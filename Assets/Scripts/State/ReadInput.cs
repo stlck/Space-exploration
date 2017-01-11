@@ -6,17 +6,22 @@ public class ReadInput : NetworkBehaviour
 {
     public delegate void DualAxisInput(float ver, float hor);
     public delegate void LookingAtInput(Vector3 t);
+    public delegate void MouseBtnClicked(int index, bool isown);
 
     [SyncVar]
     public float lastHorizontal;
     [SyncVar]
     public float lastVertical;
 
-    public event DualAxisInput AxisOut;
+    public event DualAxisInput EventAxisOut;
 
     [SyncVar]
     public Vector3 lookingAtPosition;
-    public event LookingAtInput LookingAtPosition;
+    public event LookingAtInput EventLookingAtPosition;
+
+    [SyncVar]
+    public bool isMouseDown;
+    public event MouseBtnClicked EventMouseDown;
 
     void Start()
     {
@@ -36,11 +41,13 @@ public class ReadInput : NetworkBehaviour
 
                 CmdSendInputToServer(myValVer, myValHor);
 
-                //transform.LookAt(mousePos);
                 getLookingAt();
+
+                if (Input.GetMouseButtonUp(1))
+                    CmdSendMouseBtnClick(1, false);
+                else if(Input.GetMouseButtonDown(1))
+                    CmdSendMouseBtnClick(1, true);
             }
-            //Vertical.Invoke(lastVertical);
-            //Horizontal.Invoke(lastHorizontal);
         }
 
         if(isServer)
@@ -51,11 +58,22 @@ public class ReadInput : NetworkBehaviour
                 lastVertical = Input.GetAxis("Vertical");
 
                 getLookingAt();
+
+                if (Input.GetMouseButtonUp(1))
+                {
+                    isMouseDown = false;
+                    EventMouseDown(1, false);
+                }
+                else if (Input.GetMouseButtonDown(1))
+                {
+                    isMouseDown = true;
+                    EventMouseDown(1, true);
+                }
             }
         }
 
-        if (AxisOut != null)
-            AxisOut(lastVertical, lastHorizontal);
+        if (EventAxisOut != null)
+            EventAxisOut(lastVertical, lastHorizontal);
     }
 
     void getLookingAt()
@@ -70,7 +88,7 @@ public class ReadInput : NetworkBehaviour
         if (isClient)
             CmdSendLookingAt(t);
 
-        LookingAtPosition(lookingAtPosition);
+        EventLookingAtPosition(lookingAtPosition);
     }
 
     public void OnDrawGizmos()
@@ -83,15 +101,19 @@ public class ReadInput : NetworkBehaviour
     {
         lastHorizontal = hor;
         lastVertical = ver;
-
-        //Vertical.Invoke(lastVertical);
-        //Horizontal.Invoke(lastHorizontal);
     }
 
     [Command]
     void CmdSendLookingAt(Vector3 target)
     {
         lookingAtPosition = target;
-        LookingAtPosition(lookingAtPosition);
+        EventLookingAtPosition(lookingAtPosition);
+    }
+
+    [Command]
+    void CmdSendMouseBtnClick(int index, bool down)
+    {
+        isMouseDown = down;
+        EventMouseDown(index, down);
     }
 }

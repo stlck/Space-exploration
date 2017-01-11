@@ -60,8 +60,8 @@ public class MyAvatar : NetworkBehaviour
         base.OnStartLocalPlayer();
 
         instance = this;
-        MyInput.AxisOut += updateMovement;
-        MyInput.LookingAtPosition += updateLookingAt;
+        MyInput.EventAxisOut += updateMovement;
+        MyInput.EventLookingAtPosition += updateLookingAt;
 
         IsLocal.Invoke();
     }
@@ -79,8 +79,8 @@ public class MyAvatar : NetworkBehaviour
             if(!isLocalPlayer)
             {
                 IsLocal.Invoke();
-                MyInput.AxisOut += updateMovement;
-                MyInput.LookingAtPosition += updateLookingAt;
+                MyInput.EventAxisOut += updateMovement;
+                MyInput.EventLookingAtPosition += updateLookingAt;
             }
         }
     }
@@ -141,6 +141,10 @@ public class MyAvatar : NetworkBehaviour
             {
                 CmdReleaseShip();
             }
+        }
+        if(isServer && CurrentState == States.Avatar && MyInput.isMouseDown)
+        {
+            AvatarWeaponHandler.ServerFire();
         }
     }
 

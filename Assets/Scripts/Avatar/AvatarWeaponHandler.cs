@@ -32,13 +32,13 @@ public class AvatarWeaponHandler : NetworkBehaviour
 
     void Update()
     {
-        if(isLocalPlayer)
+       /* if(isLocalPlayer)
         {
             if(Input.GetMouseButton(1))
             {
                 tryFire();
             }
-        }
+        }*/
     }
 
     void OnGUI()
@@ -93,10 +93,19 @@ public class AvatarWeaponHandler : NetworkBehaviour
         EquippedWeapon = null;
     }
 
-    void tryFire()
+    public void TryFire()
+    {
+        if(EquippedWeapon != null && EquippedWeapon.CanFire() && MyAvatar.Instance.CurrentState == States.Avatar)
+            CmdFireWeapon();
+    }
+
+    public void ServerFire()
     {
         if(EquippedWeapon != null && EquippedWeapon.CanFire())
-            CmdFireWeapon();
+        { 
+            RpcFireWeapon();
+            EquippedWeapon.FireWeapon();
+        }
     }
 
     [Command]
