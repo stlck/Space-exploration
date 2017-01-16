@@ -81,38 +81,6 @@ public class MyAvatar : NetworkBehaviour
             }
         }
     }
-    /*
-    void updateMovement(float v, float h)
-    {
-        if(isClient && CanMove)//CurrentState == States.Avatar)
-        { 
-            Movement.SetInput(v, h);
-        }
-        else if(isServer)
-        {
-
-            if (CurrentMovementBase != null)
-                CurrentMovementBase.SetInput(v, h);
-            else if( CanMove)
-                Movement.SetInput(v, h);
-        }
-    }
-
-    void updateLookingAt(Vector3 t)
-    {
-        if (isClient && CanMove)//CurrentState == States.Avatar)
-        {
-            Movement.SetLookingAt(t);
-        }
-        else if (isServer)
-        {
-            if (CurrentMovementBase != null)
-                CurrentMovementBase.SetLookingAt(t);
-            else if (CanMove)
-                Movement.SetLookingAt(t);
-        }
-
-    }*/
     
     void Update()
     {

@@ -60,10 +60,10 @@ public class WeaponMount : MovementBase, CmdObj {
         base.ReleaseControl();
 
         //var t = NetworkHelper.Instance.AllPlayers.Find(m => m.PlayerId == InControl);
-        currentOperator.SetMovementInput(this);
+        //currentOperator.SetMovementInput(this);
         //currentOperator.MyInput.EventMouseDown -= MyInput_EventMouseDown;
-        localCommand();
         InControl = -1;
+        localCommand();
         currentOperator = null;
     }
 

@@ -34,7 +34,7 @@ public class StatBase : MonoBehaviour {
         {
             var p = Camera.main.WorldToScreenPoint(transform.position + Vector3.up);
             //GUI.HorizontalScrollbar(new Rect(p.x,p.y, 30, 5), CurrentHealth / MaxHealth, 5, 0, 1);
-            GUI.DrawTexture(new Rect(p.x, p.y, (CurrentHealth / MaxHealth) * 30, 5), hpTex);
+            GUI.DrawTexture(new Rect(p.x, -p.y, (CurrentHealth / MaxHealth) * 30, 5), hpTex);
         }
     }
 }

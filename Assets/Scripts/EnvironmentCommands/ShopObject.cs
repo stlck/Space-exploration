@@ -31,7 +31,7 @@ public class ShopObject : MonoBehaviour {
 
     bool canShow()
     {
-        return Vector3.Distance(MyAvatar.Instance.transform.position, transform.position) < 10;
+        return Vector3.Distance(MyAvatar.Instance.transform.position, transform.position) < 3;
     }
 
     void OnGUI()
@@ -61,9 +61,14 @@ public class ShopObject : MonoBehaviour {
 
     void OnMouseUp()
     {
-        if (!Show && canShow())
-            Show = true;
+        if(!canShow())
+            RangeIndicator.Instance.TurnOn(transform.position, 3);
         else
-            Show = false;
+        {
+            if (!Show )
+                Show = true;
+            else
+                Show = false;
+        }
     }
 }
