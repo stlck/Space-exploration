@@ -19,15 +19,12 @@ public class MyAvatar : NetworkBehaviour
     public NetworkIdentity Identity;
     public ReadInput MyInput;
     public MoveAvator Movement;
-    public MoveShip ShipMovement;
     public MovementBase CurrentMovementBase;
     public ServerCommandObject ServerCommands;
     public AvatarWeaponHandler AvatarWeaponHandler;
     public StatBase MyStats;
     public List<BaseItem> InventoryItems = new List<BaseItem>();
-
-    //public List<Location> MyLocations = new List<Location>();
-    //public List<Location> SpawnedLocations = new List<Location>();
+    
     public CreateEnvironment EnvironmentCreator;
 
     [SyncVar]
@@ -60,8 +57,8 @@ public class MyAvatar : NetworkBehaviour
         base.OnStartLocalPlayer();
 
         instance = this;
-        MyInput.EventAxisOut += updateMovement;
-        MyInput.EventLookingAtPosition += updateLookingAt;
+        //MyInput.EventAxisOut += updateMovement;
+        //MyInput.EventLookingAtPosition += updateLookingAt;
 
         IsLocal.Invoke();
     }
@@ -79,12 +76,12 @@ public class MyAvatar : NetworkBehaviour
             if(!isLocalPlayer)
             {
                 IsLocal.Invoke();
-                MyInput.EventAxisOut += updateMovement;
-                MyInput.EventLookingAtPosition += updateLookingAt;
+                //MyInput.EventAxisOut += updateMovement;
+                //MyInput.EventLookingAtPosition += updateLookingAt;
             }
         }
     }
-
+    /*
     void updateMovement(float v, float h)
     {
         if(isClient && CanMove)//CurrentState == States.Avatar)
@@ -98,15 +95,7 @@ public class MyAvatar : NetworkBehaviour
                 CurrentMovementBase.SetInput(v, h);
             else if( CanMove)
                 Movement.SetInput(v, h);
-
-            //if (CurrentState == States.Avatar)
-            //{ 
-            //    Movement.SetInput(v, h);
-            //}
-            //else if (CurrentState == States.OnShip && ShipMovement != null)
-            //    ShipMovement.SetInput(v, h);
         }
-
     }
 
     void updateLookingAt(Vector3 t)
@@ -123,8 +112,8 @@ public class MyAvatar : NetworkBehaviour
                 Movement.SetLookingAt(t);
         }
 
-    }
-
+    }*/
+    
     void Update()
     {
         // set parent on new collider
@@ -137,12 +126,34 @@ public class MyAvatar : NetworkBehaviour
 
         if(isLocalPlayer)
         {
-            if(CurrentState == States.OnShip && Input.GetKeyDown(KeyCode.Escape))
+            if(CurrentState == States.OnShip && Input.GetKeyDown(KeyCode.Escape) && CurrentMovementBase != null)
             {
-                CmdReleaseShip();
+                CmdDefaultMovementInput();
+                //SetMovementInput(CurrentMovementBase);
+                //CmdReleaseShip();
             }
         }
-        if(isServer && CurrentState == States.Avatar && MyInput.isMouseDown)
+        if(isServer && CurrentMovementBase != null)
+        {
+            if(CurrentMovementBase != null)
+            { 
+                CurrentMovementBase.SetMouseDown(MyInput.isMouseDown);
+                CurrentMovementBase.SetLookingAt(MyInput.lookingAtPosition);
+                CurrentMovementBase.SetInput(MyInput.lastVertical, MyInput.lastHorizontal);
+            }
+            else
+            {
+                Movement.SetMouseDown(MyInput.isMouseDown);
+                Movement.SetLookingAt(MyInput.lookingAtPosition);
+                Movement.SetInput(MyInput.lastVertical, MyInput.lastHorizontal);
+            }
+        }
+        else if (isClient && isLocalPlayer && CurrentState == States.Avatar)
+        {
+            Movement.SetLookingAt(MyInput.lookingAtPosition);
+            Movement.SetInput(MyInput.lastVertical, MyInput.lastHorizontal);
+        }
+        if (isServer && CurrentState == States.Avatar && MyInput.isMouseDown)
         {
             AvatarWeaponHandler.ServerFire();
         }
@@ -158,41 +169,40 @@ public class MyAvatar : NetworkBehaviour
         CmdControlTarget(s.GetComponent<NetworkIdentity>().netId);
     }
 
-    public void ReleaseControl()
+    [Command]
+    public void CmdDefaultMovementInput()
     {
-        CmdReleaseShip();
+        if (CurrentMovementBase != null)
+        {
+            removeCurrentMovement();
+        }
     }
 
-    [Command]
-    void CmdReleaseShip()
+    void removeCurrentMovement()
     {
+        CurrentMovementBase.ReleaseControl();
+        CurrentMovementBase.SetInput(0, 0);
+        CurrentMovementBase.SetLookingAt(Vector3.zero);
         CurrentMovementBase = null;
         ChangeState(States.Avatar);
-        CanMove = false;
     }
 
     [Command]
     void CmdControlTarget(NetworkInstanceId id)
     {
-        if(CanMove)
+        var mov = NetworkServer.FindLocalObject(id).GetComponent<MovementBase>();
+        if(mov != CurrentMovementBase)
         {
             CurrentMovementBase = NetworkServer.FindLocalObject(id).GetComponent<MovementBase>();
             ChangeState(States.OnShip);
-            CanMove = false;
+            CurrentMovementBase.TakeControl();
         }
         else
-        {
-            CurrentMovementBase.SetInput(0, 0);
-            CurrentMovementBase.SetLookingAt(Vector3.zero);
-            CurrentMovementBase = null;
-            ChangeState(States.Avatar);
-            CanMove = true;
-        }
+            removeCurrentMovement();
     }
 
     public void ChangeState(States newState)
     {
-        Debug.Log("State update");
         CurrentState = newState;
         EventPlayerStateChanged(newState);
     }
@@ -202,4 +212,18 @@ public class MyAvatar : NetworkBehaviour
     {
         TeamStats.Instance.AddCredits(amount);
     }
+}
+
+public enum States
+{
+    Avatar,
+    OnShip,
+    Dead,
+}
+
+[System.Serializable]
+public class StateFloatValue
+{
+    public States State;
+    public float Value;
 }

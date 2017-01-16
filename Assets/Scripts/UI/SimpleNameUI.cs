@@ -9,8 +9,8 @@ public class SimpleNameUI : MonoBehaviour {
 
     public string Label;
     public Vector3 offset;
-    public float width = 200;
-    public float height = 60;
+    public float width = 60;
+    public float height = 25;
 
     void Awake()
     {

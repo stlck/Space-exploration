@@ -46,6 +46,7 @@ public class AvatarWeaponHandler : NetworkBehaviour
         if(isLocalPlayer)
         {
             GUILayout.BeginArea(new Rect(Screen.width/2 - 100, Screen.height - 55, 200, 50));
+            GUILayout.Label(GetComponentsInChildren<BaseWeapon>().Count() + " weapons");
             if(EquippedWeapon != null)
             {
                 GUILayout.Button(EquippedWeapon.name + " : " + (int) Mathf.Min(100,100 * EquippedWeapon.CurrentCooldown / EquippedWeapon.Cooldown));
@@ -57,12 +58,12 @@ public class AvatarWeaponHandler : NetworkBehaviour
     [Command]
     void CmdEquipWeapon(int id)
     {
-        BaseWeapon w = Instantiate(LoadedWeapons.First(m => m.Id == id));
-        //NetworkServer.Spawn(w.gameObject);
-        w.transform.parent = transform;
-        w.transform.localPosition = Vector3.up;
-        w.transform.localEulerAngles = Vector3.zero;
-        EquippedWeapon = w;
+        //BaseWeapon w = Instantiate(LoadedWeapons.First(m => m.Id == id));
+        ////NetworkServer.Spawn(w.gameObject);
+        //w.transform.parent = transform;
+        //w.transform.localPosition = w.transform.position;
+        //w.transform.localEulerAngles = Vector3.zero;
+        //EquippedWeapon = w;
 
         RpcUpdateWeaponInfo(id);
     }
@@ -73,7 +74,7 @@ public class AvatarWeaponHandler : NetworkBehaviour
         BaseWeapon w = Instantiate(LoadedWeapons.First(m => m.Id == id));
         //NetworkServer.Spawn(w.gameObject);
         w.transform.parent = transform;
-        w.transform.localPosition = Vector3.up;
+        w.transform.localPosition = w.transform.position;
         w.transform.localEulerAngles = Vector3.zero;
 
         EquippedWeapon = w;
@@ -104,7 +105,7 @@ public class AvatarWeaponHandler : NetworkBehaviour
         if(EquippedWeapon != null && EquippedWeapon.CanFire())
         { 
             RpcFireWeapon();
-            EquippedWeapon.FireWeapon();
+            //EquippedWeapon.FireWeapon();
         }
     }
 
@@ -118,6 +119,7 @@ public class AvatarWeaponHandler : NetworkBehaviour
     [ClientRpc]
     void RpcFireWeapon()
     {
+        Debug.Log("fIRING");
         EquippedWeapon.FireWeapon();
     }
 }

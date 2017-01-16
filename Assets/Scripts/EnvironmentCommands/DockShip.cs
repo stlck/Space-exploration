@@ -42,8 +42,8 @@ public class DockShip : NetworkBehaviour, CmdObj
 
     // Use this for initialization
     void Start () {
-        if (NetworkHelper.Instance != null)
-            NetworkHelper.Instance.SpawnObject(gameObject);
+        //if (NetworkHelper.Instance != null)
+        //    NetworkHelper.Instance.SpawnObject(gameObject);
 	}
 	
 	// Update is called once per frame

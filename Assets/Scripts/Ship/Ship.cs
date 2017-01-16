@@ -18,6 +18,7 @@ public class Ship : NetworkBehaviour {
     public MoveShip ShipMovement;
 
     public List<GameObject> SpawnObjects;
+    public List<NetworkSpawnObject> NetworkSpawnObjects;
 
 	// Use this for initialization
 	void Start () {
@@ -25,12 +26,22 @@ public class Ship : NetworkBehaviour {
         {
             SpawnObjects.ForEach(m =>
             {
-                GameObject i = Instantiate(m, transform);
-                i.transform.localPosition = m.transform.position;
-                NetworkServer.Spawn(i);
+                //GameObject i = Instantiate(m, transform);
+                //i.transform.localPosition = m.transform.position;
+                //NetworkServer.Spawn(i);
+                //RpcParentToTransform(gameObject, i);
             });
+
+            NetworkSpawnObjects.ForEach(m => NetworkHelper.Instance.NetworkSpawnObject(m));
         }
+
 	}
+
+    [ClientRpc]
+    void RpcParentToTransform(GameObject parent, GameObject child)
+    {
+        child.transform.SetParent(parent.transform, true);
+    }
 	
 	// Update is called once per frame
     [Server]

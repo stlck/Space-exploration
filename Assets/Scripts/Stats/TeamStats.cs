@@ -43,12 +43,7 @@ public class TeamStats : NetworkBehaviour
         if (isServer)
             Credits += amount;
         else
-            CmdAddCredits(amount);
-    }
-
-    [Command]
-    void CmdAddCredits(int amount)
-    {
-        AddCredits(amount);
+            MyAvatar.Instance.CmdAddCredits(amount);
+            //CmdAddCredits(amount);
     }
 }

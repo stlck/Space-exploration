@@ -4,24 +4,24 @@ using UnityEngine.Networking;
 
 public class ReadInput : NetworkBehaviour
 {
-    public delegate void DualAxisInput(float ver, float hor);
-    public delegate void LookingAtInput(Vector3 t);
-    public delegate void MouseBtnClicked(int index, bool isown);
+    //public delegate void DualAxisInput(float ver, float hor);
+    //public delegate void LookingAtInput(Vector3 t);
+    //public delegate void MouseBtnClicked(int index, bool isown);
 
     [SyncVar]
     public float lastHorizontal;
     [SyncVar]
     public float lastVertical;
 
-    public event DualAxisInput EventAxisOut;
+    //public event DualAxisInput EventAxisOut;
 
     [SyncVar]
     public Vector3 lookingAtPosition;
-    public event LookingAtInput EventLookingAtPosition;
+    //public event LookingAtInput EventLookingAtPosition;
 
     [SyncVar]
     public bool isMouseDown;
-    public event MouseBtnClicked EventMouseDown;
+    //public event MouseBtnClicked EventMouseDown;
 
     void Start()
     {
@@ -62,18 +62,18 @@ public class ReadInput : NetworkBehaviour
                 if (Input.GetMouseButtonUp(1))
                 {
                     isMouseDown = false;
-                    EventMouseDown(1, false);
+                    //EventMouseDown(1, false);
                 }
                 else if (Input.GetMouseButtonDown(1))
                 {
                     isMouseDown = true;
-                    EventMouseDown(1, true);
+                    //EventMouseDown(1, true);
                 }
             }
         }
 
-        if (EventAxisOut != null)
-            EventAxisOut(lastVertical, lastHorizontal);
+        //if (EventAxisOut != null)
+        //    EventAxisOut(lastVertical, lastHorizontal);
     }
 
     void getLookingAt()
@@ -88,7 +88,7 @@ public class ReadInput : NetworkBehaviour
         if (isClient)
             CmdSendLookingAt(t);
 
-        EventLookingAtPosition(lookingAtPosition);
+        //EventLookingAtPosition(lookingAtPosition);
     }
 
     public void OnDrawGizmos()
@@ -107,13 +107,13 @@ public class ReadInput : NetworkBehaviour
     void CmdSendLookingAt(Vector3 target)
     {
         lookingAtPosition = target;
-        EventLookingAtPosition(lookingAtPosition);
+        //EventLookingAtPosition(lookingAtPosition);
     }
 
     [Command]
     void CmdSendMouseBtnClick(int index, bool down)
     {
         isMouseDown = down;
-        EventMouseDown(index, down);
+        //EventMouseDown(index, down);
     }
 }

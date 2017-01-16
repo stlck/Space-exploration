@@ -35,4 +35,40 @@ public class NetworkHelper : NetworkBehaviour
             NetworkServer.Spawn(go);
     }
 
+    [Server]
+    public GameObject NetworkSpawnObject(NetworkSpawnObject so)
+    {
+        var go = Instantiate(so.SpawnTarget, so.Parent.transform);
+        if (so.PositionIsLocal)
+            go.transform.localPosition = so.Position;
+        else
+            go.transform.position = so.Position;
+
+        if (so.EulersIsLocal)
+            go.transform.localEulerAngles = so.Eulers;
+        else
+            go.transform.eulerAngles = so.Eulers;
+
+        NetworkServer.Spawn(go);
+        RpcParentSpawnObject(go, so.Parent);
+
+        return go;
+    }
+
+    [ClientRpc]
+    void RpcParentSpawnObject(GameObject go, GameObject parent)
+    {
+        go.transform.SetParent(parent.transform, true);
+    }
+}
+
+[Serializable]
+public class NetworkSpawnObject
+{
+    public GameObject SpawnTarget;
+    public GameObject Parent;
+    public Vector3 Position;
+    public bool PositionIsLocal = true;
+    public Vector3 Eulers;
+    public bool EulersIsLocal = true;
 }
