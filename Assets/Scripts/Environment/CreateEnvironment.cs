@@ -19,7 +19,7 @@ public class CreateEnvironment : MonoBehaviour {
     void Update()
     {
         // spawn terrain in vicinity (local only)
-        var close = MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 100);
+        var close = MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 1000);
         if (close.Any(m => !SpawnedLocations.Contains(m)))
         {
             // spawn 
@@ -56,10 +56,17 @@ public class CreateEnvironment : MonoBehaviour {
 
                     if (tile == 3)
                     {
-                        for(int k = 0; k < 4; k++)
-                        {
-                            Instantiate(GroundTiles[tile], p + Vector3.up * k, Quaternion.identity, owner ?? transform);
-                        }
+                        wallAt(p, GroundTiles[tile], owner);
+                        if (i + 1 < l.Size && tiles[i + 1, j] == 3)
+                            for (int temp = 0; temp < l.TileSize; temp++)
+                                wallAt(p + Vector3.right * (temp + 1), GroundTiles[tile], owner);
+                        if( j+ 1 < l.Size && tiles[i, j +1] == 3)
+                            for (int temp = 0; temp < l.TileSize; temp++)
+                                wallAt(p + Vector3.forward * (temp + 1), GroundTiles[tile], owner);
+                        //for(int k = 0; k < 4; k++)
+                        //{
+                        //    Instantiate(GroundTiles[tile], p + Vector3.up * k, Quaternion.identity, owner ?? transform);
+                        //}
                         tile = 0;
                     }
 
@@ -72,6 +79,14 @@ public class CreateEnvironment : MonoBehaviour {
                     t.SetParent(owner ?? transform);
                 }
             }
+    }
+
+    void wallAt(Vector3 p, Transform t, Transform owner)
+    {
+        for (int k = 0; k < 4; k++)
+        {
+            Instantiate(t, p + Vector3.up * k, Quaternion.identity, owner ?? transform);
+        }
     }
 
     public void DestroyLevel()
