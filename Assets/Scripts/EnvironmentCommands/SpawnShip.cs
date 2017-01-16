@@ -8,6 +8,7 @@ using UnityEngine.Networking;
 public class SpawnShip : NetworkBehaviour, CmdObj
 {
     public GameObject Ship;
+    public DockingPoint TargetDock;
 
     public void doCommand(int senderId)
     {
@@ -15,8 +16,11 @@ public class SpawnShip : NetworkBehaviour, CmdObj
 
         var s = Instantiate(Ship);
         NetworkHelper.Instance.SpawnObject(s);
-        //NetworkServer.Spawn(s);
-        //NetworkServer.SpawnObjects();
+        if(TargetDock != null)
+        {
+            s.transform.position = TargetDock.DockAlign.position;
+            s.transform.rotation = TargetDock.DockAlign.rotation;
+        }
     }
 
     public void localCommand()
@@ -26,6 +30,8 @@ public class SpawnShip : NetworkBehaviour, CmdObj
 
     public bool canExecuteCommand()
     {
-        return true;
+        if(TargetDock == null || !TargetDock.ShipDocked())
+            return true;
+        return false;
     }
 }
