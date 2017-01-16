@@ -33,7 +33,7 @@ public class ShipWeapon : BaseWeapon {
     public override void FireWeapon()
     {
         base.FireWeapon();
-        var p = Instantiate(Projectile, transform.position + transform.forward + transform.TransformPoint(SpawnPoint), transform.rotation);
+        var p = Instantiate(Projectile, /*transform.position + transform.forward +*/ transform.TransformPoint(SpawnPoint), transform.rotation);
         p.Owner = this;
         Destroy(p.gameObject, 10);
     }

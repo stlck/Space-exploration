@@ -80,7 +80,7 @@ public class WeaponMount : MovementBase, CmdObj {
     [ClientRpc]
     void RpcClientFire()
     {
-        Debug.Log("ClientFIre");
+        //Debug.Log("ClientFIre");
         ShipWeapon.FireWeapon();
     }
 
@@ -120,7 +120,7 @@ public class WeaponMount : MovementBase, CmdObj {
         if(val && ShipWeapon.CanFire())
         {
             RpcClientFire();
-            ShipWeapon.FireWeapon();
+            //ShipWeapon.FireWeapon();
         }
     }
 

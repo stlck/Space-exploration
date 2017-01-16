@@ -36,8 +36,6 @@ public class MoveAvator : MovementBase
         //if (PlayerState.Instance.CurrentState == States.Avatar)
         if(isServer || isLocalPlayer && nTransform.lastSyncTime > Time.deltaTime)
         {
-            Debug.Log("not synced");
-
             var forward = transform.forward * vert * ForwardSpeed;
             var right = transform.right * hor * StrafeSpeed;
 

@@ -133,8 +133,9 @@ public class MyAvatar : NetworkBehaviour
                 //CmdReleaseShip();
             }
         }
-        if(isServer && CurrentMovementBase != null)
+        if(isServer)
         {
+            Debug.Log("Is server, handling movement");
             if(CurrentMovementBase != null)
             { 
                 CurrentMovementBase.SetMouseDown(MyInput.isMouseDown);
