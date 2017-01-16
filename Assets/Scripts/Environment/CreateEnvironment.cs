@@ -56,18 +56,14 @@ public class CreateEnvironment : MonoBehaviour {
 
                     if (tile == 3)
                     {
-                        wallAt(p, GroundTiles[tile], owner);
+                        wallAt(p, GroundTiles[tile], owner, l.WallHeight);
                         if (i + 1 < l.Size && tiles[i + 1, j] == 3)
                             for (int temp = 0; temp < l.TileSize; temp++)
-                                wallAt(p + Vector3.right * (temp + 1), GroundTiles[tile], owner);
+                                wallAt(p + Vector3.right * (temp + 1), GroundTiles[tile], owner, l.WallHeight);
                         if( j+ 1 < l.Size && tiles[i, j +1] == 3)
                             for (int temp = 0; temp < l.TileSize; temp++)
-                                wallAt(p + Vector3.forward * (temp + 1), GroundTiles[tile], owner);
-                        //for(int k = 0; k < 4; k++)
-                        //{
-                        //    Instantiate(GroundTiles[tile], p + Vector3.up * k, Quaternion.identity, owner ?? transform);
-                        //}
-                        tile = 0;
+                                wallAt(p + Vector3.forward * (temp + 1), GroundTiles[tile], owner, l.WallHeight);
+                        tile = 2;
                     }
 
                     var t = Instantiate(
@@ -81,7 +77,7 @@ public class CreateEnvironment : MonoBehaviour {
             }
     }
 
-    void wallAt(Vector3 p, Transform t, Transform owner)
+    void wallAt(Vector3 p, Transform t, Transform owner, int WallHeight)
     {
         for (int k = 0; k < 4; k++)
         {

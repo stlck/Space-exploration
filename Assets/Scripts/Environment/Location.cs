@@ -11,6 +11,7 @@ public class Location : ScriptableObject {
     public Vector3 Position;
     public int Size = 50;
     public int TileSize = 1;
+    public int WallHeight = 4;
     public LocationTypes Type;
     public LocationStandings Standing;
 
