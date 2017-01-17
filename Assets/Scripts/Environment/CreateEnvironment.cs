@@ -29,17 +29,19 @@ public class CreateEnvironment : MonoBehaviour {
                 {
                     var go = new GameObject(c.name);
                     go.transform.position = c.Position;
-                    CreateLevel(c, go.transform);
+                    c.SpawnLocation(go.transform);
+                    //CreateLevel(c, go.transform);
                     SpawnedLocations.Add(c);
                 }
-                //else if (c.Type == LocationTypes.SpaceEncounter && Identity.isServer)
-                //{
-                //    // spawn ships
-                //}
+                else if (c.Type == LocationTypes.SpaceEncounter)
+                {
+                    // spawn ships & stuff
+
+                }
             }
         }
     }
-
+    /*
     public void CreateLevel(Location l, Transform owner = null)
     {
         var s = (Vector3.forward + Vector3.right) * l.TileSize + Vector3.up;
@@ -83,7 +85,7 @@ public class CreateEnvironment : MonoBehaviour {
         {
             Instantiate(t, p + Vector3.up * k, Quaternion.identity, owner ?? transform);
         }
-    }
+    }*/
 
     public void DestroyLevel()
     {

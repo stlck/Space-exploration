@@ -29,6 +29,17 @@ public class NetworkHelper : NetworkBehaviour
         NetworkManager.singleton.runInBackground = true;
     }
 
+    public void SpawnSpaceEncounter(Location t)
+    {
+        CmdSpaceEncounter(t);
+    }
+
+    [Command]
+    public void CmdSpaceEncounter(Location t)
+    {
+
+    }
+
     public void SpawnObject(GameObject go)
     {
         if (isServer)

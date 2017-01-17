@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(Location))]
+[CustomEditor(typeof(LocationStation))]
 public class LocationEditor : Editor {
 
     bool showLocEdit = false;
@@ -12,29 +12,14 @@ public class LocationEditor : Editor {
     {
         base.OnInspectorGUI();
 
-        var t = (Location)target;
-        var o = "tiles:\n";
-        if (t.MapTiles == null)
-        {
-            EditorGUILayout.TextField("MapTiles null");
-        }
-        else
-        {
-            int i = 0;
-            foreach (var tile in t.MapTiles)
-            {
-                i++;
-                o += tile;
-                if (i % t.Size == 0)
-                    o += "\n";
-            }
+        var t = (LocationStation)target;
 
-            EditorGUILayout.TextArea(o);
-        }
+        if (GUILayout.Button("FILL"))
+            t.FillMap();
 
         showLocEdit = GUILayout.Toggle(showLocEdit, "showLocEdit");
 
-        if(showLocEdit && t.MapTiles != null)
+        if(showLocEdit && t.tiles != null)
         {
             int i = 0;
             //foreach (var tile in t.tiles)
