@@ -63,6 +63,18 @@ public class LocationStation : Location
         var s = (Vector3.forward + Vector3.right) * TileSize + Vector3.up;
         var tiles = MapTiles;// BlockGenerator.GenerateMap(Width, Height);
 
+        var mesh = new MeshGenerator();
+        mesh.Test = this;
+        mesh.newGen();
+
+        var ground = new GameObject();
+        ground.AddComponent<MeshFilter>();
+        ground.AddComponent<MeshRenderer>().material = GroundTiles[0].GetComponent<MeshRenderer>().sharedMaterial;
+        
+        ground.transform.SetParent(owner);
+        ground.transform.localPosition = Vector3.zero;
+        ground.GetComponent<MeshFilter>().mesh = mesh.output;
+
         for (int i = 0; i < Size; i++)
             for (int j = 0; j < Size; j++)
             {
@@ -70,7 +82,7 @@ public class LocationStation : Location
 
                 if (GroundTiles[tile] != null)
                 {
-                    var p = Position + Vector3.right * i * TileSize + Vector3.forward * j * TileSize + Vector3.down / 2;
+                    var p = Position + Vector3.right * i * TileSize + Vector3.forward * j * TileSize;// + Vector3.down / 2;
 
                     if (tile == 3)
                     {
@@ -84,13 +96,13 @@ public class LocationStation : Location
                         tile = 2;
                     }
 
-                    var t = Instantiate(
+                   /* var t = Instantiate(
                         GroundTiles[tile],
                         p,
                         Quaternion.identity) as Transform;
 
                     t.localScale = s;
-                    t.SetParent(owner);
+                    t.SetParent(owner);*/
 
                 }
             }
@@ -98,9 +110,9 @@ public class LocationStation : Location
 
     void wallAt(Vector3 p, Transform t, Transform owner, int WallHeight)
     {
-        for (int k = 0; k < 3; k++)
+        for (int k = 0; k < WallHeight; k++)
         {
-            Instantiate(t, p + Vector3.up * k, Quaternion.identity, owner);
+            Instantiate(t, p + Vector3.up * (k +1), Quaternion.identity, owner);
         }
     }
 }

@@ -19,7 +19,7 @@ public class CreateEnvironment : MonoBehaviour {
     void Update()
     {
         // spawn terrain in vicinity (local only)
-        var close = MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 1000);
+        var close = MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 200);
         if (close.Any(m => !SpawnedLocations.Contains(m)))
         {
             // spawn 
