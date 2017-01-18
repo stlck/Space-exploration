@@ -16,6 +16,23 @@ public class LocationEditor : Editor {
 
         if (GUILayout.Button("FILL"))
             t.FillMap();
+        if(GUILayout.Button("Set row 0 to 1"))
+        {
+            for (int i = 0; i < t.Size; i++)
+            {
+                t.tiles[i * t.Size] = 1;
+                if(i > 0)
+                    t.tiles[i * t.Size - 1] = 1;
+            }
+            for (int j = 0; j < t.Size; j++)
+            {
+                t.tiles[j] = 1;
+                if(j > 0)
+                    t.tiles[t.Size * t.Size - j] = 1;
+            }
+
+            Debug.Log("tiles set to 1");
+        }
 
         showLocEdit = GUILayout.Toggle(showLocEdit, "showLocEdit");
 
@@ -37,8 +54,9 @@ public class LocationEditor : Editor {
                     EditorGUILayout.EndHorizontal();
                 i++;                                
             }
-            if (GUI.changed)
-                t.SetDirty();
         }
+
+        if (GUI.changed)
+            t.SetDirty();
     }
 }
