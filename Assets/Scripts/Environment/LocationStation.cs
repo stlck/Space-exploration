@@ -98,7 +98,7 @@ public class LocationStation : Location
 
     void wallAt(Vector3 p, Transform t, Transform owner, int WallHeight)
     {
-        for (int k = 0; k < 4; k++)
+        for (int k = 0; k < 3; k++)
         {
             Instantiate(t, p + Vector3.up * k, Quaternion.identity, owner);
         }
