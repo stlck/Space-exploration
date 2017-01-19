@@ -45,6 +45,8 @@ namespace ProceduralToolkit.Examples
         private float startNoise = 0.25f;
         private bool aliveBorders = false;
 
+        public bool update = false;
+
         private RulesetName[] rulesetNames = new[]
         {
             RulesetName.Life,
@@ -120,8 +122,11 @@ namespace ProceduralToolkit.Examples
 
         private void Update()
         {
-            automaton.Simulate();
-            Draw();
+            if(update)
+            { 
+                automaton.Simulate();
+                Draw();
+            }
         }
 
         private void SelectRuleset(RulesetName rulesetName)

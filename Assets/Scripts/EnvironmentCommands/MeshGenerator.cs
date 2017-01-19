@@ -72,7 +72,27 @@ public class MeshGenerator
         output.vertices = vertices.ToArray();
         output.triangles = triangles.ToArray();
         output.RecalculateNormals();
-        
+    }
+
+    public void newGen2()
+    {
+        vertices = new List<Vector3>();
+        triangles = new List<int>();
+        tiles = Test.MapTiles;
+        count = 0;
+        output = new Mesh();
+        var draft = new MeshDraft(output);
+
+        for (int i = 1; i < Test.Size - 2; i++)
+            for (int j = 1; j < Test.Size - 2; j++)
+            {
+                if(tiles[i,j] != 1)
+                {
+                    draft.Add(MeshDraft.Quad(Vector3.right *i + Vector3.forward * j, Vector3.right * Test.TileSize, Vector3.forward * Test.TileSize));
+                }
+            }
+
+        output = draft.ToMesh();
     }
 
     void createTriangle(Vector3 f, Vector3 f2, Vector3 f3)
