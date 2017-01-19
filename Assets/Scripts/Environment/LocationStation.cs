@@ -59,22 +59,15 @@ public class LocationStation : Location
 
         var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
         var GroundTiles = set.GroundTiles;
-
+        
         var s = (Vector3.forward + Vector3.right) * TileSize + Vector3.up;
         var tiles = MapTiles;// BlockGenerator.GenerateMap(Width, Height);
 
-        var mesh = new MeshGenerator();
-        mesh.Test = this;
-        mesh.newGen();
-
-        var ground = new GameObject();
-        ground.AddComponent<MeshFilter>();
-        ground.AddComponent<MeshRenderer>().material = GroundTiles[0].GetComponent<MeshRenderer>().sharedMaterial;
+        if(Type == LocationTypes.Asteroid)
+        {
+            addGroundAsMesh(GroundTiles, owner);
+        }
         
-        ground.transform.SetParent(owner);
-        ground.transform.localPosition = Vector3.zero;
-        ground.GetComponent<MeshFilter>().mesh = mesh.output;
-
         for (int i = 0; i < Size; i++)
             for (int j = 0; j < Size; j++)
             {
@@ -96,16 +89,33 @@ public class LocationStation : Location
                         tile = 2;
                     }
 
-                   /* var t = Instantiate(
-                        GroundTiles[tile],
-                        p,
-                        Quaternion.identity) as Transform;
+                    if(Type == LocationTypes.SpaceStation)
+                    { 
+                        var t = Instantiate(
+                            GroundTiles[tile],
+                            p,
+                            Quaternion.identity, owner) as Transform;
 
-                    t.localScale = s;
-                    t.SetParent(owner);*/
-
+                        t.localScale = s;
+                    }
                 }
             }
+    }
+
+    void addGroundAsMesh(List<Transform> GroundTiles, Transform owner)
+    {
+        var mesh = new MeshGenerator();
+        mesh.Test = this;
+        mesh.newGen();
+        
+        var ground = new GameObject();
+        ground.AddComponent<MeshFilter>();
+        ground.AddComponent<MeshRenderer>().material = GroundTiles[0].GetComponent<MeshRenderer>().sharedMaterial;
+
+        ground.transform.SetParent(owner);
+        ground.transform.localPosition = Vector3.zero;
+        ground.GetComponent<MeshFilter>().mesh = mesh.output;
+        ground.AddComponent<MeshCollider>().sharedMesh = mesh.output;
     }
 
     void wallAt(Vector3 p, Transform t, Transform owner, int WallHeight)

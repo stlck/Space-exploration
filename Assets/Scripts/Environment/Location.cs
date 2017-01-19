@@ -12,7 +12,15 @@ public class Location : ScriptableObject {
     public LocationTypes Type;
     public LocationStandings Standing;
 
-   
+    public void TestSpawnLocation()
+    {
+        var t = GameObject.Find(name);
+        if (t != null)
+            Destroy(t);
+        var owner = new GameObject(Name);
+        owner.transform.position = Position;
+        SpawnLocation(owner.transform);
+    }
 
     public virtual void SpawnLocation(Transform owner)
     {
