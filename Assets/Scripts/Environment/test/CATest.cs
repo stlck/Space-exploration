@@ -30,8 +30,10 @@ public class CATest : MonoBehaviour
         
         if (GUILayout.Button("SMOOTH CA"))
             Smooth();
+        if (GUILayout.Button("INCREASE SIZE"))
+            IncreaseMapSize(Size * 2);
 
-        if(GUILayout.Button("DO MESH"))
+        if (GUILayout.Button("DO MESH"))
             CreateAsMesh();
 
         if(GUILayout.Button("DO REGIONS"))
@@ -48,11 +50,14 @@ public class CATest : MonoBehaviour
 
             Generate();
             Smooth();
+            IncreaseMapSize(Size * 2);
             Smooth();
+            IncreaseMapSize(Size * 2);
             Smooth();
             doregions();
-            regionsToMesh();
+
             carve();
+            regionsToMesh();
         }
 
         ShowGizmos = GUILayout.Toggle(ShowGizmos, "Show gizmos");
@@ -65,17 +70,27 @@ public class CATest : MonoBehaviour
         var z = (int)Region.Average(m => m.z);
         var c = new GameObject();
         MeshDraft interior = new MeshDraft();
+        var p = Vector3.one;
         for (int i = x; i > Region.Min(m => m.x) -4; i--)
         {
-            //if(!inBounds(i+2, y,z) || map[i + 2, y, z] > 0)
-            { 
-                var e = MeshDraft.Hexahedron(1, 1, 1);
-                e.Move(Vector3.up * y + Vector3.forward * z + Vector3.right * i);
-                interior.Add(e);
-            }
-            //interior.Add(MeshDraft.Quad(Vector3.up * y + Vector3.forward * z + Vector3.right * i, Vector3.one, Vector3.one));
+            p = Vector3.up * y + Vector3.forward * z + Vector3.right * i;
+            var e = MeshDraft.Hexahedron(1, 1, 1);
+            e.Move(p);
+            interior.Add(e);
+            if (Region.Contains(p))
+                Region.Remove(p);
+            
         }
         output = interior.ToMesh();
+
+        var toRemove = new List<Vector3>();
+        foreach(var tile in Region)
+            if((tile.y == y || tile.y +1 == y) && neightborCount6(tile) == 6)
+            {
+                toRemove.Add(tile);
+            }
+        toRemove.ForEach(m => Region.Remove(m));
+        
         c.transform.SetParent(transform);
         c.transform.localPosition = Vector3.zero;
         c.AddComponent<MeshFilter>().mesh = output;
@@ -100,6 +115,7 @@ public class CATest : MonoBehaviour
                     }
                 }
         map = all;
+        Region = Regions.OrderBy(m => m.Count).Last();
     }
 
     void singleregion(List<Vector3> region, int x, int y, int z)
@@ -118,15 +134,12 @@ public class CATest : MonoBehaviour
     void regionsToMesh()
     {
         MeshDraft draft = new MeshDraft();
-        Region = Regions.OrderBy(m => m.Count).Last();
 
         foreach (var p in Region.Where(r => neightborCount6(r) < 6))
         {
-            {
-                var e = MeshDraft.Hexahedron(1, 1, 1);
-                e.Move(p);
-                draft.Add(e);
-            }
+            var e = MeshDraft.Hexahedron(1, 1, 1);
+            e.Move(p);
+            draft.Add(e);
         }
 
         output = draft.ToMesh();
@@ -155,6 +168,22 @@ public class CATest : MonoBehaviour
     Vector3 indexToPosition(int i, int j, int k)
     {
         return Vector3.right * i + Vector3.up * j + Vector3.forward * k;
+    }
+
+    void IncreaseMapSize(int newsize)
+    {
+        var newMap = new int[newsize, newsize, newsize];
+        int dif = (newsize - Size)/2;
+
+        for (int i = 0; i < Size; i++)
+            for (int j = 0; j < Size; j++)
+                for (int k = 0; k < Size; k++)
+                {
+                    newMap[i + dif, j+ dif, k+ dif] = map[i, j, k];
+                }
+
+        map = newMap;
+        Size = newsize;
     }
 
     void Generate()
