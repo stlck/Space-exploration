@@ -169,16 +169,23 @@ public class CATest : MonoBehaviour
 
     void Smooth()
     {
+        int[,,] temp = new int[Size, Size, Size];
         for (int i = 0; i < Size; i++)
             for (int j = 0; j < Size; j++)
                 for (int k = 0; k < Size; k++)
                 {
+                    //if(map[i,j,k] > 0)
+                    { 
                     var nCount = neighborCount(i, j, k);
-                    if (nCount > neighborsMin)
-                        map[i, j, k] = 1;
-                    else if (nCount < neighborsMin)
-                        map[i, j, k] = 0;
+                        if (nCount >= neighborsMin)
+                            temp[i, j, k] = 1;
+                        else if (nCount < neighborsMin)
+                            temp[i, j, k] = 0;
+                        //else
+                        //    temp[i, j, k] = map[i,j,k];
+                    }
                 }
+        map = temp;
     }
 
     int neightborCount6(Vector3 pos)
@@ -214,9 +221,16 @@ public class CATest : MonoBehaviour
             for (int j = y-1; j <= y+1; j++)
                 for (int k = z-1; k <= z+1; k++)
                 {
-                    if (inBounds(i,j,k))//i >= 0 && i < Size && j >= 0 && j < Size && k >= 0 && k < Size)
+                    if (inBounds(i,j,k))
                         ret += map[i, j, k];
                 }
+
+        //ret += inBounds(x - 1, y, z) ? map[x - 1, y, z] : 0;
+        //ret += inBounds(x + 1, y, z) ? map[x + 1, y, z] : 0;
+        //ret += inBounds(x, y - 1, z) ? map[x, y - 1, z] : 0;
+        //ret += inBounds(x, y + 1, z) ? map[x, y + 1, z] : 0;
+        //ret += inBounds(x, y, z - 1) ? map[x, y, z - 1] : 0;
+        //ret += inBounds(x, y, z + 1) ? map[x, y, z + 1] : 0;
 
         return ret -1;
     }
