@@ -88,12 +88,14 @@ public class CATest : MonoBehaviour
         //output = interior.ToMesh();
 
         var toRemove = new List<Vector3>();
-        foreach (var tile in Region.Where(m => m.y <= y ))
+        foreach (var tile in Region.Where(m => m.y <= y + 1 ))
            // if ((tile.y +1 == y || tile.y +2 == y) &&neightborCount6(tile) == 6)
-            {
+        {
+            if (tile.y <= y || neightborCount6(tile, Region) < 6)
                 lowerRegion.Add(tile);
-                toRemove.Add(tile);
-            }
+            toRemove.Add(tile);
+
+        }
         toRemove.ForEach(m => Region.Remove(m));
 
         lower.transform.SetParent(transform);
