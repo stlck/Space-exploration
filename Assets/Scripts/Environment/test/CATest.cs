@@ -43,7 +43,7 @@ public class CATest : MonoBehaviour
         //    regionsToMesh();
 
         if (GUILayout.Button("carve"))
-            carve();
+            carve2();
 
         if(GUILayout.Button("Do ALl"))
         {
@@ -113,55 +113,16 @@ public class CATest : MonoBehaviour
 
         foreach (var t in toRemove)
             Region.Remove(t);
-
-        //sub = Region.Where(m => neightborCount6(m) < 6);
-
-        //foreach (var tile in sub)
-        //    if (!toRemove.Contains(tile))
-        //        toRemove.Add(tile);
-        //toRemove.ForEach(m => Region.Remove(m));
-
+        
         lower.transform.SetParent(transform);
         lower.transform.localPosition = Vector3.zero;
         lower.AddComponent<MeshRenderer>().material = GetComponent<MeshRenderer>().material;
-        //regionsToMesh(lowerRegion, lower.AddComponent<MeshFilter>());
         StartCoroutine(regionToMeshCoroutine(lowerRegion, lower.AddComponent<MeshFilter>()));
 
         upper.transform.SetParent(transform);
         upper.transform.localPosition = Vector3.zero;
         upper.AddComponent<MeshRenderer>().material = GetComponent<MeshRenderer>().material;
-        //regionsToMesh(Region, upper.AddComponent<MeshFilter>());
         StartCoroutine(regionToMeshCoroutine(Region, upper.AddComponent<MeshFilter>()));
-    }
-
-    void carve()
-    {
-        var y = (int)Region.Average(m => m.y);
-        var x = (int)Region.Average(m => m.x);
-        var z = (int)Region.Average(m => m.z);
-        var c = new GameObject();
-        //MeshDraft interior = new MeshDraft();
-        var p = Vector3.one;
-        var xTo = Region.Min(m => m.x) - 4;
-        var lowerRegion = new List<Vector3>();
-        for (int i = x; i > xTo; i--)
-        {
-            p = Vector3.up * y + Vector3.forward * z + Vector3.right * i;
-            if (!Region.Contains(p))
-                Region.Add(p);
-
-            if (Region.Contains(p + Vector3.up))
-                Region.Remove(p + Vector3.up);   
-        }
-
-        var toRemove = new List<Vector3>();
-        foreach(var tile in Region.Where(m => m.y == y + 1))
-            if (/*(tile.y +1 == y || tile.y +2 == y) && */neightborCount6(tile) == 6)
-            {
-                toRemove.Add(tile);
-            }
-        toRemove.ForEach(m => Region.Remove(m));
-        
     }
 
     void doregions()
@@ -210,7 +171,6 @@ public class CATest : MonoBehaviour
             draft.Add(e);
         }
 
-        //output = draft.ToMesh();
         target.mesh = draft.ToMesh();
     }
 
@@ -219,8 +179,6 @@ public class CATest : MonoBehaviour
         float real = Time.realtimeSinceStartup;
         MeshDraft draft = new MeshDraft();
 
-        //var sub = region.Where(r => neightborCount6(r, region) < 6);
-        var dir = Directions.All;//& ~Directions.Down;
         var size = Vector3.one;
         int blocks = 0;
         foreach (var p in region)
