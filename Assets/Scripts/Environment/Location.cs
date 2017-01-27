@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class Location : ScriptableObject {
 
+    [ContextMenuItem("TestSpawnLocation", "TestSpawnLocation")]
     public string Name = "";
     public Vector3 Position;
 

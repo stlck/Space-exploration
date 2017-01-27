@@ -48,28 +48,28 @@ public class CATest : MonoBehaviour
         if(GUILayout.Button("Do ALl"))
         {
             float real = Time.realtimeSinceStartup;
-            
+            var spawner = new AsteroidSpawner();
             Debug.Log("Region to mesh " + (Time.realtimeSinceStartup - real));
-            Generate();
+            spawner.Generate(Size);
         Debug.Log("1 " + (Time.realtimeSinceStartup - real));
-            Smooth();
+            spawner.Smooth();
         Debug.Log("2 " + (Time.realtimeSinceStartup - real));
-            Smooth();
+            spawner.Smooth();
         Debug.Log("3 " + (Time.realtimeSinceStartup - real));
-            IncreaseMapSize(20);
+            spawner.IncreaseMapSize(20);
         Debug.Log("4 " + (Time.realtimeSinceStartup - real));
-            Smooth();
+            spawner.Smooth();
         Debug.Log("5 " + (Time.realtimeSinceStartup - real));
-            Smooth();
+            spawner.Smooth();
         Debug.Log("6 " + (Time.realtimeSinceStartup - real));
-            IncreaseMapSize(26);
+            spawner.IncreaseMapSize(26);
         Debug.Log("7 " + (Time.realtimeSinceStartup - real));
-            Smooth();
+            spawner.Smooth();
         Debug.Log("8 " + (Time.realtimeSinceStartup - real));
-            doregions();
+            spawner.doregions();
 
         Debug.Log("9 " + (Time.realtimeSinceStartup - real));
-            carve2();
+            spawner.Carve(transform);
         Debug.Log("10 " + (Time.realtimeSinceStartup - real));
         }
 
@@ -87,11 +87,13 @@ public class CATest : MonoBehaviour
         var xTo = Region.Min(m => m.x) - 4;
         var lowerRegion = new List<Vector3>();
         
-        var toRemove = Region.Where(m => m.y != y && neightborCount6(m) == 6).ToList();
+        // remove all at y + 1 except walls
+        var toRemove = Region.Where(m => m.y == y +1 && neightborCount6(m) == 6).ToList();
         foreach (var t in toRemove)
             Region.Remove(t);
         toRemove.Clear();
 
+        // add a landing bridge
         var sub = Region.Where(m => m.y == y && m.z == z);
         var pathOut = new List<Vector3>();
         for (int i = x; i > xTo; i--)
@@ -304,14 +306,7 @@ public class CATest : MonoBehaviour
                     if (inBounds(i,j,k))
                         ret += map[i, j, k];
                 }
-
-        //ret += inBounds(x - 1, y, z) ? map[x - 1, y, z] : 0;
-        //ret += inBounds(x + 1, y, z) ? map[x + 1, y, z] : 0;
-        //ret += inBounds(x, y - 1, z) ? map[x, y - 1, z] : 0;
-        //ret += inBounds(x, y + 1, z) ? map[x, y + 1, z] : 0;
-        //ret += inBounds(x, y, z - 1) ? map[x, y, z - 1] : 0;
-        //ret += inBounds(x, y, z + 1) ? map[x, y, z + 1] : 0;
-
+        
         return ret -1;
     }
 
