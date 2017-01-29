@@ -7,6 +7,7 @@ public class LocationAsteroid : Location
 {
     public TileSet TileSet;
 
+    public int TileSize = 1;
     public List<int> SizeArray = new List<int>();
     public int Seed = -1;
 
@@ -22,6 +23,10 @@ public class LocationAsteroid : Location
 
         Debug.Log("SPAWNING WITH Percentage: " + spawner.GeneratePercentage + ". neighbors: " + spawner.neighborsMin);
 
+        spawner.DoAll(SizeArray, TileSize, Owner);
+
+       /* spawner.TileSize = TileSize;
+
         spawner.Generate(SizeArray[0]);
         for(int i = 1; i < SizeArray.Count; i++)
         {
@@ -31,7 +36,7 @@ public class LocationAsteroid : Location
         }
 
         spawner.doregions();
-        spawner.Carve(Owner);
+        spawner.Carve(Owner);*/
 
         var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
         foreach(var r in Owner.GetComponentsInChildren<MeshRenderer>())

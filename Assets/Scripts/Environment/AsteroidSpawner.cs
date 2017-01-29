@@ -8,10 +8,26 @@ public class AsteroidSpawner {
 
     public int GeneratePercentage = 70;
     public int neighborsMin = 7;
+    public int TileSize = 1;
 
     int[,,] map;
     int Size;
     List<Vector3> UpperRegion;
+
+    public void DoAll(List<int> SizeArray, int TileSize, Transform owner, int seed = -1)
+    {
+        this.TileSize = TileSize;
+        Generate(SizeArray[0]);
+        for (int i = 1; i < SizeArray.Count; i++)
+        {
+            Smooth();
+            IncreaseMapSize(SizeArray[i]);
+            Smooth();
+        }
+
+        doregions();
+        Carve(owner);
+    }
 
 	public void Generate(int s, int seed = -1)
     {
@@ -101,11 +117,8 @@ public class AsteroidSpawner {
 
     public void doregions()
     {
-        //int[,,] all = map.Clone() as int[,,];
-        //var Regions = new List<List<Vector3>>();
         UpperRegion = new List<Vector3>();
 
-        //while(all.Length > 0)
         for (int i = 0; i < Size; i++)
             for (int j = 0; j < Size; j++)
                 for (int k = 0; k < Size; k++)
@@ -116,15 +129,11 @@ public class AsteroidSpawner {
                         singleregion(r, i, j, k);
                         if (r.Count > UpperRegion.Count)
                             UpperRegion = r;
-                        //Regions.Add(r);
                     }
                 }
 
         foreach (var r in UpperRegion)
             map[(int)r.x, (int)r.y, (int)r.z] = 1;
-
-        //map = all;
-        //UpperRegion = Regions.OrderBy(m => m.Count).Last();
     }
 
     void singleregion(List<Vector3> region, int x, int y, int z)
@@ -151,72 +160,63 @@ public class AsteroidSpawner {
         var lowerRegion = new List<Vector3>();
         
         // remove all at y + 1 except walls
-        var toRemove = UpperRegion.Where(m => m.y == y +1 && neightborCount6(m) == 6).ToList();
-        Debug.Log("toremove at " + y + ": " + toRemove.Count + "\n region count " + UpperRegion.Count);
+        var toRemove = UpperRegion.Where(m => m.y == y +1 && neightborCount6(m) == 6 || m.y < y -3).ToList();
+
         foreach (var t in toRemove)
             UpperRegion.RemoveAll( (m) => m == t);
         toRemove.Clear();
-        Debug.Log("toremove2 at " + y + ": " + toRemove.Count + "\n region count " + UpperRegion.Count);
+
+        lowerRegion.AddRange(UpperRegion.Where(u => u.y <= y + 1));
+        lowerRegion.ForEach(u => UpperRegion.Remove(u));
 
         // add landing bridge
-        var sub = UpperRegion.Where(m => m.y == y && m.z == z);
+        var sub = lowerRegion.Where(m => m.y == y && m.z == z);
         var pathOut = new List<Vector3>();
         for (int i = x; i > xTo; i--)
         {
             p.x++;
             if (!sub.Contains(p))
-                UpperRegion.Add(p);
+                lowerRegion.Add(p);
 
             pathOut.Add(p);
         }
+        foreach (var t in pathOut)
+            if (lowerRegion.Contains(t + Vector3.up))
+                lowerRegion.Remove(t + Vector3.up);
 
-        // add all beneath roof and 4 down to lower region
-        sub = UpperRegion.Where(m => m.y <= y + 1);
-        foreach (var tile in sub)
-        {
-            if (tile.y > y - 3 && /*neightborCount6(tile, Region) < 6 &&*/ !pathOut.Contains(tile - Vector3.up))
-                lowerRegion.Add(tile);
-            toRemove.Add(tile);
-        }
+        var baseMove = new Vector3(-x, -y, -z);
 
-        foreach (var t in toRemove)
-            UpperRegion.Remove(t);
-
+        // lower region
         lower.transform.SetParent(owner);
         lower.transform.localPosition = Vector3.zero;
         var renderer = lower.AddComponent<MeshRenderer>();
-        if (owner.GetComponent<MeshRenderer>() != null)
-            renderer.material = owner.GetComponent<MeshRenderer>().material;
-        //StartCoroutine(regionToMeshCoroutine(lowerRegion, lower.AddComponent<MeshFilter>()));
-        regionToMesh(lowerRegion,lower.AddComponent<MeshFilter>());
+        regionToMesh(lowerRegion,lower.AddComponent<MeshFilter>(), baseMove);
+        lower.name = "lower region";
+        lower.layer = LayerMask.NameToLayer("Ship");
+        lower.AddComponent<MeshCollider>();
 
+        // upper region
         upper.transform.SetParent(owner);
         upper.transform.localPosition = Vector3.zero;
         renderer = upper.AddComponent<MeshRenderer>();
-        if(owner.GetComponent<MeshRenderer>() != null)
-            renderer.material = owner.GetComponent<MeshRenderer>().material;
-        //StartCoroutine(regionToMeshCoroutine(Region, upper.AddComponent<MeshFilter>()));
-        regionToMesh(UpperRegion,upper.AddComponent<MeshFilter>());
+        regionToMesh(UpperRegion,upper.AddComponent<MeshFilter>(), baseMove);
+        upper.name = "upper region";
+        upper.layer = LayerMask.NameToLayer("ShipTop");
     }
 
-    void regionToMesh(List<Vector3> region, MeshFilter target)
+    void regionToMesh(List<Vector3> region, MeshFilter target, Vector3 moveOffset)
     {
         float real = Time.realtimeSinceStartup;
         MeshDraft draft = new MeshDraft();
 
         var size = Vector3.one;
-        int blocks = 0;
         foreach (var p in region)
         {
-            var e = MeshDraft.Hexahedron(1, 1, 1);
-            e.Move(p);
+            var e = MeshDraft.Hexahedron(TileSize, TileSize, TileSize);
+            e.Move((p + moveOffset) * TileSize + Vector3.down * TileSize/2);
             draft.Add(e);
-            //if (blocks++ % 5 == 0)
-            //    yield return new WaitForEndOfFrame();
         }
 
-        //output = draft.ToMesh();
         target.mesh = draft.ToMesh();
-        target.gameObject.name = "done";
     }
 }

@@ -49,4 +49,5 @@ public enum TileSet
     RedAsteroid,
     BlackAsteroid,
     OldStation,
+    BlueStation,
 }

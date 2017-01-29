@@ -81,10 +81,10 @@ public class LocationStation : Location
                     {
                         wallAt(p, GroundTiles[tile], owner, WallHeight);
                         if (i + 1 < Size && tiles[i + 1, j] == 3)
-                            for (int temp = 0; temp < TileSize; temp++)
+                            for (int temp = 0; temp < TileSize - 1; temp++)
                                 wallAt(p + Vector3.right * (temp + 1), GroundTiles[tile], owner, WallHeight);
                         if (j + 1 < Size && tiles[i, j + 1] == 3)
-                            for (int temp = 0; temp < TileSize; temp++)
+                            for (int temp = 0; temp < TileSize - 1; temp++)
                                 wallAt(p + Vector3.forward * (temp + 1), GroundTiles[tile], owner, WallHeight);
                         tile = 2;
                     }
