@@ -5,13 +5,17 @@ using UnityEngine.Networking;
 public class MoveShip : MovementBase
 {
     Ship owningShip;
-
+    Rigidbody rigidbody;
     public float MoveSpeed = 5;
     public float RotateSpeed = 3;
+
+    public bool TryPhysics = true;
+    public float PhysicsModifier = 200;
 
     void Awake()
     {
         owningShip = GetComponentInParent<Ship>();
+        rigidbody = GetComponent<Rigidbody>();
     }
 
     public void ActivateShip(ReadInput i)
@@ -32,12 +36,33 @@ public class MoveShip : MovementBase
     // Update is called once per frame
     void Update()
     {
-        if (!owningShip.Warping && isServer)
+        if (!TryPhysics && !owningShip.Warping && isServer)
         {
             //owningShip.CurrentSpeed = Mathf.Lerp(owningShip.CurrentSpeed, MoveSpeed, Time.deltaTime);
             transform.Translate(Vector3.forward * vert * Time.deltaTime * MoveSpeed);// owningShip.CurrentSpeed);
             transform.Rotate(Vector3.up, hor * Time.deltaTime * RotateSpeed);
             // check boundaries
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (TryPhysics && !owningShip.Warping && isServer)
+        {
+            if (rigidbody == null)
+            {
+                rigidbody = gameObject.AddComponent<Rigidbody>();
+                rigidbody.useGravity = false;
+                rigidbody.mass = 40;
+            }
+
+            rigidbody.AddForce(transform.forward * vert * MoveSpeed * PhysicsModifier * Time.fixedDeltaTime, ForceMode.Force);
+
+            rigidbody.AddTorque(Vector3.up * RotateSpeed * hor * Time.fixedDeltaTime * PhysicsModifier);
+
+            if (rigidbody.velocity.magnitude > MoveSpeed)
+                rigidbody.velocity = rigidbody.velocity.normalized * MoveSpeed; 
+            // velocity limit
         }
     }
 }

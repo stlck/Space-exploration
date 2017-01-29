@@ -40,6 +40,8 @@ public class BaseWeapon : BaseItem
     public override void BuyItem()
     {
         base.BuyItem();
+
+        MyAvatar.Instance.AvatarWeaponHandler.EquipWeapon(this.Id);
     }
 
     public override void ShopGUI()
@@ -57,6 +59,5 @@ public class BaseWeapon : BaseItem
             MyAvatar.Instance.AvatarWeaponHandler.EquipWeapon(this.Id);
         else if (GUILayout.Button("Unequip"))
             MyAvatar.Instance.AvatarWeaponHandler.UnEquipWeapon(this.Id);
-
     }
 }
