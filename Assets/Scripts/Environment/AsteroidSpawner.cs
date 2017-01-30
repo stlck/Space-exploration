@@ -132,6 +132,15 @@ public class AsteroidSpawner {
                     }
                 }
 
+        alignMapToRegion();
+        //foreach (var r in UpperRegion)
+        //    map[(int)r.x, (int)r.y, (int)r.z] = 1;
+    }
+
+    void alignMapToRegion()
+    {
+        //foreach (var a in map)
+        map = new int[Size, Size, Size];
         foreach (var r in UpperRegion)
             map[(int)r.x, (int)r.y, (int)r.z] = 1;
     }
@@ -159,12 +168,16 @@ public class AsteroidSpawner {
         var xTo = UpperRegion.Min(m => m.x) - 4;
         var lowerRegion = new List<Vector3>();
         
+        UpperRegion = UpperRegion.Distinct().ToList();
+
         // remove all at y + 1 except walls
         var toRemove = UpperRegion.Where(m => m.y == y +1 && neightborCount6(m) == 6 || m.y < y -3).ToList();
-
         foreach (var t in toRemove)
             UpperRegion.RemoveAll( (m) => m == t);
         toRemove.Clear();
+
+        alignMapToRegion();
+        UpperRegion.RemoveAll(m => neightborCount6(m) == 6);
 
         lowerRegion.AddRange(UpperRegion.Where(u => u.y <= y + 1));
         lowerRegion.ForEach(u => UpperRegion.Remove(u));
@@ -180,6 +193,7 @@ public class AsteroidSpawner {
 
             pathOut.Add(p);
         }
+
         foreach (var t in pathOut)
             if (lowerRegion.Contains(t + Vector3.up))
                 lowerRegion.Remove(t + Vector3.up);

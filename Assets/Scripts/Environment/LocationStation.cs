@@ -61,7 +61,7 @@ public class LocationStation : Location
         var GroundTiles = set.GroundTiles;
         
         var s = (Vector3.forward + Vector3.right) * TileSize + Vector3.up;
-        var tiles = MapTiles;// BlockGenerator.GenerateMap(Width, Height);
+        var _tiles = MapTiles;// BlockGenerator.GenerateMap(Width, Height);
 
         if(Type == LocationTypes.Asteroid)
         {
@@ -71,19 +71,19 @@ public class LocationStation : Location
         for (int i = 0; i < Size; i++)
             for (int j = 0; j < Size; j++)
             {
-                var tile = tiles[i, j];
+                var tile = _tiles[i, j];
+
+                var p = Position + Vector3.right * i * TileSize + Vector3.forward * j * TileSize;// + Vector3.down / 2;
 
                 if (GroundTiles[tile] != null)
                 {
-                    var p = Position + Vector3.right * i * TileSize + Vector3.forward * j * TileSize;// + Vector3.down / 2;
-
                     if (tile == 3)
                     {
                         wallAt(p, GroundTiles[tile], owner, WallHeight);
-                        if (i + 1 < Size && tiles[i + 1, j] == 3)
+                        if (i + 1 < Size && _tiles[i + 1, j] == 3)
                             for (int temp = 0; temp < TileSize - 1; temp++)
                                 wallAt(p + Vector3.right * (temp + 1), GroundTiles[tile], owner, WallHeight);
-                        if (j + 1 < Size && tiles[i, j + 1] == 3)
+                        if (j + 1 < Size && _tiles[i, j + 1] == 3)
                             for (int temp = 0; temp < TileSize - 1; temp++)
                                 wallAt(p + Vector3.forward * (temp + 1), GroundTiles[tile], owner, WallHeight);
                         tile = 2;
@@ -99,7 +99,34 @@ public class LocationStation : Location
                         t.localScale = s;
                     }
                 }
+                else if(neighborCount(_tiles, i, j) > 0)
+                {
+                    
+                    var t = Instantiate(
+                        GroundTiles[0],
+                        p ,
+                        Quaternion.identity, owner) as Transform;
+
+                    var scale = s;
+                    scale.y = WallHeight;
+                    t.localScale = scale;
+                    t.localPosition = t.localPosition + Vector3.up * TileSize / 2;
+                    t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
+                }
             }
+    }
+
+    int neighborCount(int[,] _tiles, int x, int z)
+    {
+        var ret = 0;
+        for(int i = x- 1; i <= x +1; i++)
+            for(int j = z -1; j <= z +1; j++)
+            {
+                if (i>= 0 && j>= 0 && i < Size && j < Size && _tiles[i, j] != 1)
+                    ret++;
+            }
+
+        return ret;
     }
 
     void addGroundAsMesh(List<Transform> GroundTiles, Transform owner)
