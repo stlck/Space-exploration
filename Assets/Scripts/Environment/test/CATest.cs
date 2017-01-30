@@ -10,10 +10,11 @@ public class CATest : MonoBehaviour
     public bool ShowGizmos = false;
 
     public List<Cell> Cells = new List<Cell>();
-    public List<Room> Rooms = new List<Room>();
+    public List<Cell> Rooms = new List<Cell>();
+    public float MinSize = 5;
     int[,,] map;
     Mesh output;
-
+    MeshDraft draft;
     // Use this for initialization
     void Start()
     {
@@ -23,10 +24,10 @@ public class CATest : MonoBehaviour
     void OnGUI()
     {
         if(GUILayout.Button("DO CA"))
+        { 
             Generate();
-
-        if (GUILayout.Button("DO ROOMS"))
             doRooms();
+        }
 
         if (GUILayout.Button("DO MESH"))
             CreateAsMesh();
@@ -36,34 +37,36 @@ public class CATest : MonoBehaviour
         
     void CreateAsMesh()
     {
-        MeshDraft draft = new MeshDraft();
-
-        //for (int i = 0; i < Size; i++)
-        //    for (int j = 0; j < Size; j++)
-        //        for (int k = 0; k < Size; k++)
-        //        {
-        //            if(map[i,j,k] > 0)
-        //            {
-        //                var e = MeshDraft.Hexahedron(1, 1, 1);
-        //                e.Move(indexToPosition(i,j,k));
-        //                draft.Add(e);
-        //            }
-        //        }
+        draft = new MeshDraft();
+        
         int counter = 0;
-        foreach (var r in Rooms)
+        foreach (var r in Cells)
         { 
             var e = MeshDraft.Hexahedron(r.w, r.h, 1);
-            e.Move(Vector3.forward * r.center.y + Vector3.right * r.center.x + counter++ * Vector3.up);
+            e.Move(Vector3.forward * r.center.y + Vector3.right * r.center.x);// + counter++ *Vector3.up);
             draft.Add(e);
         }
+
+        // connect
+        
 
         output = draft.ToMesh();
         GetComponent<MeshFilter>().mesh = output;
     }
 
-    Vector3 indexToPosition(int i, int j, int k)
+    void ConnectRooms(Cell c)
     {
-        return Vector3.right * i + Vector3.up * j + Vector3.forward * k;
+        if(c.hasChildren && c.Child1.hasChildren)
+        {
+            ConnectRooms(c.Child1);
+            ConnectRooms(c.Child2);
+        }
+        else
+        {
+            //var distx = Mathf.Abs(c.Child1.x - c.Child2.x) - c.Child1.w - c.Child2.w;
+            //var e= MeshDraft.Hexahedron(distx, 1, 1);
+            
+        }
     }
     
     void Generate()
@@ -79,86 +82,64 @@ public class CATest : MonoBehaviour
     void splitCell(Cell cell, int i)
     {
         i--;
+        if (i <= 0) return;
+        Cell cell1;
         Cell cell2;
-        if(Random.value > 0.5f)
+        var r = Random.Range(0, 100);
+        if (r < 50)
         {
-            var t = cell.w / 2;// Random.Range(2,4);
-            cell2 = new Cell(cell.x + t, cell.y, cell.w - t, cell.h);
-            cell.w -= t;
-        }
-        else
-        {
-            var t = cell.h / 2;// Random.Range(2, 4);
-            cell2 = new Cell(cell.x, cell.y + t, cell.w, cell.h - t);
-            cell.h -= t;
-        }
-        Cells.Add(cell2);
+            var t = cell.w / Random.Range(1f,3f);
+            if (t > MinSize && cell.w - t > MinSize)
+            {
+                cell1 = new Cell(cell.x, cell.y, t, cell.h);
+                cell2 = new Cell(cell.x + t, cell.y,cell.w- t, cell.h);
+                cell.hasChildren = true;
+                Cells.Add(cell1);
+                Cells.Add(cell2);
+                cell.Child1 = cell1;
+                cell.Child2 = cell2;
 
-        if(i > 0)
+                splitCell(cell1, i);
+                splitCell(cell2, i);
+            }
+        }
+        else 
         {
-            splitCell(cell, i);
-            splitCell(cell2, i);
+            var t = cell.h / Random.Range(1f, 3f);
+            if (t > MinSize && cell.h - t > MinSize)
+            {
+                cell1 = new Cell(cell.x, cell.y, cell.w, t);
+                cell2 = new Cell(cell.x, cell.y + t, cell.w, cell.h - t);
+                cell.hasChildren = true;
+                Cells.Add(cell1);
+                Cells.Add(cell2);
+                cell.Child1 = cell1;
+                cell.Child2 = cell2;
+
+                splitCell(cell1, i);
+                splitCell(cell2, i);
+            }
         }
     }
 
     void doRooms()
     {
-        foreach(var c in Cells)
+        var toRooms = Cells.Where(m => !m.hasChildren);
+        foreach(var c in toRooms)
         {
-            var r = new Room(c.x, c.y, c.w, c.h);
-            Rooms.Add(r);
+            var r = new Cell(c.x, c.y, c.w, c.h);
+
+            var widthOff = Random.Range(1f, c.w / 2f);
+            var heightOff = Random.Range(1f, c.h / 2f);
+            r.w -= widthOff;
+            r.x += Random.value * widthOff;
+            r.h -= heightOff;
+            r.h += Random.value * heightOff;
+
+            //Rooms.Add(r);
         }
     }
-
-    int neightborCount6(Vector3 pos, List<Vector3> region)
-    {
-        var ret = 0;
-        ret = region.Count(m => m == pos + Vector3.up ||
-                                m == pos + Vector3.down ||
-                                m == pos + Vector3.right ||
-                                m == pos + Vector3.left ||
-                                m == pos + Vector3.forward ||
-                                m == pos + Vector3.back );
-
-        return ret;
-    }
-
-    int neightborCount6(Vector3 pos)
-    {
-        int x = (int)pos.x;
-        int y = (int)pos.y;
-        int z = (int)pos.z;
-
-        var ret = 0;
-        ret += inBounds(x-1, y, z) ? map[x-1, y, z] : 0;
-        ret += inBounds(x+1, y, z) ? map[x+1, y, z] : 0;
-        ret += inBounds(x, y-1, z) ? map[x, y-1, z] : 0;
-        ret += inBounds(x, y+1, z) ? map[x, y+1, z] : 0;
-        ret += inBounds(x, y, z-1) ? map[x, y, z-1] : 0;
-        ret += inBounds(x, y, z+1) ? map[x, y, z+1] : 0;
-
-        return ret;
-    }
-
-    int neighborCount(int x, int y, int z)
-    {
-        var ret = 0;
-        for (int i = x-1; i <= x+1; i++)
-            for (int j = y-1; j <= y+1; j++)
-                for (int k = z-1; k <= z+1; k++)
-                {
-                    if (inBounds(i,j,k))
-                        ret += map[i, j, k];
-                }
-        
-        return ret -1;
-    }
-
-    bool inBounds(int i, int j, int k)
-    {
-        return i >= 0 && i < Size && j >= 0 && j < Size && k >= 0 && k < Size;
-    }
-
+    
     public void OnDrawGizmos()
     {
         if(map != null && ShowGizmos)
@@ -177,6 +158,7 @@ public class CATest : MonoBehaviour
             {
                 Gizmos.color = new Color(c.x / (float)Size, c.y /(float)Size,1f,1f);
                 Gizmos.DrawCube(Vector3.forward * c.center.y + Vector3.right * c.center.x, Vector3.forward * c.h + Vector3.right * c.w + Vector3.up);
+                
             }
         else if(Cells != null && ShowGizmos)
             foreach (var c in Cells)
@@ -219,6 +201,10 @@ public class CATest : MonoBehaviour
         public float y;
         public float w;
         public float h;
+
+        public bool hasChildren = false;
+        public Cell Child1;
+        public Cell Child2;
 
         public Point center
         {
