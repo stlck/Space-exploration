@@ -51,7 +51,7 @@ public class CATest : MonoBehaviour
         foreach (var r in Cells.Where(m => !m.hasChildren))
         { 
             var e = MeshDraft.Hexahedron(r.w, r.h, 1);
-            e.Move(Vector3.forward * r.center.y + Vector3.right * r.center.x + counter++ * Vector3.up);
+            e.Move(Vector3.forward * r.center.y + Vector3.right * r.center.x);// + counter++ * Vector3.up);
             draft.Add(e);
         }
 
@@ -61,35 +61,52 @@ public class CATest : MonoBehaviour
         output = draft.ToMesh();
         GetComponent<MeshFilter>().mesh = output;
     }
+    float corridorMinSize = 5f;
 
     void ConnectRooms(Cell c, MeshDraft draft)
     {
-        float corridorMinSize = 5f;
         if (c.hasChildren && c.Child1.hasChildren)
         {
             ConnectRooms(c.Child1, draft);
             ConnectRooms(c.Child2, draft);
+            if(c.Child1.Child1 != null && c.Child2.Child1 != null)
+            {
+                Debug.Log(c.Child1.Child1 + " \nto\n" + c.Child2.Child1);
+                connectCells(c.Child1.Child1, c.Child2.Child1, draft);
+            }
+            else if( c.Child1.Child2 != null && c.Child2.Child2 != null)
+            {
+                Debug.Log(c.Child1.Child2 + " \nto\n" + c.Child2.Child2);
+                connectCells(c.Child1.Child2, c.Child2.Child2, draft);
+            }
         }
-        else if(c.hasChildren)
+        if (c.hasChildren && !c.Child1.hasChildren)
         {
-            var halfWay = c.Child1.center + (c.Child2.center - c.Child1.center);
-            Debug.Log("HALF WAY " + halfWay + "\nc1: " + c.Child1 + "\nc2: " + c.Child2);
-
-            //var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //cube.transform.position = new Vector3(halfWay.x, 1, halfWay.y);
-
-            Bounds b1 = new Bounds(c.Child1.center.Position, c.Child1.Size);
-            Bounds b2 = new Bounds(c.Child2.center.Position, c.Child2.Size);
-
-            var b1Point = b1.ClosestPoint(c.Child2.center.Position);
-            var b2Point = b2.ClosestPoint(c.Child1.center.Position);
-            var xSize = Mathf.Abs(b1Point.x - b2Point.x);
-            var zSize = Mathf.Abs(b1Point.z - b2Point.z);
-            var center = Vector3.Lerp(b1Point, b2Point, .5f);
-            var e = MeshDraft.Hexahedron(xSize >= corridorMinSize ? xSize : corridorMinSize, zSize >= corridorMinSize ? zSize : corridorMinSize, 1f);
-            e.Move(center);
-            draft.Add(e);
+            //connectCells(c.Child1, c.Child2, draft);
         }
+    }
+
+    void connectCells(Cell cell1, Cell cell2, MeshDraft draft)
+    {
+        Bounds b1 = new Bounds(cell1.center.Position, cell1.Size);
+        Bounds b2 = new Bounds(cell2.center.Position, cell2.Size);
+
+        var b1Point = b1.ClosestPoint(cell2.center.Position);
+        var b2Point = b2.ClosestPoint(cell1.center.Position);
+
+        var xSize = Mathf.Abs(b1Point.x - b2Point.x);
+        if (Mathf.Abs(cell1.x - cell2.x) < 1)
+            xSize = corridorMinSize;
+        var zSize = Mathf.Abs(b1Point.z - b2Point.z);
+        if (Mathf.Abs(cell1.y - cell2.y) < 1)
+            zSize = corridorMinSize;
+
+        var moveToCenter = Vector3.Lerp(b1Point, b2Point, .5f);
+        Debug.Log("connection : " + b1Point + " to " + b2Point + "\n w " + xSize + " h " + zSize + "\ncenter: " + moveToCenter);
+
+        var e = MeshDraft.Hexahedron(xSize, zSize, 1f);
+        e.Move(moveToCenter + Vector3.up);
+        draft.Add(e);
     }
     
     void Generate()
@@ -162,16 +179,16 @@ public class CATest : MonoBehaviour
         var toRooms = Cells.Where(m => !m.hasChildren);
         foreach(var c in toRooms)
         {
-            //var r = new Cell(c.x, c.y, c.w, c.h);
 
-            var widthOff = Random.Range(1f, c.w / 2f);
-            var heightOff = Random.Range(1f, c.h / 2f);
+            var widthOff = Random.Range(1, ((int)c.w-1) / 2);
+            var heightOff = Random.Range(1, ((int)c.h-1) / 2);
             c.w -= widthOff;
-            c.x += Random.value * widthOff;
+            //c.x += Random.value * widthOff;
             c.h -= heightOff;
-            c.h += Random.value * heightOff;
+            //c.h += Random.value * heightOff;
 
-            //Rooms.Add(r);
+            var r = new Cell(c.x, c.y, c.w, c.h);
+            Rooms.Add(r);
         }
     }
     
