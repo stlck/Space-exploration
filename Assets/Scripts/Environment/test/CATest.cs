@@ -71,18 +71,120 @@ public class CATest : MonoBehaviour
             ConnectRooms(c.Child2, draft);
             if(c.Child1.Child1 != null && c.Child2.Child1 != null)
             {
-                Debug.Log(c.Child1.Child1 + " \nto\n" + c.Child2.Child1);
-                connectCells(c.Child1.Child1, c.Child2.Child1, draft);
+                //Debug.Log(c.Child1.Child1 + " \nto\n" + c.Child2.Child1);
+                connectCells2(c.Child1.Child1, c.Child2.Child1, draft);
             }
             else if( c.Child1.Child2 != null && c.Child2.Child2 != null)
             {
-                Debug.Log(c.Child1.Child2 + " \nto\n" + c.Child2.Child2);
-                connectCells(c.Child1.Child2, c.Child2.Child2, draft);
+                //Debug.Log(c.Child1.Child2 + " \nto\n" + c.Child2.Child2);
+                connectCells2(c.Child1.Child2, c.Child2.Child2, draft);
             }
         }
         if (c.hasChildren && !c.Child1.hasChildren)
         {
-            //connectCells(c.Child1, c.Child2, draft);
+            connectCells(c.Child1, c.Child2, draft);
+        }
+    }
+
+    void connectCells2(Cell cell1, Cell cell2, MeshDraft draft)
+    {
+        Bounds b1 = new Bounds(cell1.center.Position, cell1.Size);
+        Bounds b2 = new Bounds(cell2.center.Position, cell2.Size);
+        if(cell1.hasChildren && cell2.hasChildren)
+        {
+            if(cell1.Child2 != null && cell2.Child1 != null)
+                connectCells2(cell1.Child2, cell2.Child1, draft);
+            else if(cell1.Child1 != null && cell2.Child2 != null)
+                connectCells2(cell1.Child1, cell2.Child2, draft);
+        }
+        else if (Mathf.Clamp(cell1.x, cell2.x, cell2.x + cell2.w) == cell1.x)
+        {
+            //var height = Mathf.Abs(cell1.y - cell2.y) - cell1.h / 2f - cell2.h / 2f;
+            var width = corridorMinSize;
+            var height = cell2.y - (cell1.y + cell1.h);//cell1.x > cell2.x ? cell1.x : cell2.x;
+
+            var x1 = cell2.x;
+            var x2 = cell1.x + cell1.w;
+            var x = Mathf.Lerp(x1, x2, .5f);
+
+            var y1 = cell1.y + cell1.h;//cell2.y > cell1.y ? cell1.y: cell2.y;
+            var y2 = cell2.y;// + cell2.h > cell1.y + cell1.h ? cell1.y + cell1.h: cell2.y + cell2.h;
+            var y = Mathf.Lerp(y1, y2, .5f);
+            
+            //var prim = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            //prim.transform.position = Vector3.forward * (y - height/2f) + Vector3.right * (x - width/2f);
+            //prim.name = "x1y1";
+            //prim = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            //prim.transform.position = Vector3.forward * (y - height / 2f) + Vector3.right * (x + width / 2f);
+            //prim.name = "x2y1";
+            //prim = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            //prim.transform.position = Vector3.forward * (y + height / 2f) + Vector3.right * (x - width / 2f);
+            //prim.name = "x1y2";
+            //prim = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            //prim.transform.position = Vector3.forward * (y + height / 2f) + Vector3.right * (x + width / 2f);
+            //prim.name = "x2y2";
+
+            var e = MeshDraft.Hexahedron(width, height, 1);
+            e.Move(Vector3.right * (x)  + Vector3.forward * (y) + Vector3.up);
+            draft.Add(e);
+
+            //Debug.Log("Cell1 left side in cell2. size : " + corridorMinSize + "x" + (y2 - y1) + " start at " + (cell2.x + cell2.w / 2f) + "x" + (cell1.y + cell1.h / 2f));
+            Debug.Log("Cell1 left side in cell2 \ncenter: " + x + "x" + y + "\nwh: " + width + "x" + height + "\n cell1: " + cell1 + "\ncell2:" + cell2);
+
+        }
+        else if (Mathf.Clamp(cell1.x + cell1.w, cell2.x, cell2.x + cell2.w) == cell1.x + cell1.w)
+        {
+            //Debug.Log("Cell1 right side in cell2");
+            var width = corridorMinSize;
+            var height = cell2.y - (cell1.y + cell1.h);
+
+            var x1 = cell1.x;
+            var x2 = cell2.x + cell2.w;
+            var x = Mathf.Lerp(x1, x2, .5f);
+
+            var y1 = cell1.y + cell1.h;//cell2.y > cell1.y ? cell1.y: cell2.y;
+            var y2 = cell2.y;// + cell2.h > cell1.y + cell1.h ? cell1.y + cell1.h: cell2.y + cell2.h;
+            var y = Mathf.Lerp(y1, y2, .5f);
+
+            var e = MeshDraft.Hexahedron(width, height, 1);
+            e.Move(Vector3.right * (x) + Vector3.forward * (y) + Vector3.up);
+            draft.Add(e);
+        }
+        else if (Mathf.Clamp(cell1.y, cell2.y, cell2.y + cell2.h) == cell1.y)
+        {
+            //Debug.Log("Cell1 lower side in cell2");
+            var width = cell2.x - (cell1.x + cell1.w); 
+            var height = corridorMinSize;
+
+            var y1 = cell2.y;
+            var y2 = cell1.y + cell1.h;
+            var y = Mathf.Lerp(y1, y2, .5f);
+
+            var x1 = cell1.x + cell1.w;//cell2.y > cell1.y ? cell1.y: cell2.y;
+            var x2 = cell2.x;// + cell2.h > cell1.y + cell1.h ? cell1.y + cell1.h: cell2.y + cell2.h;
+            var x = Mathf.Lerp(x1, x2, .5f);
+
+            var e = MeshDraft.Hexahedron(width, height, 1);
+            e.Move(Vector3.right * (x) + Vector3.forward * (y) + Vector3.up);
+            draft.Add(e);
+        }
+        else if (Mathf.Clamp(cell1.y + cell1.h, cell2.y, cell2.y + cell2.h) == cell1.y + cell1.h)
+        {
+            //Debug.Log("Cell1 upper side in cell2");
+            var width = cell2.y - (cell1.y + cell1.h);
+            var height = corridorMinSize;
+
+            var y1 = cell1.y;
+            var y2 = cell2.y + cell2.h;
+            var y = Mathf.Lerp(y1, y2, .5f);
+
+            var x1 = cell1.x + cell1.w;//cell2.y > cell1.y ? cell1.y: cell2.y;
+            var x2 = cell2.x;// + cell2.h > cell1.y + cell1.h ? cell1.y + cell1.h: cell2.y + cell2.h;
+            var x = Mathf.Lerp(x1, x2, .5f);
+
+            var e = MeshDraft.Hexahedron(width, height, 1);
+            e.Move(Vector3.right * (x) + Vector3.forward * (y) + Vector3.up);
+            draft.Add(e);
         }
     }
 
@@ -102,7 +204,7 @@ public class CATest : MonoBehaviour
             zSize = corridorMinSize;
 
         var moveToCenter = Vector3.Lerp(b1Point, b2Point, .5f);
-        Debug.Log("connection : " + b1Point + " to " + b2Point + "\n w " + xSize + " h " + zSize + "\ncenter: " + moveToCenter);
+        //Debug.Log("connection : " + b1Point + " to " + b2Point + "\n w " + xSize + " h " + zSize + "\ncenter: " + moveToCenter);
 
         var e = MeshDraft.Hexahedron(xSize, zSize, 1f);
         e.Move(moveToCenter + Vector3.up);
@@ -244,6 +346,23 @@ public class CATest : MonoBehaviour
         public bool hasChildren = false;
         public Cell Child1;
         public Cell Child2;
+
+        //public Point CornerLowerLeft
+        //{
+        //    get
+        //    {
+        //        return new Point(x, y);
+        //    }
+        //}
+
+        //public Point CornerUpperLeft
+        //{
+        //    get
+        //    {
+        //        return new Point(x, y + h);
+        //    }
+        //}
+
 
         public Point center
         {
