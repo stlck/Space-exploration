@@ -110,19 +110,6 @@ public class CATest : MonoBehaviour
             var y1 = cell1.y + cell1.h;//cell2.y > cell1.y ? cell1.y: cell2.y;
             var y2 = cell2.y;// + cell2.h > cell1.y + cell1.h ? cell1.y + cell1.h: cell2.y + cell2.h;
             var y = Mathf.Lerp(y1, y2, .5f);
-            
-            //var prim = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //prim.transform.position = Vector3.forward * (y - height/2f) + Vector3.right * (x - width/2f);
-            //prim.name = "x1y1";
-            //prim = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //prim.transform.position = Vector3.forward * (y - height / 2f) + Vector3.right * (x + width / 2f);
-            //prim.name = "x2y1";
-            //prim = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //prim.transform.position = Vector3.forward * (y + height / 2f) + Vector3.right * (x - width / 2f);
-            //prim.name = "x1y2";
-            //prim = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            //prim.transform.position = Vector3.forward * (y + height / 2f) + Vector3.right * (x + width / 2f);
-            //prim.name = "x2y2";
 
             var e = MeshDraft.Hexahedron(width, height, 1);
             e.Move(Vector3.right * (x)  + Vector3.forward * (y) + Vector3.up);
@@ -284,10 +271,11 @@ public class CATest : MonoBehaviour
 
             var widthOff = Random.Range(1, ((int)c.w-1) / 2);
             var heightOff = Random.Range(1, ((int)c.h-1) / 2);
+            Debug.Log("c.w = " + c.w + ". random : " + widthOff);
             c.w -= widthOff;
-            //c.x += Random.value * widthOff;
+            c.x += Random.Range(0, widthOff);
             c.h -= heightOff;
-            //c.h += Random.value * heightOff;
+            c.h += Random.Range(0, heightOff);
 
             var r = new Cell(c.x, c.y, c.w, c.h);
             Rooms.Add(r);
