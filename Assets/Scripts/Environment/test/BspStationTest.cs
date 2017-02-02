@@ -12,6 +12,8 @@ public class BspStationTest : MonoBehaviour {
     float timer = 0;
     float minSize = 8;
     float corridorsize = 3;
+    public TileSet TileSet;
+    GameObject parent;
 
     // Use this for initialization
     void Start () {
@@ -41,6 +43,53 @@ public class BspStationTest : MonoBehaviour {
         offset(root);
         toMap(root);
         connectCells(root.child1, root.child2);
+        meshIt();
+    }
+
+    void meshIt()
+    {
+        if (parent != null)
+            Destroy(parent);
+
+        parent = new GameObject();
+
+        var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+            {
+                if(map[i,j] > 0)
+                    Instantiate(set.GroundTiles[0], Vector3.right * i + Vector3.forward * j, Quaternion.identity,parent.transform);
+                else if( hasNeighbor(i,j))
+                {
+                    for (int y = 0; y < 4; y++)
+                        Instantiate(set.GroundTiles[1], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                }
+                
+            }
+
+        outerLayer();
+    }
+
+    void outerLayer()
+    {
+        var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
+        for(int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+            {
+                if (i == 0 || j == 0 || i == size - 1 || j == size - 1)
+                    for (int y = 0; y < 5; y++)
+                    {
+                        var t = Instantiate(set.GroundTiles[2], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                        t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
+                    }
+                else
+                {
+                    var t = Instantiate(set.GroundTiles[2], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
+                    t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
+                    t = Instantiate(set.GroundTiles[2], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
+                    t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
+                }
+            }
     }
 
     void offset(BspCell cell)
@@ -117,25 +166,22 @@ public class BspStationTest : MonoBehaviour {
 
     void connectCells(BspCell cell1, BspCell cell2)
     {
-
-        if(cell2.x - cell1.x > cell2.y - cell1.y)
+        if (cell2.x - cell1.x > cell2.y - cell1.y)
         {
-            Debug.Log("x1:" + cell1.x + " to " + cell2.x + " y1:" + cell1.y + " to " + cell2.y);
-            for(int i = cell1.x /*+ cell1.w/2*/; i <= cell2.x/* + cell1.w*/; i++)
-                for(int j = cell1.y-1; j <= cell1.y +1; j++)
+            for (int i = cell1.x /*+ cell1.w/2*/; i <= cell2.x/* + cell1.w*/; i++)
+                for (int j = cell1.y - 1; j <= cell1.y + 1; j++)
                 {
                     if (i > 0 && j > 0 && i < size && j < size)
-                        map[i, j] = 2;
+                        map[i, j] = 1;
                 }
         }
         else
         {
-            Debug.Log("y1:" + cell1.y + " to " + cell2.y + " x1:" + cell1.x + " to " + cell2.x);
             for (int i = cell1.y/* + cell1.h / 2*/; i <= cell2.y/* + cell1.h*/; i++)
                 for (int j = cell1.x - 1; j <= cell1.x + 1; j++)
                 {
                     if (i > 0 && j > 0 && i < size && j < size)
-                        map[i, j] = 2;
+                        map[j, i] = 1;
                 }
         }
 
@@ -143,41 +189,18 @@ public class BspStationTest : MonoBehaviour {
             connectCells(cell1.child1, cell1.child2);
         if (cell2.child1 != null && cell2.child2 != null)
             connectCells(cell2.child1, cell2.child2);
+        if (cell1.child1 != null && cell2.child1 != null)
+            connectCells(cell1.child1, cell2.child1);
     }
 
-    void OnDrawGizmos()
+    bool hasNeighbor(int i, int j)
     {
-        if (map == null)
-            return;
-        //if(root != null)
-        //{
-        //    showCell(root);
-        //}
-        for (int i = 0; i < size; i++)
-            for (int j = 0; j < size; j++)
-                if (map[i, j] == 1)
-                {
-                    Gizmos.color = Color.white;
-                    Gizmos.DrawCube(Vector3.forward * j + Vector3.right * i, Vector3.one * .8f);
-                }
-                else if(map[i,j] == 2)
-                {
-                    Gizmos.color = Color.blue;
-                    Gizmos.DrawCube(Vector3.forward * j + Vector3.right * i, Vector3.one * .8f);
-                }
-    }
+        for (int x = i - 1; x <= i + 1; x++)
+            for (int y = j - 1; y <= j + 1; y++)
+                if (x > 0 && y > 0 && x < size && y < size && map[x, y] > 0)
+                    return true;
 
-    void showCell(BspCell cell)
-    {
-        if(cell.child1 != null && cell.child2 != null)
-        {
-            showCell(cell.child1);
-            showCell(cell.child2);
-        }
-        else
-        {
-            Gizmos.DrawCube(Vector3.right * cell.x + Vector3.forward * cell.y, Vector3.up + Vector3.right * (cell.w -1 ) + Vector3.forward * (cell.h - 1));
-        }
+        return false;
     }
 }
 
