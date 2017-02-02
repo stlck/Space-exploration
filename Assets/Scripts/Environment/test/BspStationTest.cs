@@ -5,15 +5,16 @@ using UnityEngine;
 
 public class BspStationTest : MonoBehaviour {
 
-    int[,] map;
+    private int[,] map;
+    private BspCell root;
+    private float timer = 0;
+    private GameObject parent;
+
     public int iterations = 2;
-    BspCell root;
     public int size = 70;
-    float timer = 0;
-    float minSize = 8;
-    float corridorsize = 3;
+    public int minRoomSize = 8;
+    public int halfCorridorSize = 1;
     public TileSet TileSet;
-    GameObject parent;
 
     // Use this for initialization
     void Start () {
@@ -23,7 +24,7 @@ public class BspStationTest : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         timer += Time.deltaTime;
-        if(Input.GetKeyDown(KeyCode.Space))//timer > .5f)
+        if(timer > .5f)
         {
             timer = 0f;
             generate();
@@ -62,7 +63,7 @@ public class BspStationTest : MonoBehaviour {
                 else if( hasNeighbor(i,j))
                 {
                     for (int y = 0; y < 4; y++)
-                        Instantiate(set.GroundTiles[1], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                        Instantiate(set.GroundTiles[3], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
                 }
                 
             }
@@ -138,7 +139,7 @@ public class BspStationTest : MonoBehaviour {
         var dir = Random.value;
         if(dir > 0.5f)
         {
-            if(cell.w/2 > minSize)
+            if(cell.w/2 > minRoomSize)
             {
                 var nCell1 = new BspCell(cell.x - cell.w / 4, cell.y, cell.w / 2, cell.h);
                 cell.child1 = nCell1;
@@ -151,7 +152,7 @@ public class BspStationTest : MonoBehaviour {
         }
         else
         {
-            if(cell.h / 2 > minSize)
+            if(cell.h / 2 > minRoomSize)
             {
                 var nCell1 = new BspCell(cell.x, cell.y - cell.h / 4, cell.w, cell.h / 2);
                 cell.child1 = nCell1;
@@ -169,7 +170,7 @@ public class BspStationTest : MonoBehaviour {
         if (cell2.x - cell1.x > cell2.y - cell1.y)
         {
             for (int i = cell1.x /*+ cell1.w/2*/; i <= cell2.x/* + cell1.w*/; i++)
-                for (int j = cell1.y - 1; j <= cell1.y + 1; j++)
+                for (int j = cell1.y - halfCorridorSize; j <= cell1.y + halfCorridorSize; j++)
                 {
                     if (i > 0 && j > 0 && i < size && j < size)
                         map[i, j] = 1;
@@ -178,7 +179,7 @@ public class BspStationTest : MonoBehaviour {
         else
         {
             for (int i = cell1.y/* + cell1.h / 2*/; i <= cell2.y/* + cell1.h*/; i++)
-                for (int j = cell1.x - 1; j <= cell1.x + 1; j++)
+                for (int j = cell1.x - halfCorridorSize; j <= cell1.x + halfCorridorSize; j++)
                 {
                     if (i > 0 && j > 0 && i < size && j < size)
                         map[j, i] = 1;
