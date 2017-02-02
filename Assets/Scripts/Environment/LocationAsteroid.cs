@@ -20,7 +20,6 @@ public class LocationAsteroid : Location
     void spawn(Transform Owner)
     {
         var spawner = new AsteroidSpawner();
-
         Debug.Log("SPAWNING WITH Percentage: " + spawner.GeneratePercentage + ". neighbors: " + spawner.neighborsMin);
 
         spawner.DoAll(SizeArray, TileSize, Owner);
@@ -28,6 +27,7 @@ public class LocationAsteroid : Location
         var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
         foreach(var r in Owner.GetComponentsInChildren<MeshRenderer>())
             r.material = set.GroundTiles[0].GetComponent<MeshRenderer>().sharedMaterial;
+
     }
 
 }
