@@ -18,29 +18,42 @@ public class CreateEnvironment : MonoBehaviour {
 
     void Update()
     {
-        // spawn terrain in vicinity (local only)
-        var close = MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 200);
-        if (close.Any(m => !SpawnedLocations.Contains(m)))
+        if (MyAvatar.Instance.isServer)
         {
-            // spawn 
-            foreach (var c in close)
+            // spawn terrain in vicinity (local only)
+            var close = MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 200 && !SpawnedLocations.Contains(m));
+            if (close.Any())
             {
-                if (c.Type == LocationTypes.Asteroid || c.Type == LocationTypes.SpaceStation)
-                {
-                    var go = new GameObject(c.name);
-                    go.transform.position = c.Position;
-                    c.SpawnLocation(go.transform);
-                    //CreateLevel(c, go.transform);
-                    SpawnedLocations.Add(c);
-                }
-                else if (c.Type == LocationTypes.SpaceEncounter)
-                {
-                    // spawn ships & stuff
+                var loc = close.First();
+                var seed = loc.seed == -1 ? Random.Range(0, 32000) : loc.seed;
+                NetworkHelper.Instance.RpcSpawnLocation(close.First().Name, seed);
 
-                }
+                SpawnedLocations.Add(loc);
             }
+            /*{
+                // spawn 
+                foreach (var c in close)
+                {
+                    if (c.Type == LocationTypes.Asteroid || c.Type == LocationTypes.SpaceStation)
+                    {
+                        var go = new GameObject(c.name);
+                        go.transform.position = c.Position;
+                        c.SpawnLocation(go.transform);
+                        //CreateLevel(c, go.transform);
+                        SpawnedLocations.Add(c);
+                    }
+                    else if (c.Type == LocationTypes.SpaceEncounter)
+                    {
+                        // spawn ships & stuff
+
+                    }
+                }
+            }*/
         }
     }
+
+    
+
     /*
     public void CreateLevel(Location l, Transform owner = null)
     {

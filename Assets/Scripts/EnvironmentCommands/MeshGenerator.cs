@@ -6,16 +6,20 @@ using ProceduralToolkit;
 
 public class MeshGenerator
 {
+
     public LocationStation Test;
     public Mesh output;
     int[,] tiles;
     int count;
+    public ProceduralBlocks BlockGenerator;
+    public int Size = 50;
 
     public void newGen()
     {
         vertices = new List<Vector3>();
         triangles = new List<int>();
-        tiles = Test.MapTiles;
+        //tiles = Test.MapTiles;
+        tiles = BlockGenerator.GenerateMap(Size, Size);
         count = 0;
         for(int i = 1; i < Test.Size-2; i++)
             for(int j = 1; j < Test.Size-2; j++)
@@ -78,7 +82,8 @@ public class MeshGenerator
     {
         vertices = new List<Vector3>();
         triangles = new List<int>();
-        tiles = Test.MapTiles;
+        //tiles = Test.MapTiles;
+        tiles = BlockGenerator.GenerateMap(Size, Size);
         count = 0;
         output = new Mesh();
         var draft = new MeshDraft(output);

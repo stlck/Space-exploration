@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(Location))]
+[CustomEditor(typeof(Location),true)]
 public class LocationEditor : Editor {
 
     bool showLocEdit = false;
@@ -17,6 +17,5 @@ public class LocationEditor : Editor {
         }
 
         base.OnInspectorGUI();
-
     }
 }

@@ -18,6 +18,9 @@ public class StationSpawner
         size = _size;
         map = new int[size, size];
 
+        if (seed >= 0)
+            Random.InitState(seed);
+
         iterations = _splits;
         minRoomSize = _minRoomSize;
         halfCorridorSize = _halfCorridorSize;
@@ -47,11 +50,17 @@ public class StationSpawner
             for (int j = 0; j < size; j++)
             {
                 if (map[i, j] > 0)
-                    MonoBehaviour.Instantiate(set.GroundTiles[0], Vector3.right * i + Vector3.forward * j, Quaternion.identity, parent.transform);
+                {
+                    var t = MonoBehaviour.Instantiate(set.GroundTiles[0], parent.transform);
+                    t.localPosition = Vector3.right * i + Vector3.forward * j;
+                }
                 else if (hasNeighbor(i, j))
                 {
                     for (int y = 0; y < 4; y++)
-                        MonoBehaviour.Instantiate(set.GroundTiles[3], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                    {
+                        var t = MonoBehaviour.Instantiate(set.GroundTiles[3], parent.transform);
+                        t.localPosition = Vector3.right * i + Vector3.forward * j + Vector3.up * y;
+                    }
                 }
 
             }
@@ -103,16 +112,19 @@ public class StationSpawner
                     //if (i == 0 || j == 0 || i == size - 1 || j == size - 1)
                     for (int y = 0; y < 5; y++)
                     {
-                        var t = MonoBehaviour.Instantiate(set.GroundTiles[2], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                        var t = MonoBehaviour.Instantiate(set.GroundTiles[2], parent.transform);
+                        t.localPosition = Vector3.right * i + Vector3.forward * j + Vector3.up * y;
                         t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
                     }
 
                 }
                 else if (map[i, j] > 0)
                 {
-                    var t = MonoBehaviour.Instantiate(set.GroundTiles[2], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
+                    var t = MonoBehaviour.Instantiate(set.GroundTiles[2], parent.transform);
+                    t.localPosition = Vector3.right * i + Vector3.forward * j + Vector3.down;
                     t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
-                    t = MonoBehaviour.Instantiate(set.GroundTiles[2], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
+                    t = MonoBehaviour.Instantiate(set.GroundTiles[2], parent.transform);
+                    t.localPosition = Vector3.right * i + Vector3.forward * j + Vector3.up * 5;
                     t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
                 }
             }

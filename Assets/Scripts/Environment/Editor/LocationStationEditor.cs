@@ -15,7 +15,7 @@ public class LocationStationEditor : LocationEditor
 
         var t = (LocationStation)target;
 
-        if (GUILayout.Button("FILL"))
+        /*if (GUILayout.Button("FILL"))
             t.FillMap();
         if (GUILayout.Button("Set row 0 to 1"))
         {
@@ -55,7 +55,7 @@ public class LocationStationEditor : LocationEditor
                     EditorGUILayout.EndHorizontal();
                 i++;
             }
-        }
+        }*/
 
         if (GUI.changed)
             t.SetDirty();

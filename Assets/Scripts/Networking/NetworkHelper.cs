@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -17,10 +17,12 @@ public class NetworkHelper : NetworkBehaviour
     }
 
     public List<MyAvatar> AllPlayers = new List<MyAvatar>();
+    public List<Location> MyLocations = new List<Location>();
 
     void Awake()
     {
         instance = this;
+        MyLocations = Resources.LoadAll<Location>("").ToList();
     }
 
     // Use this for initialization
@@ -70,6 +72,15 @@ public class NetworkHelper : NetworkBehaviour
     void RpcParentSpawnObject(GameObject go, GameObject parent)
     {
         go.transform.SetParent(parent.transform, true);
+    }
+
+    [ClientRpc]
+    public void RpcSpawnLocation(string locationName, int seed)
+    {
+        var c = MyLocations.First(m => m.Name == locationName);
+        var go = new GameObject(c.name);
+        go.transform.position = c.Position;
+        c.SpawnLocation(go.transform, seed);
     }
 }
 

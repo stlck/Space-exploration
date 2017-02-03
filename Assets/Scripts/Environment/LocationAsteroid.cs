@@ -9,20 +9,19 @@ public class LocationAsteroid : Location
 
     public int TileSize = 1;
     public List<int> SizeArray = new List<int>();
-    public int Seed = -1;
 
-    public override void SpawnLocation(Transform owner)
+    public override void SpawnLocation(Transform owner, int _seed)
     {
-        base.SpawnLocation(owner);
+        base.SpawnLocation(owner, _seed);
         spawn(owner);
     }
 
     void spawn(Transform Owner)
     {
         var spawner = new AsteroidSpawner();
-        Debug.Log("SPAWNING WITH Percentage: " + spawner.GeneratePercentage + ". neighbors: " + spawner.neighborsMin);
+        //Debug.Log("SPAWNING WITH Percentage: " + spawner.GeneratePercentage + ". neighbors: " + spawner.neighborsMin);
 
-        spawner.DoAll(SizeArray, TileSize, Owner);
+        spawner.DoAll(SizeArray, TileSize, Owner, seed, TileSet);
 
         /*var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
         foreach(var r in Owner.GetComponentsInChildren<MeshRenderer>())

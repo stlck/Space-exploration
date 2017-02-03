@@ -9,6 +9,7 @@ public class Location : ScriptableObject {
     [ContextMenuItem("TestSpawnLocation", "TestSpawnLocation")]
     public string Name = "";
     public Vector3 Position;
+    public int seed = -1;
 
     public LocationTypes Type;
     public LocationStandings Standing;
@@ -20,12 +21,13 @@ public class Location : ScriptableObject {
             DestroyImmediate(t);
         var owner = new GameObject(Name);
         owner.transform.position = Position;
-        SpawnLocation(owner.transform);
+        SpawnLocation(owner.transform, seed);
     }
 
-    public virtual void SpawnLocation(Transform owner)
+    public virtual void SpawnLocation(Transform owner, int _seed = -1)
     {
-
+        Debug.Log("Location base spawn");
+        seed = _seed;
     }
 }
 

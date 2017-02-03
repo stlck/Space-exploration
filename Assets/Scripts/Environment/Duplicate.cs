@@ -4,7 +4,7 @@ using System.Collections;
 public class Duplicate : MonoBehaviour
 {
     public float minForce;
-    public float Health = 300;
+    public float Health = 150;
 
     bool hit = false;
     float timer = 0f;
