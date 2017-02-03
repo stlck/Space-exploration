@@ -14,8 +14,13 @@ public class BspStationTest : MonoBehaviour {
     public int halfCorridorSize = 1;
     public TileSet _tileset;
     public int seed = -1;
-
+    List<int> sizes;
     public bool doStations = true;
+
+    void Awake()
+    {
+        sizes = new List<int>() { 15, 20, 24 };
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -37,9 +42,6 @@ public class BspStationTest : MonoBehaviour {
         GUILayout.Label("Size : " + size);
         size = (int)GUILayout.HorizontalSlider((float)size, 0f, 100f);
 
-        GUILayout.Label("Size : " + size);
-        size = (int)GUILayout.HorizontalSlider((float)size, 0f, 100f);
-
         //GUILayout.Label("TileSet : " + _tileset);
         //foreach (var t in System.Enum.GetValues(typeof(TileSet)))
         //    if (GUILayout.Button(t.ToString()))
@@ -55,6 +57,12 @@ public class BspStationTest : MonoBehaviour {
 
             GUILayout.Label("Half corridor size : " + halfCorridorSize);
             halfCorridorSize = (int)GUILayout.HorizontalSlider((float)halfCorridorSize, 1f, 4f);
+        }
+        else
+        {
+            GUILayout.Label("asteroid size array");
+            for (int i = 0; i < sizes.Count; i++)
+                sizes[i] = (int) GUILayout.HorizontalSlider((float)sizes[i], (float)(i == 0 ? 10 : sizes[i - 1]), (float)(i == sizes.Count - 1 ? 30 : sizes[i + 1]));
         }
     }
 
@@ -75,7 +83,7 @@ public class BspStationTest : MonoBehaviour {
 
         parent = new GameObject();
         AsteroidSpawner spawner = new AsteroidSpawner();
-        var sizes = new List<int>() { 15, 20, 24 };
+        
         spawner.DoAll(sizes, 1, parent.transform, seed, _tileset);
     }
 }
