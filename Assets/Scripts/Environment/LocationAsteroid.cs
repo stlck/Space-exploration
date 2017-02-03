@@ -24,9 +24,9 @@ public class LocationAsteroid : Location
 
         spawner.DoAll(SizeArray, TileSize, Owner);
 
-        var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
+        /*var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
         foreach(var r in Owner.GetComponentsInChildren<MeshRenderer>())
-            r.material = set.GroundTiles[0].GetComponent<MeshRenderer>().sharedMaterial;
+            r.material = set.GroundTiles[0].GetComponent<MeshRenderer>().sharedMaterial;*/
 
     }
 

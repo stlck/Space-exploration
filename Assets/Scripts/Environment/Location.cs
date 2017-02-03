@@ -17,7 +17,7 @@ public class Location : ScriptableObject {
     {
         var t = GameObject.Find(name);
         if (t != null)
-            Destroy(t);
+            DestroyImmediate(t);
         var owner = new GameObject(Name);
         owner.transform.position = Position;
         SpawnLocation(owner.transform);

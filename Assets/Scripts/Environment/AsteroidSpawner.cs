@@ -9,36 +9,35 @@ public class AsteroidSpawner {
     public int GeneratePercentage = 70;
     public int neighborsMin = 7;
     public int TileSize = 1;
+    LocationTileSet tileSet;
 
     int[,,] map;
     int Size;
     List<Vector3> UpperRegion;
 
-    public void DoAll(List<int> SizeArray, int TileSize, Transform owner, int seed = -1)
+    public void DoAll(List<int> SizeArray, int TileSize, Transform owner, int seed = -1, TileSet _tileSet = TileSet.BlackAsteroid)
     {
-        float time = Time.realtimeSinceStartup;
+        if (seed >= 0)
+            Random.InitState(seed);
+
+        this.tileSet = Resources.LoadAll<LocationTileSet>("TileSets/" + _tileSet.ToString())[0];
         this.TileSize = TileSize;
-        Debug.Log("0Time taken : " + (Time.realtimeSinceStartup - time));
+
         Generate(SizeArray[0]);
-        Debug.Log("1Time taken : " + (Time.realtimeSinceStartup - time));
         for (int i = 1; i < SizeArray.Count; i++)
         {
             Smooth();
             IncreaseMapSize(SizeArray[i]);
             Smooth();
         }
-        Debug.Log("2Time taken : " + (Time.realtimeSinceStartup - time));
         doregions();
-        Debug.Log("3Time taken : " + (Time.realtimeSinceStartup - time));
         Carve2(owner);
-        Debug.Log("4Time taken : " + (Time.realtimeSinceStartup - time));
+
+        //Random.state = new Random.State();
     }
 
     public void Generate(int s, int seed = -1)
     {
-        if (seed >= 0)
-            Random.InitState( seed);
-
         Size = s;
         map = new int[Size, Size, Size];
         for (int i = 0; i < Size; i++)
@@ -149,7 +148,6 @@ public class AsteroidSpawner {
                             UpperRegion = r;
                     }
                 }
-
         alignMapToRegion();
     }
 
@@ -172,7 +170,7 @@ public class AsteroidSpawner {
     }
     void Carve2(Transform owner)
     {
-        //var real = Time.realtimeSinceStartup;
+        Debug.Log("up  : " + UpperRegion.Count);
         var y = (int)UpperRegion.Average(m => m.y);
         var x = (int)UpperRegion.Average(m => m.x);
         var z = (int)UpperRegion.Average(m => m.z);
@@ -181,8 +179,8 @@ public class AsteroidSpawner {
         var p = Vector3.up * y + Vector3.forward * z + Vector3.right * x;
         var xMin = UpperRegion.Min(m => m.x);
         var xTo =  xMin - 4;
+        var xEntrance = 0;
         var lowerRegion = new List<Vector3>();
-        var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
         lower.transform.SetParent(owner);
         lower.transform.localPosition = Vector3.zero;
@@ -195,9 +193,18 @@ public class AsteroidSpawner {
         upper.layer = LayerMask.NameToLayer("ShipTop");
 
         // add bridge
-        for (int i = (int) xTo; i < xMin; i++) { 
-            map[i, y, z] = 0;
-            map[i, y - 1, z] = 1;
+        for (int i = 0; i < Size; i++) {
+            // landing bridge
+            if (map[i, y + 1, z] == 1)
+            {
+                xEntrance = i;
+                // make a hole into the asteroid here
+                for (int j = xEntrance - 4; j < xEntrance; j++)
+                    if(inBounds(j,y, z))
+                        map[j, y, z] = 1;
+
+                break;
+            }
         }
 
         // lower region
@@ -206,10 +213,10 @@ public class AsteroidSpawner {
                 for (int k = 0; k < Size; k++)
                 { 
                     // show where not surrounded by neighbors and not where player is
-                    if (map[i,j,k] > 0 && (neightborCount6(i,j,k) < 6 || 
-                        j == y && neightborCount6(i,j,k) == 6) /*|| i <= x && i >= xTo && j == y && k == z*/)
+                    if ((map[i,j,k] > 0 && (neightborCount6(i,j,k) < 6 || 
+                        j == y && neightborCount6(i,j,k) == 6) && !(i == xEntrance && j == y +1 && k == z)) /*|| i <= x && i >= xTo && j == y && k == z*/)
                     {
-                        MonoBehaviour.Instantiate(go, new Vector3(i,j,k), Quaternion.identity, lower.transform);
+                        addTileToWorld(i, j, k, lower.transform);
                     }
                 }
         for (int i = 0; i < Size; i++)
@@ -217,98 +224,12 @@ public class AsteroidSpawner {
                 for (int k = 0; k < Size; k++)
                 { // upper region
                     if (map[i,j,k] > 0 && neightborCount6(i, j, k) < 6)
-                        MonoBehaviour.Instantiate(go, new Vector3(i,j,k), Quaternion.identity, upper.transform);
+                        addTileToWorld(i, j, k, upper.transform);
                 }
-
-        MonoBehaviour.DestroyImmediate(go);
     }
 
-    public void Carve(Transform owner)
+    void addTileToWorld(int x, int y, int z, Transform parent)
     {
-        //var real = Time.realtimeSinceStartup;
-        var y = (int)UpperRegion.Average(m => m.y);
-        var x = (int)UpperRegion.Average(m => m.x);
-        var z = (int)UpperRegion.Average(m => m.z);
-        var lower = new GameObject();
-        var upper = new GameObject();
-        var p = Vector3.up * y + Vector3.forward * z + Vector3.right * x;
-        var xTo = UpperRegion.Min(m => m.x) - 4;
-        var lowerRegion = new List<Vector3>();
-        
-        UpperRegion = UpperRegion.Distinct().ToList();
-
-        // remove all at y + 1 except walls
-        var toRemove = UpperRegion.Where(m => m.y == y +1 && neightborCount6(m) == 6 || m.y < y -3).ToList();
-        foreach (var t in toRemove)
-            UpperRegion.RemoveAll( (m) => m == t);
-        toRemove.Clear();
-
-        // update map[,,]
-        alignMapToRegion();
-        // remove all with 6 neighbors
-        UpperRegion.RemoveAll(m => neightborCount6(m) == 6);
-
-        // split region up in lower and upper
-        lowerRegion.AddRange(UpperRegion.Where(u => u.y <= y + 1));
-        lowerRegion.ForEach(u => UpperRegion.Remove(u));
-
-        // add landing bridge
-        var sub = lowerRegion.Where(m => m.y == y && m.z == z);
-        var pathOut = new List<Vector3>();
-        for (int i = x; i > xTo; i--)
-        {
-            p.x++;
-            if (!sub.Contains(p))
-                lowerRegion.Add(p);
-
-            pathOut.Add(p);
-        }
-
-        foreach (var t in pathOut)
-            if (lowerRegion.Contains(t + Vector3.up))
-                lowerRegion.Remove(t + Vector3.up);
-
-        var baseMove = new Vector3(-x, -y, -z);
-
-        // lower region
-        lower.transform.SetParent(owner);
-        lower.transform.localPosition = Vector3.zero;
-        var renderer = lower.AddComponent<MeshRenderer>();
-        regionToMesh(lowerRegion,lower.AddComponent<MeshFilter>(), baseMove);
-        lower.name = "lower region";
-        lower.layer = LayerMask.NameToLayer("Ship");
-        lower.AddComponent<MeshCollider>();
-
-        // upper region
-        upper.transform.SetParent(owner);
-        upper.transform.localPosition = Vector3.zero;
-        renderer = upper.AddComponent<MeshRenderer>();
-        regionToMesh(UpperRegion,upper.AddComponent<MeshFilter>(), baseMove);
-        upper.name = "upper region";
-        upper.layer = LayerMask.NameToLayer("ShipTop");
+        MonoBehaviour.Instantiate(tileSet.GroundTiles.GetRandom(), new Vector3(x, y, z), Quaternion.identity, parent);
     }
-
-    void regionToMesh(List<Vector3> region, MeshFilter target, Vector3 moveOffset)
-    {
-        
-            var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        foreach (var p in region)
-        {
-            MonoBehaviour.Instantiate(go, p, Quaternion.identity, target.transform);
-            //go.transform.position = p;
-        }
-        return;
-        MeshDraft draft = new MeshDraft();
-
-        var size = Vector3.one;
-        foreach (var p in region)
-        {
-            var e = MeshDraft.Hexahedron(TileSize, TileSize, TileSize);
-            e.Move((p + moveOffset) * TileSize + Vector3.down * TileSize/2);
-            draft.Add(e);
-        }
-
-        target.mesh = draft.ToMesh();
-    }
-    
 }
