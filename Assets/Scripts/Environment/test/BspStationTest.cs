@@ -12,7 +12,8 @@ public class BspStationTest : MonoBehaviour {
     public int size = 70;
     public int minRoomSize = 8;
     public int halfCorridorSize = 1;
-    public TileSet TileSet;
+    public TileSet _tileset;
+    public int seed = -1;
 
     public bool doStations = true;
 	
@@ -32,13 +33,25 @@ public class BspStationTest : MonoBehaviour {
     void OnGUI()
     {
         doStations = GUILayout.Toggle(doStations, doStations ? "Asteroids" : "stations");
+
         GUILayout.Label("Size : " + size);
         size = (int)GUILayout.HorizontalSlider((float)size, 0f, 100f);
+
+        GUILayout.Label("TileSet : " + _tileset);
+        foreach (var t in System.Enum.GetValues(typeof(TileSet)))
+            if (GUILayout.Button(t.ToString()))
+                _tileset = t;
 
         if(doStations)
         {
             GUILayout.Label("Splits : " + iterations);
             iterations = (int)GUILayout.HorizontalSlider((float)iterations, 1f, 8f);
+
+            GUILayout.Label("Min Room Size : " + minRoomSize);
+            minRoomSize = (int)GUILayout.HorizontalSlider((float)minRoomSize, 4f, 20f);
+
+            GUILayout.Label("Half corridor size : " + halfCorridorSize);
+            halfCorridorSize = (int)GUILayout.HorizontalSlider((float)halfCorridorSize, 1f, 4f);
         }
     }
 
@@ -49,7 +62,7 @@ public class BspStationTest : MonoBehaviour {
 
         parent = new GameObject();
         StationSpawner spawner = new StationSpawner();
-        spawner.Generate(parent.transform, Random.Range(0, 1000), size, iterations, minRoomSize, halfCorridorSize, TileSet);
+        spawner.Generate(parent.transform, seed, size, iterations, minRoomSize, halfCorridorSize, _tileset);
     }
 
     void generateAsteroid()
@@ -60,6 +73,6 @@ public class BspStationTest : MonoBehaviour {
         parent = new GameObject();
         AsteroidSpawner spawner = new AsteroidSpawner();
         var sizes = new List<int>() { 15, 20, 24 };
-        spawner.DoAll(sizes, 1, parent.transform);
+        spawner.DoAll(sizes, 1, parent.transform, seed, _tileset);
     }
 }
