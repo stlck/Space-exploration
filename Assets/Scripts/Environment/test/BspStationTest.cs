@@ -32,17 +32,20 @@ public class BspStationTest : MonoBehaviour {
 
     void OnGUI()
     {
-        doStations = GUILayout.Toggle(doStations, doStations ? "Asteroids" : "stations");
+        doStations = GUILayout.Toggle(doStations, doStations ? "stations" : "Asteroids");
 
         GUILayout.Label("Size : " + size);
         size = (int)GUILayout.HorizontalSlider((float)size, 0f, 100f);
 
-        GUILayout.Label("TileSet : " + _tileset);
-        foreach (var t in System.Enum.GetValues(typeof(TileSet)))
-            if (GUILayout.Button(t.ToString()))
-                _tileset = t;
+        GUILayout.Label("Size : " + size);
+        size = (int)GUILayout.HorizontalSlider((float)size, 0f, 100f);
 
-        if(doStations)
+        //GUILayout.Label("TileSet : " + _tileset);
+        //foreach (var t in System.Enum.GetValues(typeof(TileSet)))
+        //    if (GUILayout.Button(t.ToString()))
+        //        _tileset = t;
+
+        if (doStations)
         {
             GUILayout.Label("Splits : " + iterations);
             iterations = (int)GUILayout.HorizontalSlider((float)iterations, 1f, 8f);
