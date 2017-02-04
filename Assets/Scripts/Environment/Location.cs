@@ -54,6 +54,20 @@ public enum TileSet
     BlueStation,
 }
 
+[System.Serializable]
+public class Vector2Int
+{
+    public int x;
+    public int y;
+
+    public Vector2Int(int _x, int _y)
+    {
+        x = _x;
+        y = _y;
+    }
+    
+}
+
 //public static class LocationTileSet
 //{
 //    public static int Ground = 0;

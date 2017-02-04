@@ -181,14 +181,10 @@ public class AsteroidSpawner {
         var xEntrance = 0;
 
         lower.transform.SetParent(owner);
-        lower.transform.localPosition = Vector3.zero;
         lower.name = "lower region";
-        lower.layer = LayerMask.NameToLayer("Ship");
 
         upper.transform.SetParent(owner);
-        upper.transform.localPosition = Vector3.zero;
         upper.name = "upper region";
-        upper.layer = LayerMask.NameToLayer("ShipTop");
 
         // add bridge
         for (int i = 0; i < Size; i++) {
@@ -224,6 +220,12 @@ public class AsteroidSpawner {
                     if (map[i,j,k] > 0 && neightborCount6(i, j, k) < 6)
                         addTileToWorld(i, j, k, upper.transform);
                 }
+
+        
+        lower.transform.localPosition = Vector3.down * y;
+        lower.layer = LayerMask.NameToLayer("Ship");
+        upper.transform.localPosition = Vector3.down * y;
+        upper.layer = LayerMask.NameToLayer("ShipTop");
     }
 
     void addTileToWorld(int x, int y, int z, Transform parent)

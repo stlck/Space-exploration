@@ -45,7 +45,9 @@ public class Duplicate : MonoBehaviour
                         t.GetComponent<Duplicate>().enabled = false;
                         t.GetComponent<Rigidbody>().isKinematic = false;
                         t.GetComponent<Rigidbody>().mass = 2;
-                        Destroy(t.gameObject, Random.Range(4, 16));
+                        if (t.gameObject.layer != LayerMask.NameToLayer("Ship"))
+                            t.gameObject.layer = LayerMask.NameToLayer("Ship");
+                        Destroy(t.gameObject, Random.Range(10, 30));
                     }
 
             Destroy(gameObject);

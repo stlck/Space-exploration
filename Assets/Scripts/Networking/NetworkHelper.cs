@@ -79,8 +79,8 @@ public class NetworkHelper : NetworkBehaviour
     {
         var c = MyLocations.First(m => m.Name == locationName);
         var go = new GameObject(c.name);
-        go.transform.position = c.Position;
         c.SpawnLocation(go.transform, seed);
+        go.transform.position = c.Position;
     }
 }
 
