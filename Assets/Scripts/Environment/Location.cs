@@ -53,3 +53,16 @@ public enum TileSet
     OldStation,
     BlueStation,
 }
+
+//public static class LocationTileSet
+//{
+//    public static int Ground = 0;
+//    public static int InnerWall = 1;
+//    public static int OuterWall = 2;
+//    public static int Room = 3;
+
+//    public static int GetRandom()
+//    {
+//        return UnityEngine.Random.Range(0, 3);
+//    }
+//}

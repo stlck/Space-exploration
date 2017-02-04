@@ -170,17 +170,15 @@ public class AsteroidSpawner {
     }
     void Carve2(Transform owner)
     {
-        Debug.Log("up  : " + UpperRegion.Count);
         var y = (int)UpperRegion.Average(m => m.y);
         var x = (int)UpperRegion.Average(m => m.x);
         var z = (int)UpperRegion.Average(m => m.z);
         var lower = new GameObject();
         var upper = new GameObject();
-        var p = Vector3.up * y + Vector3.forward * z + Vector3.right * x;
-        var xMin = UpperRegion.Min(m => m.x);
-        var xTo =  xMin - 4;
+        //var p = Vector3.up * y + Vector3.forward * z + Vector3.right * x;
+        //var xMin = UpperRegion.Min(m => m.x);
+        //var xTo =  xMin - 4;
         var xEntrance = 0;
-        var lowerRegion = new List<Vector3>();
 
         lower.transform.SetParent(owner);
         lower.transform.localPosition = Vector3.zero;
@@ -230,6 +228,6 @@ public class AsteroidSpawner {
 
     void addTileToWorld(int x, int y, int z, Transform parent)
     {
-        MonoBehaviour.Instantiate(tileSet.GroundTiles.GetRandom(), new Vector3(x, y, z), Quaternion.identity, parent);
+        MonoBehaviour.Instantiate(tileSet.GroundTiles[LocationTileSet.GetRandom()], new Vector3(x, y, z), Quaternion.identity, parent);
     }
 }

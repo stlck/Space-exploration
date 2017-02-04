@@ -49,16 +49,17 @@ public class StationSpawner
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
             {
-                if (map[i, j] > 0)
+                if (map[i, j] == 1 )
                 {
-                    var t = MonoBehaviour.Instantiate(set.GroundTiles[0], parent.transform);
+                    var t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.Ground], parent.transform);
                     t.localPosition = Vector3.right * i + Vector3.forward * j;
                 }
-                else if (hasNeighbor(i, j))
+                else if (hasNeighbor(i, j, 1) && i > 0)
                 {
                     for (int y = 0; y < 4; y++)
                     {
-                        var t = MonoBehaviour.Instantiate(set.GroundTiles[3], parent.transform);
+                        map[i, j] = 2;
+                        var t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.InnerWall], parent.transform);
                         t.localPosition = Vector3.right * i + Vector3.forward * j + Vector3.up * y;
                     }
                 }
@@ -92,12 +93,16 @@ public class StationSpawner
         for (int i = 0; i < size; i++)
         {
             map[i, 0] = 0;
+            map[i, 1] = 0;
             map[i, size - 1] = 0;
+            map[i, size - 2] = 0;
         }
         for (int j = 0; j < size; j++)
         {
             map[0, j] = 0;
+            map[1, j] = 0;
             map[size - 1, j] = 0;
+            map[size - 2, j] = 0;
         }
     }
 
@@ -107,12 +112,12 @@ public class StationSpawner
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
             {
-                if (map[i, j] == 0 && hasNeighbor(i, j))
+                if (map[i, j] == 0 && hasNeighbor(i, j, 2))
                 {
                     //if (i == 0 || j == 0 || i == size - 1 || j == size - 1)
                     for (int y = 0; y < 5; y++)
                     {
-                        var t = MonoBehaviour.Instantiate(set.GroundTiles[2], parent.transform);
+                        var t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], parent.transform);
                         t.localPosition = Vector3.right * i + Vector3.forward * j + Vector3.up * y;
                         t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
                     }
@@ -120,10 +125,10 @@ public class StationSpawner
                 }
                 else if (map[i, j] > 0)
                 {
-                    var t = MonoBehaviour.Instantiate(set.GroundTiles[2], parent.transform);
+                    var t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], parent.transform);
                     t.localPosition = Vector3.right * i + Vector3.forward * j + Vector3.down;
                     t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
-                    t = MonoBehaviour.Instantiate(set.GroundTiles[2], parent.transform);
+                    t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], parent.transform);
                     t.localPosition = Vector3.right * i + Vector3.forward * j + Vector3.up * 5;
                     t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
                 }
@@ -231,11 +236,11 @@ public class StationSpawner
             connectCells(cell1.child1, cell2.child1);
     }
 
-    bool hasNeighbor(int i, int j)
+    bool hasNeighbor(int i, int j, int val = 1)
     {
         for (int x = i - 1; x <= i + 1; x++)
             for (int y = j - 1; y <= j + 1; y++)
-                if (x > 0 && y > 0 && x < size && y < size && map[x, y] > 0)
+                if (x > 0 && y > 0 && x < size && y < size && map[x, y] == val)
                     return true;
 
         return false;

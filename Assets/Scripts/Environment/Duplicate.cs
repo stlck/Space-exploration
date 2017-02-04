@@ -12,7 +12,7 @@ public class Duplicate : MonoBehaviour
     Rigidbody rigidBody;
 
     // Use this for initialization
-    void Start()
+    void Awake()
     {
         rigidBody = GetComponent<Rigidbody>();
         if (rigidBody == null)
@@ -28,15 +28,31 @@ public class Duplicate : MonoBehaviour
     
     public void OnCollisionEnter(Collision collision)
     {
-        if (!hit && collision.relativeVelocity.magnitude > minForce)
+        if (enabled && !hit && collision.relativeVelocity.magnitude > minForce)
         {
-            Health -= collision.relativeVelocity.magnitude;
-            if (rigidBody.isKinematic)
-                rigidBody.isKinematic = false;
+            /* transform.localScale = transform.localScale * .95f;
+             Health -= collision.relativeVelocity.magnitude;
+             if (rigidBody.isKinematic)
+                 rigidBody.isKinematic = false;*/
+            var pos = transform.position;
+            var scale = transform.localScale / 4f;
+            for (int i = 0; i < 2; i++)
+                for (int j = 0; j < 2; j++)
+                    for (int k = 0; k < 2; k++)
+                    {
+                        var t = Instantiate(transform, pos + scale.x * transform.right * i + scale.y * transform.up * j + scale.z * transform.forward * k, transform.rotation, transform.parent);
+                        t.localScale = transform.localScale / 2.05f;
+                        t.GetComponent<Duplicate>().enabled = false;
+                        t.GetComponent<Rigidbody>().isKinematic = false;
+                        t.GetComponent<Rigidbody>().mass = 2;
+                        Destroy(t.gameObject, Random.Range(4, 16));
+                    }
+
+            Destroy(gameObject);
         }
     }
 
-    void Update()
+   /* void Update()
     {
         if(hit)
         {
@@ -46,6 +62,17 @@ public class Duplicate : MonoBehaviour
                 //mat.SetFloat("_SliceAmount", timer - 3f);
                 if (timer >= 4f)
                 {
+                    var pos = transform.position;
+                    var scale = transform.localScale/4f;
+                    for(int i = 0; i < 2; i++)
+                        for(int j = 0; j < 2; j++)
+                            for(int k = 0; k < 2; k++)
+                        {
+                                var t = Instantiate(transform, pos + scale.x * transform.right * i + scale.y * transform.up * j + scale.z * transform.forward * k, transform.rotation);
+                                t.localScale = transform.localScale / 2;
+                                t.GetComponent<Duplicate>().enabled = false;
+                                Destroy(t.gameObject, Random.Range(4, 8));
+                        }
                     Destroy(gameObject);
                 }
             }
@@ -55,5 +82,5 @@ public class Duplicate : MonoBehaviour
             timer = Random.Range(-2f, 2f);
             hit = true;
         }
-    }
+    }*/
 }
