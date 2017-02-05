@@ -181,6 +181,12 @@ public class MyAvatar : NetworkBehaviour
     {
         TeamStats.Instance.AddCredits(amount);
     }
+
+    [Command]
+    public void CmdSpawnShip(int[,] t, int[,] c, int sizex, int sizey, Vector3 position, Quaternion rotation)
+    {
+        ShipSpawner.SrvCreateShip(t, c, sizex, sizey, position, rotation);
+    }
 }
 
 public enum States

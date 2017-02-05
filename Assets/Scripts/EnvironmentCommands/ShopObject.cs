@@ -25,7 +25,7 @@ public class ShopObject : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Show && !canShow())
+        if (Show && !canShow() || Input.GetKeyDown(KeyCode.Escape))
             Show = false;
 	}
 

@@ -17,24 +17,35 @@ public class Ship : NetworkBehaviour {
     public float CurrentSpeed = 0;
     public MoveShip ShipMovement;
 
-    //public List<GameObject> SpawnObjects;
+    public int[,] tiles;
+    public int[,] controls;
+    public int Sizex;
+    public int Sizey;
+
     public List<NetworkSpawnObject> NetworkSpawnObjects;
 
 	// Use this for initialization
 	void Start () {
 		if(isServer)
         {
-            //SpawnObjects.ForEach(m =>
-            //{
-            //    //GameObject i = Instantiate(m, transform);
-            //    //i.transform.localPosition = m.transform.position;
-            //    //NetworkServer.Spawn(i);
-            //    //RpcParentToTransform(gameObject, i);
-            //});
-
+            if(tiles.Length > 0)
+            {
+                var t = new int[Sizex * Sizey];
+                int counter = 0;
+                var output = "";
+                for (int i = 0; i < Sizex; i++)
+                    for (int j = 0; j < Sizey; j++)
+                    {
+                        output += tiles[i, j];
+                        
+                        t[counter] = tiles[i, j];
+                        counter++;
+                    }
+                Debug.Log(output);
+                RpcBuildShip(t, Sizex, Sizey);
+            }
             NetworkSpawnObjects.ForEach(m => NetworkHelper.Instance.NetworkSpawnObject(m));
         }
-
 	}
 
     [ClientRpc]
@@ -42,8 +53,28 @@ public class Ship : NetworkBehaviour {
     {
         child.transform.SetParent(parent.transform, true);
     }
-	
-	// Update is called once per frame
+
+    
+    [ClientRpc]
+    public void RpcBuildShip(int[] t, int sizex, int sizey)
+    {
+        var counter = 0;
+                var output = "";
+        for (int i = 0; i < Sizex; i++)
+            for (int j = 0; j < Sizey; j++)
+            {
+                tiles[i, j] = t[counter];
+                        output += tiles[i, j];
+                counter++;
+            }
+                Debug.Log(output);
+
+        var mTarget = GetComponentInChildren<MeshFilter>();
+        mTarget.gameObject.AddComponent<MeshCollider>();
+        ShipSpawner.ShipToMesh(mTarget, sizex, sizey, tiles);
+    }
+
+    // Update is called once per frame
     [Server]
 	void Update () {
 

@@ -3,19 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class ShipSpawner : MonoBehaviour {
 
-    public Vector2Int Size = new Vector2Int(11,14);
+    public Vector2Int Size = new Vector2Int(11, 14);
+    public MeshFilter Target;
+    public static List<GameObject> ControlList = new List<GameObject>();
+    public DockingPoint TargetDock;
+
     int[,] tiles;
     int[,] controls;
     bool changed;
 
     bool doGround = true;
-    bool showBuilder = true;
+    public bool IsTesting = false;
+    public bool Show = false;
 
-    public MeshFilter Target;
-    public List<GameObject> ControlList = new List<GameObject>();
     int currentControl;
     Vector3 center;
     Vector2 scrollPosition;
@@ -24,20 +28,80 @@ public class ShipSpawner : MonoBehaviour {
     public void Start()
     {
         reset();
+
+        ControlList = Resources.LoadAll<GameObject>("ShipControls").ToList();
+
         if (ControlList.Any())
             currentControl = 0;
     }
 
+    void OnMouseUp()
+    {
+        if (!canShow())
+            RangeIndicator.Instance.TurnOn(transform.position, 3);
+        else
+        {
+            if (!Show)
+                Show = true;
+            else
+                Show = false;
+        }
+    }
+
+    bool canShow()
+    {
+        return Vector3.Distance(MyAvatar.Instance.transform.position, transform.position) < 3;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (!IsTesting && Show && !canShow() || Input.GetKeyDown(KeyCode.Escape))
+            Show = false;
+    }
+
+    public static void SrvCreateShip(int[,] t, int[,] c, int sizex, int sizey, Vector3 position, Quaternion rotation)
+    {
+        var baseShip = Resources.Load<Ship>("BaseShip");
+        var s = Instantiate(baseShip, Vector3.zero, Quaternion.identity);//Target.gameObject.AddComponent<Ship>();
+        NetworkServer.Spawn(s.gameObject);
+        var center = new Vector3(sizex / 2, 0, sizey / 2);
+
+        for (int y = 1; y < sizey - 1; y++)
+            for (int x = 1; x < sizex - 1; x++)
+                if (c[x, y] >= 0)
+                {
+                    var spawn = new NetworkSpawnObject();
+                    spawn.SpawnTarget = ControlList[c[x, y]];
+                    spawn.Position = positionOf(x, y) + Vector3.left * center.x + Vector3.forward * center.z;
+                    spawn.PositionIsLocal = true;
+                    spawn.Parent = s.gameObject;
+                    s.NetworkSpawnObjects.Add(spawn);
+                }
+
+        s.transform.position = position;
+        s.transform.rotation = rotation;
+
+        s.tiles = t;
+        s.Sizex = sizex;
+        s.Sizey = sizey;
+    }
+
     public void OnGUI()
     {
-        if (!showBuilder) return;
+        if (!Show) return;
 
         scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true);
         changed = false;
+
         if (GUILayout.Button("RESET"))
             reset();
-        if (GUILayout.Button("Create Ship"))
-            createShip();
+
+        if (GUILayout.Button("Cmd! Create Ship"))
+            MyAvatar.Instance.CmdSpawnShip(tiles, controls, Size.x, Size.y, TargetDock.DockAlign.position, TargetDock.DockAlign.rotation);//createShip();
+
+        if (GUILayout.Button("test create ship2"))
+            createShipTest();
 
         doGround = GUILayout.Toggle(doGround,doGround ? "HULL" : "Controls");
         if(doGround)
@@ -68,8 +132,13 @@ public class ShipSpawner : MonoBehaviour {
         else {
             int index = 0;
             foreach (var c in ControlList)
+            { 
                 if (GUILayout.Button(index + ":\t" + c.name))
-                    currentControl = index++;
+                { 
+                    currentControl = index;
+                }
+                index++;
+            }
             for (int y = 1; y < Size.y - 1; y++)
             {
                 GUILayout.BeginHorizontal();
@@ -104,33 +173,15 @@ public class ShipSpawner : MonoBehaviour {
             }
         }
         GUILayout.EndScrollView();
-        if (changed)
+        if (IsTesting && changed)
         {
-            reMesh();
+            ShipToMesh(Target, Size.x, Size.y, tiles);
         }
     }
 
-    void createShip()
+    void createShipTest()
     {
-        reMesh();
-        var baseShip = Resources.Load<Ship>("BaseShip");
-        var s = Instantiate(baseShip, Vector3.zero, Quaternion.identity);//Target.gameObject.AddComponent<Ship>();
-        var mTarget = s.GetComponentInChildren<MeshFilter>();
-        mTarget.mesh = Target.mesh;
-        mTarget.gameObject.AddComponent<MeshCollider>();
-
-        for (int y = 1; y < Size.y - 1; y++)
-            for (int x = 1; x < Size.x-1; x++)
-                if(controls[x,y] >= 0)
-                {
-                    var spawn = new NetworkSpawnObject();
-                    spawn.SpawnTarget = ControlList[controls[x, y]];
-                    spawn.Position = positionOf(x, y);
-                    spawn.PositionIsLocal = true;
-                    spawn.Parent = Target.gameObject;
-                    s.NetworkSpawnObjects.Add(spawn);
-                }
-                    
+        ShipToMesh(Target, Size.x, Size.y, tiles);
     }
 
     int hasNeighbor(int x, int y)
@@ -164,21 +215,22 @@ public class ShipSpawner : MonoBehaviour {
         tiles[(int)center.x, (int)center.z] = 1;
     }
 
-    void reMesh()
+    public static void ShipToMesh(MeshFilter _target, int _sizex, int _sizey, int[,] _tiles)
     {
+        var center = new Vector3((int)_sizex / 2, 0, (int)_sizey / 2);
         MeshDraft draft = new MeshDraft();
         Mesh m = new Mesh();
         List<Vector3> nodeTiles = new List<Vector3>();
-        for (int x = 0; x < Size.x-1; x++)
-            for (int y = 0; y < Size.y-1; y++)
+        for (int x = 0; x < _sizex-1; x++)
+            for (int y = 0; y < _sizey-1; y++)
             {
-                if (tiles[x, y ] > 0)
+                if (_tiles[x, y ] > 0)
                     nodeTiles.Add(positionOf(x, y));
-                if (tiles[x, y+1] > 0)
-                    nodeTiles.Add(positionOf(x, y+1));
-                if (tiles[x+1, y + 1] > 0)
+                if (_tiles[x, y+1] > 0)
+                    nodeTiles.Add(positionOf(x,  y + 1));
+                if (_tiles[x+1, y + 1] > 0)
                     nodeTiles.Add(positionOf(x+1, y + 1));
-                if (tiles[x+1, y] > 0)
+                if (_tiles[x+1, y] > 0)
                     nodeTiles.Add(positionOf(x+1, y));
 
                 if (nodeTiles.Count == 4)
@@ -216,13 +268,13 @@ public class ShipSpawner : MonoBehaviour {
                 }
                     nodeTiles.Clear();
             }
-
+        draft.Move(Vector3.left * center.x + Vector3.forward * center.z);
         m = draft.ToMesh();
-        Target.mesh = m;
+        _target.mesh = m;
     }
 
-    Vector3 positionOf(int x, int y)
+    static Vector3 positionOf(int x, int y)
     {
-        return Vector3.right * x + Vector3.forward * (Size.y - y) - center;
+        return Vector3.right * x + Vector3.back * (y);
     }
 }
