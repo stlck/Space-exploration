@@ -23,6 +23,7 @@ public class ShipSpawner : MonoBehaviour {
     int currentControl;
     Vector3 center;
     Vector2 scrollPosition;
+    Transform testControls;
 
     // Use this for initialization
     public void Start()
@@ -146,7 +147,7 @@ public class ShipSpawner : MonoBehaviour {
                 {
                     if (tiles[x, y] == 1)
                     {
-                        if(hasNeighbor(x,y) > 2)
+                        if(hasNeighbor(x,y) == 4)
                         {
                             if(controls[x, y] == -1)
                                 GUI.contentColor = Color.green;
@@ -156,9 +157,12 @@ public class ShipSpawner : MonoBehaviour {
                             if (controls[x, y] == -1 && GUILayout.Button("x", GUILayout.Width(25)) && hasNeighbor(x, y) > 2)
                             {
                                 controls[x, y] = currentControl;//ControlList.IndexOf(currentControl);
+                                changed = true;
                             }
-                            else if (controls[x, y] >= 0 && GUILayout.Button(controls[x, y].ToString(), GUILayout.Width(25)))
+                            else if (controls[x, y] >= 0 && GUILayout.Button(controls[x, y].ToString(), GUILayout.Width(25))) { 
                                 controls[x, y] = -1;
+                                changed = true;
+                            }
                         }
                         else
                         {
@@ -176,6 +180,7 @@ public class ShipSpawner : MonoBehaviour {
         if (IsTesting && changed)
         {
             ShipToMesh(Target, Size.x, Size.y, tiles);
+            showControls();
         }
     }
 
@@ -213,6 +218,34 @@ public class ShipSpawner : MonoBehaviour {
             }
 
         tiles[(int)center.x, (int)center.z] = 1;
+        tiles[(int)center.x+1, (int)center.z] = 1;
+        tiles[(int)center.x-1, (int)center.z] = 1;
+        tiles[(int)center.x, (int)center.z+1] = 1;
+        tiles[(int)center.x, (int)center.z-1] = 1;
+    }
+
+    void showControls()
+    {
+        if(testControls == null)
+        {
+            testControls = new GameObject("testControls").transform;
+            testControls.SetParent(Target.transform.root);
+        }
+
+        while(testControls.childCount > 0)
+            DestroyImmediate(testControls.GetChild(0).gameObject);
+
+        for (int y = 1; y < Size.y - 1; y++)
+            for (int x = 1; x < Size.x - 1; x++)
+            {
+                if(controls[x,y] >= 0)
+                {
+                    var c = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    c.transform.SetParent(testControls);
+                    c.transform.localPosition = positionOf(x, y) + Vector3.left * center.x + Vector3.forward * center.z;
+                }
+            }
+
     }
 
     public static void ShipToMesh(MeshFilter _target, int _sizex, int _sizey, int[,] _tiles)
