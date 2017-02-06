@@ -80,7 +80,7 @@ public class ShipSpawner : MonoBehaviour {
                     s.NetworkSpawnObjects.Add(spawn);
                 }
 
-        s.transform.position = position;
+        s.transform.position = position + Vector3.up / 2;
         s.transform.rotation = rotation;
 
         s.tiles = t;
@@ -245,14 +245,15 @@ public class ShipSpawner : MonoBehaviour {
                     c.transform.localPosition = positionOf(x, y) + Vector3.left * center.x + Vector3.forward * center.z;
                 }
             }
-
     }
 
     public static void ShipToMesh(MeshFilter _target, int _sizex, int _sizey, int[,] _tiles)
     {
         var center = new Vector3((int)_sizex / 2, 0, (int)_sizey / 2);
-        MeshDraft draft = new MeshDraft();
-        Mesh m = new Mesh();
+        MeshDraft lowerDraft = new MeshDraft();
+        MeshDraft upperDraft = new MeshDraft();
+        Mesh lower = new Mesh();
+        Mesh upper = new Mesh();
         List<Vector3> nodeTiles = new List<Vector3>();
         for (int x = 0; x < _sizex-1; x++)
             for (int y = 0; y < _sizey-1; y++)
@@ -268,42 +269,55 @@ public class ShipSpawner : MonoBehaviour {
 
                 if (nodeTiles.Count == 4)
                 {
-                    draft.Add(MeshDraft.Quad(nodeTiles[3], nodeTiles[2], nodeTiles[1], nodeTiles[0]));
+                    lowerDraft.Add(MeshDraft.Quad(nodeTiles[3], nodeTiles[2], nodeTiles[1], nodeTiles[0]));
+                    upperDraft.Add(MeshDraft.Quad(nodeTiles[3] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
                     //draft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[2], nodeTiles[3]));
                     
                 }
                 else if (nodeTiles.Count == 3)
                 {
-                    draft.Add(MeshDraft.Triangle(nodeTiles[2], nodeTiles[1], nodeTiles[0]));
+                    lowerDraft.Add(MeshDraft.Triangle(nodeTiles[2], nodeTiles[1], nodeTiles[0]));
+                    upperDraft.Add(MeshDraft.Triangle(nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
                     //Debug.Log(nodeTiles[0] + " x " + nodeTiles[1] + " x " + nodeTiles[2]);
-                    if(nodeTiles[0].x != nodeTiles[1].x && nodeTiles[0].z != nodeTiles[1].z)
+                    if (nodeTiles[0].x != nodeTiles[1].x && nodeTiles[0].z != nodeTiles[1].z)
                     {
-                        draft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up, nodeTiles[1] + Vector3.up, nodeTiles[1]));
-                        draft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] + Vector3.up, nodeTiles[0] + Vector3.up));
+                        upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up, nodeTiles[1] + Vector3.up, nodeTiles[1]));
+                        upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
                     }
                     else if (nodeTiles[0].x != nodeTiles[2].x && nodeTiles[0].z != nodeTiles[2].z)
                     {
-                        draft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up, nodeTiles[2] + Vector3.up, nodeTiles[2]));
-                        draft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[2], nodeTiles[2] + Vector3.up, nodeTiles[0] + Vector3.up));
+                        upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up, nodeTiles[2] + Vector3.up, nodeTiles[2]));
+                        upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[2], nodeTiles[2] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
                     }
                     else if (nodeTiles[1].x != nodeTiles[2].x && nodeTiles[1].z != nodeTiles[2].z)
                     {
-                        draft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[1] + Vector3.up, nodeTiles[2] + Vector3.up, nodeTiles[2]));
-                        draft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[2], nodeTiles[2] + Vector3.up, nodeTiles[1] + Vector3.up));
+                        upperDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[1] + Vector3.up, nodeTiles[2] + Vector3.up, nodeTiles[2]));
+                        upperDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[2], nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2));
                     }
                     
                     // add wall
                 }
                 else if (nodeTiles.Count == 2)
                 {
-                    draft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up, nodeTiles[1] + Vector3.up, nodeTiles[1]));
-                    draft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] + Vector3.up, nodeTiles[0] + Vector3.up));
+                    upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[1]));
+                    upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
                 }
-                    nodeTiles.Clear();
+                nodeTiles.Clear();
             }
-        draft.Move(Vector3.left * center.x + Vector3.forward * center.z);
-        m = draft.ToMesh();
-        _target.mesh = m;
+
+        lowerDraft.Move(Vector3.left * center.x + Vector3.forward * center.z);
+        upperDraft.Move(Vector3.left * center.x + Vector3.forward * center.z);
+        lower = lowerDraft.ToMesh();
+        upper = upperDraft.ToMesh();
+        _target.mesh = lower;
+
+        var uChild = new GameObject();
+        uChild.transform.SetParent(_target.transform);
+        uChild.transform.localPosition = Vector3.zero;
+        uChild.AddComponent<MeshFilter>().mesh = upper;
+        uChild.AddComponent<MeshRenderer>().material = _target.GetComponent<MeshRenderer>().material;
+        uChild.gameObject.layer = LayerMask.NameToLayer("ShipTop");
+        uChild.AddComponent<MeshCollider>().sharedMesh = upper;
     }
 
     static Vector3 positionOf(int x, int y)

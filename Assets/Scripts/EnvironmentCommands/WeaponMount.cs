@@ -58,24 +58,11 @@ public class WeaponMount : MovementBase, CmdObj {
     public override void ReleaseControl()
     {
         base.ReleaseControl();
-
-        //var t = NetworkHelper.Instance.AllPlayers.Find(m => m.PlayerId == InControl);
-        //currentOperator.SetMovementInput(this);
-        //currentOperator.MyInput.EventMouseDown -= MyInput_EventMouseDown;
+        
         InControl = -1;
         localCommand();
         currentOperator = null;
     }
-
-   /* private void MyInput_EventMouseDown(int index, bool isown)
-    {
-        // fire
-        if(isServer && ShipWeapon.CanFire())
-        {
-            RpcClientFire();
-            //ShipWeapon.FireWeapon();
-        }
-    }*/
 
     [ClientRpc]
     void RpcClientFire()
@@ -88,21 +75,32 @@ public class WeaponMount : MovementBase, CmdObj {
     void Start () {
         MouseLookAt = MountTarget.forward;
         Mounted.Invoke(false);
+        calculateLimits();
+    }
+
+    void calculateLimits()
+    {
+        var owner = GetComponentInParent<Ship>();
+        var localx = (int)transform.localPosition.x;
+        var localz = (int)transform.localPosition.z;
+        for(int i = localx -1; i <= localx +1; i++)
+            for(int j = localz-1; j <= localz + 1; j++)
+                {
+                    
+                    var ang = Vector3.Angle(transform.forward, Vector3.right * i + Vector3.forward * j - Vector3.right * localx + Vector3.forward * localz);
+                    if (i != localx && j != localz)
+                    {
+                        if (ang < LocalYMin)
+                            LocalYMin = ang;
+                        else if (ang > LocalYMax)
+                            LocalYMax = ang;
+                    }
+                }
     }
 
     // Update is called once per frame
     void Update () {
-		/*if(isServer && InControl >= 0)
-        {
-            LookTarget = MouseLookAt - MountTarget.position;
-            MountTarget.forward = Vector3.RotateTowards(MountTarget.forward, LookTarget.normalized, RotateSpeed * Time.deltaTime, RotateSpeed * Time.deltaTime);
 
-            var e = MountTarget.localEulerAngles;
-            e.x = 0;
-            e.z = 0;
-            e.y = Mathf.Clamp(Mathf.DeltaAngle(-e.y, 0), LocalYMin, LocalYMax);
-            MountTarget.localEulerAngles = e;
-        }*/
 	}
     float ClampAngle(float angle, float from, float to)
     {

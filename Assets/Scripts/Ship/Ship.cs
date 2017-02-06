@@ -41,7 +41,7 @@ public class Ship : NetworkBehaviour {
                         t[counter] = tiles[i, j];
                         counter++;
                     }
-                Debug.Log(output);
+                //Debug.Log(output);
                 RpcBuildShip(t, Sizex, Sizey);
             }
             NetworkSpawnObjects.ForEach(m => NetworkHelper.Instance.NetworkSpawnObject(m));
@@ -53,13 +53,12 @@ public class Ship : NetworkBehaviour {
     {
         child.transform.SetParent(parent.transform, true);
     }
-
     
     [ClientRpc]
     public void RpcBuildShip(int[] t, int sizex, int sizey)
     {
         var counter = 0;
-                var output = "";
+        var output = "";
         for (int i = 0; i < Sizex; i++)
             for (int j = 0; j < Sizey; j++)
             {
@@ -67,10 +66,11 @@ public class Ship : NetworkBehaviour {
                         output += tiles[i, j];
                 counter++;
             }
-                Debug.Log(output);
+                //Debug.Log(output);
 
         var mTarget = GetComponentInChildren<MeshFilter>();
-        mTarget.gameObject.AddComponent<MeshCollider>();
+        mTarget.gameObject.AddComponent<MeshCollider>().sharedMesh = mTarget.GetComponent<MeshFilter>().mesh;
+        mTarget.gameObject.layer = LayerMask.NameToLayer("Ship");
         ShipSpawner.ShipToMesh(mTarget, sizex, sizey, tiles);
     }
 
