@@ -187,6 +187,7 @@ public class ShipSpawner : MonoBehaviour {
     void createShipTest()
     {
         ShipToMesh(Target, Size.x, Size.y, tiles);
+        
     }
 
     int hasNeighbor(int x, int y)
@@ -217,11 +218,11 @@ public class ShipSpawner : MonoBehaviour {
                 controls[x, y] = -1;
             }
 
-        tiles[(int)center.x, (int)center.z] = 1;
-        tiles[(int)center.x+1, (int)center.z] = 1;
-        tiles[(int)center.x-1, (int)center.z] = 1;
-        tiles[(int)center.x, (int)center.z+1] = 1;
-        tiles[(int)center.x, (int)center.z-1] = 1;
+        for(int i = (int)center.x -2; i <= center.x + 2; i++)
+            for(int j = (int)center.z - 2; j <= center.z + 2; j++)
+            {
+                tiles[i, j] = 1;
+            }
     }
 
     void showControls()
