@@ -282,18 +282,27 @@ public class ShipSpawner : MonoBehaviour {
                     //Debug.Log(nodeTiles[0] + " x " + nodeTiles[1] + " x " + nodeTiles[2]);
                     if (nodeTiles[0].x != nodeTiles[1].x && nodeTiles[0].z != nodeTiles[1].z)
                     {
-                        upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up, nodeTiles[1] + Vector3.up, nodeTiles[1]));
+                        upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[1]));
                         upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
+
+                        lowerDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] - Vector3.up * 2, nodeTiles[1] - Vector3.up * 2, nodeTiles[1]));
+                        lowerDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] - Vector3.up * 2, nodeTiles[0] - Vector3.up * 2));
                     }
                     else if (nodeTiles[0].x != nodeTiles[2].x && nodeTiles[0].z != nodeTiles[2].z)
                     {
-                        upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up, nodeTiles[2] + Vector3.up, nodeTiles[2]));
+                        upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[2]));
                         upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[2], nodeTiles[2] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
+
+                        lowerDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] - Vector3.up * 2, nodeTiles[2] - Vector3.up, nodeTiles[2]));
+                        lowerDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[2], nodeTiles[2] - Vector3.up * 2, nodeTiles[0] - Vector3.up * 2));
                     }
                     else if (nodeTiles[1].x != nodeTiles[2].x && nodeTiles[1].z != nodeTiles[2].z)
                     {
-                        upperDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[1] + Vector3.up, nodeTiles[2] + Vector3.up, nodeTiles[2]));
+                        upperDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[2]));
                         upperDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[2], nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2));
+
+                        lowerDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[1] - Vector3.up * 2, nodeTiles[2] - Vector3.up * 2, nodeTiles[2]));
+                        lowerDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[2], nodeTiles[2] - Vector3.up * 2, nodeTiles[1] - Vector3.up * 2));
                     }
                     
                     // add wall
@@ -302,6 +311,9 @@ public class ShipSpawner : MonoBehaviour {
                 {
                     upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[1]));
                     upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
+
+                    lowerDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] - Vector3.up * 2, nodeTiles[1] - Vector3.up * 2, nodeTiles[1]));
+                    lowerDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] - Vector3.up * 2, nodeTiles[0] - Vector3.up * 2));
                 }
                 nodeTiles.Clear();
             }

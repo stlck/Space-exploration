@@ -20,7 +20,7 @@ public class StatBase : MonoBehaviour {
     // Update is called once per frame
     //[ServerCallback]
     void Update () {
-		if (CurrentHealth <= 0 && MyAvatar.Instance != null && MyAvatar.Instance.isServer)
+		if (CurrentHealth <= 0 && MyAvatar.Instance != null && MyAvatar.Instance.isServer && GetComponent<NetworkIdentity> () != null)
             NetworkServer.Destroy(gameObject);
 	}
 

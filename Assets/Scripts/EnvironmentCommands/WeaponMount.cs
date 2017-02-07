@@ -67,7 +67,7 @@ public class WeaponMount : MovementBase, CmdObj {
         base.ReleaseControl();
         
         InControl = -1;
-        localCommand();
+        Mounted.Invoke(false);
         currentOperator = null;
     }
 
@@ -80,11 +80,13 @@ public class WeaponMount : MovementBase, CmdObj {
 
     // Use this for initialization
     void Start () {
-        LocalYMin = LocalYMax = 0;
+        LocalYMin = -60;
+        LocalYMax = 60;
         MouseLookAt = MountTarget.forward;
         Mounted.Invoke(false);
-        calculateLimits();
+        setInitialRotation();
     }
+
     float calcAngle(int x, int y)
     {
         var norm = Vector3.right * (x) + Vector3.forward * (y);
@@ -96,130 +98,57 @@ public class WeaponMount : MovementBase, CmdObj {
 
         return angle;
     }
-    void calculateLimits()
+    
+    void setInitialRotation()
     {
+        // find out where the is solid behind gun. point the transform other way, limit to -60 -> 60
+        
+        // go clockwise until last 1, that is limit y min
         var owner = GetComponentInParent<Ship>();
         var center = Vector3.right * owner.Sizex / 2 + Vector3.forward * owner.Sizey / 2;
-        var localx = (int)transform.localPosition.x;
-        var localz = (int)transform.localPosition.z;
+        var localx = (int)transform.localPosition.x + (int)center.x;
+        var localz = (int)transform.localPosition.z + (int)center.z;
+        var top = true;
+        var bottom = true;
+        var left = true;
+        var right = true;
+        
+
         for (int i = -2; i <= 2; i++)
         {
-            if(owner.tiles[i + localx + (int)center.x, 2 + localz + (int)center.y] == 0)
-            {
-                var angle = calcAngle(i, 2);
-
-                if (angle < LocalYMin)
-                    LocalYMin = angle;
-                if (angle > LocalYMax)
-                    LocalYMax = angle;
-            }
-            else if (owner.tiles[i + localx + (int)center.x, -2 + localz + (int)center.y] == 0)
-            {
-                var angle = calcAngle(i, -2);
-
-                if (angle < LocalYMin)
-                    LocalYMin = angle;
-                if (angle > LocalYMax)
-                    LocalYMax = angle;
-            }
+            if (owner.tiles[localx + i, localz - 2] == 1)
+                bottom = false;
+            if (owner.tiles[localx + i, localz + 2] == 1)
+                top = false;
         }
         for (int j = -2; j <= 2; j++)
         {
-            if(owner.tiles[2 + localx + (int)center.x, j + localz + (int)center.y] == 0)
-            {
-                var angle = calcAngle(2,j);
-
-                if (angle < LocalYMin)
-                    LocalYMin = angle;
-                if (angle > LocalYMax)
-                    LocalYMax = angle;
-            }
-            if (owner.tiles[-2 + localx + (int)center.x, j + localz + (int)center.y] == 0)
-            {
-                var angle = calcAngle(-2,j);
-
-                if (angle < LocalYMin)
-                    LocalYMin = angle;
-                if (angle > LocalYMax)
-                    LocalYMax = angle;
-            }
-            //var ang = Vector3.Angle(transform.forward, Vector3.right * i + Vector3.forward * j - Vector3.right * localx + Vector3.forward * localz);
-            //if (i != localx && j != localz)
-            //{
-            //    if (ang < LocalYMin)
-            //        LocalYMin = ang;
-            //    else if (ang > LocalYMax)
-            //        LocalYMax = ang;
-            //}
+            if (owner.tiles[localx + 2, localz + j] == 1)
+                left = false;
+            if (owner.tiles[localx - 2, localz + j] == 1)
+                right = false;
         }
-    }
 
-    void calcAngleLimit2()
-    {
-        // find out where the is solid behind gun. point the transform other way, limit to -60 -> 60
+        if(top)
+        {
+            //transform.LookAt(transform.TransformPoint(Vector3.right + Vector3.forward));
+        }
+        else if(right)
+        {
+            transform.eulerAngles = Vector3.up * -90;
+            //transform.LookAt(transform.TransformPoint(Vector3.right));
+        }
+        else if(left)
+        {
+            transform.eulerAngles = Vector3.up * 90;
+            //transform.LookAt(transform.TransformPoint(Vector3.left));
 
-
-
-        // go clockwise until last 1, that is limit y min
-        //var owner = GetComponentInParent<Ship>();
-        //var center = Vector3.right * owner.Sizex / 2 + Vector3.forward * owner.Sizey / 2;
-        //var localx = (int)transform.localPosition.x + (int)center.x;
-        //var localz = (int)transform.localPosition.z + (int)center.y;
-        //var top = false;
-        //var bottom = false;
-        //var left = false;
-        //var right = false;
-        
-
-        //for (int i = -2; i <= 2; i++)
-        //{
-        //    if (owner.tiles[localx + i, localz - 2] == 1)
-        //        top = false;
-        //    if (owner.tiles[localx + i, localz + 2] == 1)
-        //        bottom = false;
-        //}
-        //for (int j = -2; j <= 2; j++)
-        //{
-        //    if (owner.tiles[localx + 2, localz + j] == 1)
-        //        left = false;
-        //    if (owner.tiles[localx - 2, localz + j] == 1)
-        //        right = false;
-        //}
-
-        //if(top)
-        //{
-        //    LocalYMin = -45;
-        //    LocalYMax = 45;
-        //    if(left)
-        //    {
-        //        LocalYMin -= 90;
-        //    }
-        //    if (right)
-        //    {
-        //        LocalYMax += 90;
-        //    }
-        //}
-        //else if(right)
-        //{
-        //    LocalYMin = 45;
-        //    LocalYMax = 135; // or -120?
-        //    if (bottom)
-        //        LocalYMax += 90;
-        //    if (bottom && left)
-        //        LocalYMax += 90;
-        //}
-        //else if(left)
-        //{
-        //    LocalYMin = -45;
-        //    LocalYMax = -135;
-        //    if (bottom)
-        //        LocalYMin -= 90;
-        //}
-        //else if(bottom)
-        //{
-        //    LocalYMin = 180 - 45;
-        //    LocalYMax = 180 + 45;
-        //}
+        }
+        else if(bottom)
+        {
+            //transform.LookAt(transform.TransformPoint(Vector3.back));
+            transform.eulerAngles = Vector3.up * 180;
+        }
     }
 
     // Update is called once per frame

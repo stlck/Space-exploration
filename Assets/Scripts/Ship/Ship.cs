@@ -24,6 +24,11 @@ public class Ship : NetworkBehaviour {
 
     public List<NetworkSpawnObject> NetworkSpawnObjects;
 
+    void Awake()
+    {
+        transform.localScale = Vector3.one * 2;
+    }
+
 	// Use this for initialization
 	void Start () {
 		if(isServer)
@@ -69,9 +74,10 @@ public class Ship : NetworkBehaviour {
                 //Debug.Log(output);
 
         var mTarget = GetComponentInChildren<MeshFilter>();
-        mTarget.gameObject.AddComponent<MeshCollider>().sharedMesh = mTarget.GetComponent<MeshFilter>().mesh;
-        mTarget.gameObject.layer = LayerMask.NameToLayer("Ship");
         ShipSpawner.ShipToMesh(mTarget, sizex, sizey, tiles);
+        mTarget.gameObject.AddComponent<MeshCollider>().sharedMesh = mTarget.GetComponent<MeshFilter>().mesh;
+        //mTarget.gameObject.GetComponent<MeshCollider>().convex = true;
+        mTarget.gameObject.layer = LayerMask.NameToLayer("Ship");
     }
 
     // Update is called once per frame

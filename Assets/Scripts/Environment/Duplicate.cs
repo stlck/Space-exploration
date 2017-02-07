@@ -26,32 +26,45 @@ public class Duplicate : MonoBehaviour
 
     }
     
+    public void ApplyForce(Vector3 origin, float force)
+    {
+        if( force > minForce)
+        {
+            doCollision();
+        }
+    }
+
     public void OnCollisionEnter(Collision collision)
     {
         if (enabled && !hit && collision.relativeVelocity.magnitude > minForce)
         {
-            /* transform.localScale = transform.localScale * .95f;
-             Health -= collision.relativeVelocity.magnitude;
-             if (rigidBody.isKinematic)
-                 rigidBody.isKinematic = false;*/
-            var pos = transform.position;
-            var scale = transform.localScale / 4f;
-            for (int i = 0; i < 2; i++)
-                for (int j = 0; j < 2; j++)
-                    for (int k = 0; k < 2; k++)
-                    {
-                        var t = Instantiate(transform, pos + scale.x * transform.right * i + scale.y * transform.up * j + scale.z * transform.forward * k, transform.rotation, transform.parent);
-                        t.localScale = transform.localScale / 2.05f;
-                        t.GetComponent<Duplicate>().enabled = false;
-                        t.GetComponent<Rigidbody>().isKinematic = false;
-                        t.GetComponent<Rigidbody>().mass = 2;
-                        if (t.gameObject.layer != LayerMask.NameToLayer("Ship"))
-                            t.gameObject.layer = LayerMask.NameToLayer("Ship");
-                        Destroy(t.gameObject, Random.Range(10, 30));
-                    }
-
-            Destroy(gameObject);
+            doCollision();
         }
+    }
+
+    void doCollision()
+    {
+        /* transform.localScale = transform.localScale * .95f;
+            Health -= collision.relativeVelocity.magnitude;
+            if (rigidBody.isKinematic)
+                rigidBody.isKinematic = false;*/
+        var pos = transform.position;
+        var scale = transform.localScale / 4f;
+        for (int i = 0; i < 2; i++)
+            for (int j = 0; j < 2; j++)
+                for (int k = 0; k < 2; k++)
+                {
+                    var t = Instantiate(transform, pos + scale.x * transform.right * i + scale.y * transform.up * j + scale.z * transform.forward * k, transform.rotation, transform.parent);
+                    t.localScale = transform.localScale / 2.05f;
+                    t.GetComponent<Duplicate>().enabled = false;
+                    t.GetComponent<Rigidbody>().isKinematic = false;
+                    t.GetComponent<Rigidbody>().mass = 2;
+                    if (t.gameObject.layer != LayerMask.NameToLayer("Ship"))
+                        t.gameObject.layer = LayerMask.NameToLayer("Ship");
+                    Destroy(t.gameObject, Random.Range(10, 30));
+                }
+
+        Destroy(gameObject);
     }
 
    /* void Update()

@@ -41,7 +41,7 @@ public class MoveAvator : MovementBase
 
             RaycastHit hit;
 
-            if (Physics.CheckBox(transform.position + forward.normalized + Vector3.down / 2, Vector3.forward + Vector3.up, transform.rotation, walkable.value) && 
+            if (Physics.CheckBox(transform.position + forward.normalized + Vector3.down / 2, Vector3.forward + Vector3.up, Quaternion.identity, walkable.value) && 
                 !Physics.Raycast( new Ray(transform.position, forward), .5f, walkable))
                 transform.position = transform.position + (forward * Time.deltaTime);
 
