@@ -28,22 +28,28 @@ public class Duplicate : MonoBehaviour
     
     public void ApplyForce(Vector3 origin, float force)
     {
-        if( force > minForce)
+        if(enabled )
         {
-            doCollision();
+            doCollision(origin, force);
         }
     }
 
     public void OnCollisionEnter(Collision collision)
     {
-        if (enabled && !hit && collision.relativeVelocity.magnitude > minForce)
+        if (enabled && !hit )// && collision.relativeVelocity.magnitude > minForce)
         {
-            doCollision();
+            doCollision(collision.contacts[0].point, collision.relativeVelocity.magnitude);
         }
     }
 
-    void doCollision()
+    void doCollision(Vector3 originPoint, float force)
     {
+        if (force < minForce)
+        {
+            transform.localScale = transform.localScale * .95f;
+            rigidBody.isKinematic = false;
+            return;
+        }
         /* transform.localScale = transform.localScale * .95f;
             Health -= collision.relativeVelocity.magnitude;
             if (rigidBody.isKinematic)
@@ -61,7 +67,7 @@ public class Duplicate : MonoBehaviour
                     t.GetComponent<Rigidbody>().mass = 2;
                     if (t.gameObject.layer != LayerMask.NameToLayer("Ship"))
                         t.gameObject.layer = LayerMask.NameToLayer("Ship");
-                    Destroy(t.gameObject, Random.Range(10, 30));
+                    Destroy(t.gameObject, Random.Range(20, 50));
                 }
 
         Destroy(gameObject);

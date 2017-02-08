@@ -46,20 +46,18 @@ public class BaseProjectile : MonoBehaviour
             }
         }
 
-        var point = collision.contacts[0].point;
+       /* var point = collision.contacts[0].point;
         var duplicates = Physics.OverlapSphere(point, HitRadius);
         Debug.Log("Found " + duplicates.Length);
         foreach(var d in duplicates)
         {
             if (d.GetComponent<Duplicate>() != null)
             {
-                Debug.Log("Setting iskinematic off");
-
                 d.GetComponent<Rigidbody>().isKinematic = false;
                 d.GetComponent<Rigidbody>().AddExplosionForce(ExplosionForce, point, HitRadius);
                 //d.GetComponent<Duplicate>().ApplyForce(collision.contacts[0].point, MoveSpeed - Vector3.Distance(point, d.transform.position));
             }
-        }
+        }*/
 
         if (HitEffect != null)
         {
