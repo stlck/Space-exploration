@@ -179,14 +179,14 @@ public class ShipSpawner : MonoBehaviour {
         GUILayout.EndScrollView();
         if (IsTesting && changed)
         {
-            ShipToMesh(Target, Size.x, Size.y, tiles);
+            ShipToMesh(Target.transform, Size.x, Size.y, tiles, Target.GetComponent<MeshRenderer>().material);
             showControls();
         }
     }
 
     void createShipTest()
     {
-        ShipToMesh(Target, Size.x, Size.y, tiles);
+        ShipToMesh(Target.transform, Size.x, Size.y, tiles, Target.GetComponent<MeshRenderer>().material);
         
     }
 
@@ -248,7 +248,7 @@ public class ShipSpawner : MonoBehaviour {
             }
     }
 
-    public static void ShipToMesh(MeshFilter _target, int _sizex, int _sizey, int[,] _tiles)
+    public static void ShipToMesh(Transform _target, int _sizex, int _sizey, int[,] _tiles, Material mat = null)
     {
         var center = new Vector3((int)_sizex / 2, 0, (int)_sizey / 2);
         MeshDraft lowerDraft = new MeshDraft();
@@ -322,13 +322,21 @@ public class ShipSpawner : MonoBehaviour {
         upperDraft.Move(Vector3.left * center.x + Vector3.forward * center.z);
         lower = lowerDraft.ToMesh();
         upper = upperDraft.ToMesh();
-        _target.mesh = lower;
+        //_target.mesh = lower;
+
+        var lChild = new GameObject();
+        lChild.transform.SetParent(_target);
+        lChild.transform.localPosition = Vector3.zero;
+        lChild.AddComponent<MeshFilter>().mesh = upper;
+        lChild.AddComponent<MeshRenderer>().material = mat;//_target.GetComponent<MeshRenderer>().material;
+        lChild.gameObject.layer = LayerMask.NameToLayer("Ship");
+        lChild.AddComponent<MeshCollider>().sharedMesh = upper;
 
         var uChild = new GameObject();
-        uChild.transform.SetParent(_target.transform);
+        uChild.transform.SetParent(_target);
         uChild.transform.localPosition = Vector3.zero;
         uChild.AddComponent<MeshFilter>().mesh = upper;
-        uChild.AddComponent<MeshRenderer>().material = _target.GetComponent<MeshRenderer>().material;
+        uChild.AddComponent<MeshRenderer>().material = mat;// _target.GetComponent<MeshRenderer>().material;
         uChild.gameObject.layer = LayerMask.NameToLayer("ShipTop");
         uChild.AddComponent<MeshCollider>().sharedMesh = upper;
     }

@@ -10,6 +10,7 @@ public class BaseProjectile : MonoBehaviour
     public float HitRadius = 3;
     public float ExplosionForce = 50;
     Rigidbody rb;
+    bool hasHit = false;
 
     void Awake()
     {
@@ -29,6 +30,9 @@ public class BaseProjectile : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+        if (hasHit) return;
+        hasHit = true;
+
         if ( MyAvatar.Instance.GetComponent<Collider>() == collision.collider)
         {
             Physics.IgnoreCollision(collision.collider, this.GetComponent<Collider>(), true);
@@ -46,18 +50,20 @@ public class BaseProjectile : MonoBehaviour
             }
         }
 
-       /* var point = collision.contacts[0].point;
+        var point = collision.contacts[0].point;
         var duplicates = Physics.OverlapSphere(point, HitRadius);
         Debug.Log("Found " + duplicates.Length);
         foreach(var d in duplicates)
         {
-            if (d.GetComponent<Duplicate>() != null)
+            if (d.gameObject != collision.gameObject && d.GetComponent<Duplicate>() != null)
             {
-                d.GetComponent<Rigidbody>().isKinematic = false;
-                d.GetComponent<Rigidbody>().AddExplosionForce(ExplosionForce, point, HitRadius);
+                d.GetComponent<Duplicate>().ApplyForce(point, ExplosionForce, HitRadius);// ExplosionForce * Vector3.Distance(d.transform.position, point) / HitRadius);
+
+                //d.GetComponent<Rigidbody>().isKinematic = false;
+//d.GetComponent<Rigidbody>().AddExplosionForce(ExplosionForce, point, HitRadius);
                 //d.GetComponent<Duplicate>().ApplyForce(collision.contacts[0].point, MoveSpeed - Vector3.Distance(point, d.transform.position));
             }
-        }*/
+        }
 
         if (HitEffect != null)
         {

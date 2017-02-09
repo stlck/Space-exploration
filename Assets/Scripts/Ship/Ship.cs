@@ -22,6 +22,8 @@ public class Ship : NetworkBehaviour {
     public int Sizex;
     public int Sizey;
 
+    public Material ShipMaterial;
+
     public List<NetworkSpawnObject> NetworkSpawnObjects;
 
     void Awake()
@@ -71,9 +73,9 @@ public class Ship : NetworkBehaviour {
                         output += tiles[i, j];
                 counter++;
             }
-                //Debug.Log(output);
+        //Debug.Log(output);
 
-        var mTarget = GetComponentInChildren<MeshFilter>();
+        var mTarget = transform;// GetComponentInChildren<MeshFilter>();
         ShipSpawner.ShipToMesh(mTarget, sizex, sizey, tiles);
         mTarget.gameObject.AddComponent<MeshCollider>().sharedMesh = mTarget.GetComponent<MeshFilter>().mesh;
         //mTarget.gameObject.GetComponent<MeshCollider>().convex = true;
