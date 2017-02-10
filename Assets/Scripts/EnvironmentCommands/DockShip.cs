@@ -44,6 +44,10 @@ public class DockShip : NetworkBehaviour, CmdObj, IShipSpawnObject
 
     public Transform AlignTo;
     public float maxTime = 0;
+    [SyncVar]
+    public int TilePositionX;
+    [SyncVar]
+    public int TilePositionY;
 
     // Use this for initialization
     void Start () {
@@ -67,5 +71,11 @@ public class DockShip : NetworkBehaviour, CmdObj, IShipSpawnObject
         mustHaveAZero.Add(new Vector2Int(1, 0));
         
         return mustHaveAZero;
+    }
+
+    public void SetTilePosition(Vector2Int position)
+    {
+        TilePositionX = position.x;
+        TilePositionY = position.y;
     }
 }

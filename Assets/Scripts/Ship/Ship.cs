@@ -51,7 +51,7 @@ public class Ship : NetworkBehaviour {
                 //Debug.Log(output);
                 RpcBuildShip(t, Sizex, Sizey);
             }
-            NetworkSpawnObjects.ForEach(m => NetworkHelper.Instance.NetworkSpawnObject(m));
+            //NetworkSpawnObjects.ForEach(m => NetworkHelper.Instance.NetworkSpawnObject(m));
         }
 	}
 
@@ -140,4 +140,5 @@ public class Ship : NetworkBehaviour {
 interface IShipSpawnObject
 {
     List<Vector2Int> TileConfig();
+    void SetTilePosition(Vector2Int position);
 }

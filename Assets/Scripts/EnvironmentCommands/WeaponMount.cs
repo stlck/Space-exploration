@@ -21,6 +21,11 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
     public ShipWeapon ShipWeapon;
     MyAvatar currentOperator;
 
+    [SyncVar]
+    public int TilePositionX;
+    [SyncVar]
+    public int TilePositionY;
+
     public bool canExecuteCommand()
     {
         return true;
@@ -87,18 +92,6 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
         Mounted.Invoke(false);
         setInitialRotation();
     }
-
-    float calcAngle(int x, int y)
-    {
-        var norm = Vector3.right * (x) + Vector3.forward * (y);
-        norm.Normalize();
-        var angle = Vector3.Angle(Vector3.forward, norm);
-        var cross = Vector3.Cross(Vector3.forward, norm);
-        if (cross.y < 0)
-            angle = -angle;
-
-        return angle;
-    }
     
     void setInitialRotation()
     {
@@ -107,8 +100,8 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
         // go clockwise until last 1, that is limit y min
         var owner = GetComponentInParent<Ship>();
         var center = Vector3.right * owner.Sizex / 2 + Vector3.forward * owner.Sizey / 2;
-        var localx = (int)transform.localPosition.x + (int)center.x;
-        var localz = (int)transform.localPosition.z + (int)center.z;
+        //var localx = (int)transform.localPosition.x + (int)center.x;
+        //var localz = (int)transform.localPosition.z + (int)center.z;
         var top = true;
         var bottom = true;
         var left = true;
@@ -117,16 +110,16 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
 
         for (int i = -2; i <= 2; i++)
         {
-            if (owner.tiles[localx + i, localz - 2] == 1)
+            if (owner.tiles[TilePositionX + i, TilePositionY - 2] == 1)
                 bottom = false;
-            if (owner.tiles[localx + i, localz + 2] == 1)
+            if (owner.tiles[TilePositionX + i, TilePositionY + 2] == 1)
                 top = false;
         }
         for (int j = -2; j <= 2; j++)
         {
-            if (owner.tiles[localx + 2, localz + j] == 1)
+            if (owner.tiles[TilePositionX + 2, TilePositionY + j] == 1)
                 left = false;
-            if (owner.tiles[localx - 2, localz + j] == 1)
+            if (owner.tiles[TilePositionX - 2, TilePositionY + j] == 1)
                 right = false;
         }
 
@@ -200,5 +193,11 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
         mustHaveAZero.Add(new Vector2Int(0, 1));
 
         return mustHaveAZero;
+    }
+
+    public void SetTilePosition(Vector2Int position)
+    {
+        TilePositionX = position.x;
+        TilePositionY = position.y;
     }
 }

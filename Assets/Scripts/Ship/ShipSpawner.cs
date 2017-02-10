@@ -78,6 +78,9 @@ public class ShipSpawner : MonoBehaviour {
                     spawn.PositionIsLocal = true;
                     spawn.Parent = s.gameObject;
                     s.NetworkSpawnObjects.Add(spawn);
+                    //NetworkSpawnObjects.ForEach(m => NetworkHelper.Instance.NetworkSpawnObject(m));
+                    var spawned = NetworkHelper.Instance.NetworkSpawnObject(spawn);
+                    spawned.GetComponent<IShipSpawnObject>().SetTilePosition(new Vector2Int(x, y));
                 }
 
         s.transform.position = position + Vector3.up / 2;
