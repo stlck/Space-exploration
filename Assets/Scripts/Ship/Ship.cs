@@ -76,8 +76,8 @@ public class Ship : NetworkBehaviour {
         //Debug.Log(output);
 
         var mTarget = transform;// GetComponentInChildren<MeshFilter>();
-        ShipSpawner.ShipToMesh(mTarget, sizex, sizey, tiles);
-        mTarget.gameObject.AddComponent<MeshCollider>().sharedMesh = mTarget.GetComponent<MeshFilter>().mesh;
+        ShipSpawner.ShipToMesh(mTarget, sizex, sizey, tiles,ShipMaterial);
+        //mTarget.gameObject.AddComponent<MeshCollider>().sharedMesh = mTarget.GetComponent<MeshFilter>().mesh;
         //mTarget.gameObject.GetComponent<MeshCollider>().convex = true;
         mTarget.gameObject.layer = LayerMask.NameToLayer("Ship");
     }

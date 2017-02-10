@@ -342,7 +342,8 @@ public class ShipSpawner : MonoBehaviour {
 
         var lChild = new GameObject();
         lChild.transform.SetParent(_target);
-        lChild.transform.localPosition = Vector3.zero;
+        lChild.transform.localPosition = Vector3.down * 2;
+        lChild.transform.localScale = Vector3.one;
         lChild.AddComponent<MeshFilter>().mesh = upper;
         lChild.AddComponent<MeshRenderer>().material = mat;//_target.GetComponent<MeshRenderer>().material;
         lChild.gameObject.layer = LayerMask.NameToLayer("Ship");
@@ -351,6 +352,7 @@ public class ShipSpawner : MonoBehaviour {
         var uChild = new GameObject();
         uChild.transform.SetParent(_target);
         uChild.transform.localPosition = Vector3.zero;
+        uChild.transform.localScale = Vector3.one;
         uChild.AddComponent<MeshFilter>().mesh = upper;
         uChild.AddComponent<MeshRenderer>().material = mat;// _target.GetComponent<MeshRenderer>().material;
         uChild.gameObject.layer = LayerMask.NameToLayer("ShipTop");

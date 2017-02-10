@@ -45,7 +45,7 @@ public class MoveAvator : MovementBase
 
                 if(Physics.Raycast(transform.position, Vector3.down, 2, walkable))
                 {
-                    grav -= Physics.gravity;
+                    grav += Physics.gravity;
                 }
                 else
                 {
@@ -54,6 +54,7 @@ public class MoveAvator : MovementBase
                 }
                 
                 charCtrl.Move((forward + right + grav) * Time.deltaTime);
+                 transform.LookAt(MouseLookAt);
             }
         }
         else if(isServer || isLocalPlayer && nTransform.lastSyncTime > Time.deltaTime)
