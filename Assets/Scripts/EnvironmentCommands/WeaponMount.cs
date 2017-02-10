@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class WeaponMount : MovementBase, CmdObj {
+public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
+{
 
     public float RotateSpeed = 3;
     [SyncVar]
@@ -188,5 +189,16 @@ public class WeaponMount : MovementBase, CmdObj {
         e.z = 0;
         e.y = Mathf.Clamp(Mathf.DeltaAngle(-e.y, 0), LocalYMin, LocalYMax);
         MountTarget.localEulerAngles = e;
+    }
+
+    public List<Vector2Int> TileConfig()
+    {
+        var mustHaveAZero = new List<Vector2Int>();
+        mustHaveAZero.Add(new Vector2Int(-1, 0));
+        mustHaveAZero.Add(new Vector2Int(1, 0));
+        mustHaveAZero.Add(new Vector2Int(0, -1));
+        mustHaveAZero.Add(new Vector2Int(0, 1));
+
+        return mustHaveAZero;
     }
 }

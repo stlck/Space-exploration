@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class DockShip : NetworkBehaviour, CmdObj
+public class DockShip : NetworkBehaviour, CmdObj, IShipSpawnObject
 {
     Ship ship;
     void Awake()
@@ -34,7 +34,12 @@ public class DockShip : NetworkBehaviour, CmdObj
 
     public void localCommand()
     {
-        
+        // de-/ex-pand drawbridge
+    }
+
+    void setAlignToTarget()
+    {
+        // depending on free tile
     }
 
     public Transform AlignTo;
@@ -42,8 +47,6 @@ public class DockShip : NetworkBehaviour, CmdObj
 
     // Use this for initialization
     void Start () {
-        //if (NetworkHelper.Instance != null)
-        //    NetworkHelper.Instance.SpawnObject(gameObject);
 	}
 	
 	// Update is called once per frame
@@ -55,5 +58,14 @@ public class DockShip : NetworkBehaviour, CmdObj
             else if (ship.Docking)
                 ship.Docking = false;
         }
+    }
+
+    public List<Vector2Int> TileConfig()
+    {
+        var mustHaveAZero = new List<Vector2Int>();
+        mustHaveAZero.Add(new Vector2Int(-1, 0));
+        mustHaveAZero.Add(new Vector2Int(1, 0));
+        
+        return mustHaveAZero;
     }
 }

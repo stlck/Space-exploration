@@ -147,14 +147,15 @@ public class ShipSpawner : MonoBehaviour {
                 {
                     if (tiles[x, y] == 1)
                     {
-                        if(hasNeighbor(x,y) == 4)
+                        //if(hasNeighbor(x,y) == 4)
+                        if(matchConfig(ControlList[currentControl], x, y))
                         {
                             if(controls[x, y] == -1)
                                 GUI.contentColor = Color.green;
                             else
                                 GUI.contentColor = Color.white;
 
-                            if (controls[x, y] == -1 && GUILayout.Button("x", GUILayout.Width(25)) && hasNeighbor(x, y) > 2)
+                            if (controls[x, y] == -1 && GUILayout.Button("x", GUILayout.Width(25)))// && hasNeighbor(x, y) > 2)
                             {
                                 controls[x, y] = currentControl;//ControlList.IndexOf(currentControl);
                                 changed = true;
@@ -182,6 +183,18 @@ public class ShipSpawner : MonoBehaviour {
             ShipToMesh(Target.transform, Size.x, Size.y, tiles, Target.GetComponent<MeshRenderer>().material);
             showControls();
         }
+    }
+
+    bool matchConfig(GameObject go, int x, int y)
+    {
+        var spawnobj = go.GetComponent<IShipSpawnObject>();
+        var config = spawnobj.TileConfig();
+
+        foreach (var c in config)
+            if (tiles[x + c.x, y + c.y] == 0)
+                return true;
+                
+        return false;
     }
 
     void createShipTest()

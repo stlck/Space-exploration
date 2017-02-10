@@ -136,3 +136,8 @@ public class Ship : NetworkBehaviour {
         ActiveStatus.Invoke(false);
     }
 }
+
+interface IShipSpawnObject
+{
+    List<Vector2Int> TileConfig();
+}
