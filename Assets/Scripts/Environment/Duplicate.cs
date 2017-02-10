@@ -61,7 +61,7 @@ public class Duplicate : MonoBehaviour
         {
             return false;
         }
-
+        
         hit = true;
         var pos = transform.position;
         var scale = transform.localScale / 4f;

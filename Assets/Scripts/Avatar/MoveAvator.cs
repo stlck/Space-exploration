@@ -8,10 +8,11 @@ public class MoveAvator : MovementBase
     public float StrafeSpeed = 2;
     public LayerMask walkable;
     public NetworkTransform nTransform;
+    CharacterController charCtrl;
 
     // Use this for initialization
     void Start () {
-
+        charCtrl = GetComponent<CharacterController>();
     }
 
     public void EnableMovement()
@@ -34,7 +35,28 @@ public class MoveAvator : MovementBase
 	// Update is called once per frame
 	void Update () {
         //if (PlayerState.Instance.CurrentState == States.Avatar)
-        if(isServer || isLocalPlayer && nTransform.lastSyncTime > Time.deltaTime)
+        if(charCtrl != null)
+        {
+            if(isServer || isLocalPlayer && nTransform.lastSyncTime > Time.deltaTime)
+            {
+                var forward = transform.forward * vert * ForwardSpeed;
+                var right = transform.right * hor * StrafeSpeed;
+                var grav = Vector3.zero;
+
+                if(Physics.Raycast(transform.position, Vector3.down, 2, walkable))
+                {
+                    grav -= Physics.gravity;
+                }
+                else
+                {
+                    forward /= 3;
+                    right /= 3;
+                }
+                
+                charCtrl.Move((forward + right + grav) * Time.deltaTime);
+            }
+        }
+        else if(isServer || isLocalPlayer && nTransform.lastSyncTime > Time.deltaTime)
         {
             var forward = transform.forward * vert * ForwardSpeed;
             var right = transform.right * hor * StrafeSpeed;
