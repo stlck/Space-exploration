@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Linq;
 
 public class Ship : NetworkBehaviour {
 
@@ -22,6 +23,9 @@ public class Ship : NetworkBehaviour {
     public int Sizex;
     public int Sizey;
 
+    public Transform WarpEffect;
+    public float WarpTime = 2f;
+    float warpTimer = 0f;
     public Material ShipMaterial;
 
     public List<NetworkSpawnObject> NetworkSpawnObjects;
@@ -29,13 +33,15 @@ public class Ship : NetworkBehaviour {
     void Awake()
     {
         transform.localScale = Vector3.one * 2;
+
     }
 
 	// Use this for initialization
-	void Start () {
-		if(isServer)
+	void Start ()
+    {
+        if (isServer)
         {
-            if(tiles.Length > 0)
+            if (tiles.Length > 0)
             {
                 var t = new int[Sizex * Sizey];
                 int counter = 0;
@@ -44,16 +50,16 @@ public class Ship : NetworkBehaviour {
                     for (int j = 0; j < Sizey; j++)
                     {
                         output += tiles[i, j];
-                        
+
                         t[counter] = tiles[i, j];
                         counter++;
                     }
                 //Debug.Log(output);
-                RpcBuildShip(t, Sizex, Sizey);
+                RpcBuildShip(output, Sizex, Sizey);
             }
-            //NetworkSpawnObjects.ForEach(m => NetworkHelper.Instance.NetworkSpawnObject(m));
         }
-	}
+
+    }
 
     [ClientRpc]
     void RpcParentToTransform(GameObject parent, GameObject child)
@@ -62,24 +68,61 @@ public class Ship : NetworkBehaviour {
     }
     
     [ClientRpc]
-    public void RpcBuildShip(int[] t, int sizex, int sizey)
+    public void RpcBuildShip(string shipString, int sizex, int sizey)
     {
         var counter = 0;
         var output = "";
+        Sizex = sizex;
+        Sizey = sizey;
+
+        int[] t = new int [ shipString.Length];
+        tiles = new int[sizex, sizey];
+        for (int i = 0; i < shipString.Length; i++)
+            t[i] = (int)char.GetNumericValue(shipString[i]);
+
         for (int i = 0; i < Sizex; i++)
             for (int j = 0; j < Sizey; j++)
             {
                 tiles[i, j] = t[counter];
-                        output += tiles[i, j];
+                output += tiles[i, j];
                 counter++;
             }
-        //Debug.Log(output);
+        Debug.Log(shipString);
+        Debug.Log(output);
 
         var mTarget = transform;// GetComponentInChildren<MeshFilter>();
         ShipSpawner.ShipToMesh(mTarget, sizex, sizey, tiles,ShipMaterial);
-        //mTarget.gameObject.AddComponent<MeshCollider>().sharedMesh = mTarget.GetComponent<MeshFilter>().mesh;
-        //mTarget.gameObject.GetComponent<MeshCollider>().convex = true;
         mTarget.gameObject.layer = LayerMask.NameToLayer("Ship");
+    }
+
+    public void WarpTo(Vector3 Position)
+    {
+        if (isServer)
+        {
+            ServerWarp(Position);
+        }
+        else
+            MyAvatar.Instance.CmdWarpShip(netId, Position);
+    }
+
+    [Server]
+    public void ServerWarp(Vector3 Position)
+    {
+        Warping = true;
+        WarpPosition = Position;
+        warpTimer = 0f;
+
+        RpcDoWarpEffect();
+    }
+
+    [ClientRpc]
+    public void RpcDoWarpEffect()
+    {
+        if(WarpEffect != null)
+        { 
+            var e = Instantiate(WarpEffect, transform.position, WarpEffect.rotation);
+            Destroy(e.gameObject, WarpTime + 1);
+        }
     }
 
     // Update is called once per frame
@@ -88,7 +131,13 @@ public class Ship : NetworkBehaviour {
 
         if (Warping)
         {
-            var sign = Vector3.Cross(transform.forward, WarpPosition - transform.position).z < 0 ? -1: 1;
+            warpTimer += Time.deltaTime;
+            if(warpTimer >= WarpTime)
+            {
+                Warping = false;
+                transform.position = WarpPosition;
+            }
+           /* var sign = Vector3.Cross(transform.forward, WarpPosition - transform.position).z < 0 ? -1: 1;
             transform.Rotate(Vector3.up, Mathf.Clamp(sign * Vector3.Angle(transform.forward, WarpPosition - transform.position),-ShipMovement.RotateSpeed,ShipMovement.RotateSpeed) * Time.deltaTime);
             //transform.forward = Vector3.RotateTowards(transform.forward, transform.position - WarpPosition, 0, );
             if(Vector3.Angle(transform.forward, WarpPosition - transform.position) < 10)
@@ -106,10 +155,10 @@ public class Ship : NetworkBehaviour {
                     Warping = false;
                     CurrentSpeed = 0;
                 }
-            }
+            }*/
         }
 
-        if(Docking)
+        else if(Docking)
         {
             transform.position = Vector3.MoveTowards(transform.position, AlignToTarget.position, 5 * Time.deltaTime);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, AlignToTarget.rotation, 10 * Time.deltaTime);

@@ -54,7 +54,7 @@ public class MoveAvator : MovementBase
                 }
                 
                 charCtrl.Move((forward + right + grav) * Time.deltaTime);
-                 transform.LookAt(MouseLookAt);
+                transform.LookAt(MouseLookAt);
             }
         }
         else if(isServer || isLocalPlayer && nTransform.lastSyncTime > Time.deltaTime)

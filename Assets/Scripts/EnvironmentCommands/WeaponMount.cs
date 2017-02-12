@@ -20,11 +20,15 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
 
     public ShipWeapon ShipWeapon;
     MyAvatar currentOperator;
+    Ship owner;
+    bool rotationSet = false;
 
     [SyncVar]
     public int TilePositionX;
     [SyncVar]
     public int TilePositionY;
+    [SyncVar]
+    public Vector3 CurrentEulers;
 
     public bool canExecuteCommand()
     {
@@ -35,11 +39,11 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
     {
         if (ShipWeapon == null)
             return;
-        if(InControl == senderId)
+        if (InControl == senderId)
         {
             currentOperator = null;
         }
-        else if(InControl == -1)
+        else if (InControl == -1)
         {
             InControl = senderId;
 
@@ -52,7 +56,7 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
 
     public void localCommand()
     {
-        if(ShipWeapon == null)
+        if (ShipWeapon == null)
         {
             //show weapon list
             // send equip command to server
@@ -71,7 +75,7 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
     public override void ReleaseControl()
     {
         base.ReleaseControl();
-        
+
         InControl = -1;
         Mounted.Invoke(false);
         currentOperator = null;
@@ -85,18 +89,19 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
     }
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         LocalYMin = -60;
         LocalYMax = 60;
         MouseLookAt = MountTarget.forward;
         Mounted.Invoke(false);
-        setInitialRotation();
+        owner = GetComponentInParent<Ship>();
     }
-    
+
     void setInitialRotation()
     {
         // find out where the is solid behind gun. point the transform other way, limit to -60 -> 60
-        
+
         // go clockwise until last 1, that is limit y min
         var owner = GetComponentInParent<Ship>();
         var center = Vector3.right * owner.Sizex / 2 + Vector3.forward * owner.Sizey / 2;
@@ -106,7 +111,7 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
         var bottom = true;
         var left = true;
         var right = true;
-        
+
 
         for (int i = -2; i <= 2; i++)
         {
@@ -123,32 +128,40 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
                 right = false;
         }
 
-        if(top)
+        if (top)
         {
+            transform.eulerAngles = Vector3.up * 180;
             //transform.LookAt(transform.TransformPoint(Vector3.right + Vector3.forward));
         }
-        else if(right)
+        else if (right)
         {
             transform.eulerAngles = Vector3.up * -90;
             //transform.LookAt(transform.TransformPoint(Vector3.right));
         }
-        else if(left)
+        else if (left)
         {
             transform.eulerAngles = Vector3.up * 90;
             //transform.LookAt(transform.TransformPoint(Vector3.left));
 
         }
-        else if(bottom)
+        else if (bottom)
         {
             //transform.LookAt(transform.TransformPoint(Vector3.back));
-            transform.eulerAngles = Vector3.up * 180;
         }
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update()
+    {
+        if(!rotationSet && owner.tiles != null && owner.tiles.Length >0)
+        {
+            rotationSet = true;
+            setInitialRotation();
+        }
 
-	}
+        //if (MountTarget.localEulerAngles != CurrentEulers)
+            MountTarget.localEulerAngles = CurrentEulers;
+    }
 
     float ClampAngle(float angle, float from, float to)
     {
@@ -163,7 +176,7 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
     {
         base.SetMouseDown(val);
 
-        if(val && ShipWeapon.CanFire())
+        if (val && ShipWeapon.CanFire())
         {
             RpcClientFire();
             //ShipWeapon.FireWeapon();
@@ -181,7 +194,8 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
         e.x = 0;
         e.z = 0;
         e.y = Mathf.Clamp(Mathf.DeltaAngle(-e.y, 0), LocalYMin, LocalYMax);
-        MountTarget.localEulerAngles = e;
+        //MountTarget.localEulerAngles = e;
+        CurrentEulers = e;
     }
 
     public List<Vector2Int> TileConfig()
@@ -200,4 +214,6 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
         TilePositionX = position.x;
         TilePositionY = position.y;
     }
+
+
 }

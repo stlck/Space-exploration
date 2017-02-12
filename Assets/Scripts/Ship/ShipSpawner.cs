@@ -61,6 +61,32 @@ public class ShipSpawner : MonoBehaviour {
             Show = false;
     }
 
+    public static void FromClientCreateShip(string shipString, string controlString, int sizex, int sizey, Vector3 pos, Quaternion rotation)
+    {
+        int[] t = new int[shipString.Length];
+        var tiles = new int[sizex, sizey];
+        for (int i = 0; i < shipString.Length; i++)
+            t[i] = (int)char.GetNumericValue(shipString[i]);
+
+        int[] c = new int[controlString.Length];
+        var controls = new int[sizex, sizey];
+        for (int i = 0; i < controlString.Length; i++)
+            c[i] = (int)char.GetNumericValue(controlString[i]);
+
+
+        int counter = 0;
+
+        for (int i = 0; i < sizex; i++)
+            for (int j = 0; j < sizey; j++)
+            {
+                tiles[i, j] = t[counter];
+                controls[i, j] = c[counter];
+                counter++;
+            }
+
+        SrvCreateShip(tiles, controls, sizex, sizey, pos, rotation);
+    }
+
     public static void SrvCreateShip(int[,] t, int[,] c, int sizex, int sizey, Vector3 position, Quaternion rotation)
     {
         var baseShip = Resources.Load<Ship>("BaseShip");
@@ -70,10 +96,10 @@ public class ShipSpawner : MonoBehaviour {
 
         for (int y = 1; y < sizey - 1; y++)
             for (int x = 1; x < sizex - 1; x++)
-                if (c[x, y] >= 0)
+                if (c[x, y] >= 1)
                 {
                     var spawn = new NetworkSpawnObject();
-                    spawn.SpawnTarget = ControlList[c[x, y]];
+                    spawn.SpawnTarget = ControlList[c[x, y] -1];
                     spawn.Position = positionOf(x, y) + Vector3.left * center.x + Vector3.forward * center.z;
                     spawn.PositionIsLocal = true;
                     spawn.Parent = s.gameObject;
@@ -91,38 +117,51 @@ public class ShipSpawner : MonoBehaviour {
         s.Sizey = sizey;
     }
 
-    public void OnGUI()
+    void buildWindow(int id)
     {
-        if (!Show) return;
-
         scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true);
         changed = false;
 
         if (GUILayout.Button("RESET"))
             reset();
 
-        if (GUILayout.Button("Cmd! Create Ship"))
-            MyAvatar.Instance.CmdSpawnShip(tiles, controls, Size.x, Size.y, TargetDock.DockAlign.position, TargetDock.DockAlign.rotation);//createShip();
+        if (GUILayout.Button("Cmd! Create Ship")) { 
+            if(MyAvatar.Instance.isServer)
+                SrvCreateShip(tiles, controls, Size.x, Size.y, TargetDock.DockAlign.position, TargetDock.DockAlign.rotation);//createShip();
+            else
+            {
+                var shipString = "";
+                var ctrlString = "";
+                for(int row =0; row < Size.x;row++)
+                    for(int col = 0; col < Size.y; col++)
+                    {
+                        ctrlString += controls[row, col];
+                        shipString += tiles[row, col];
+                    }
+
+                MyAvatar.Instance.CmdSpawnShip(shipString, ctrlString, Size.x, Size.y, TargetDock.DockAlign.position, TargetDock.DockAlign.rotation);
+            }
+        }
 
         if (GUILayout.Button("test create ship2"))
             createShipTest();
 
-        doGround = GUILayout.Toggle(doGround,doGround ? "HULL" : "Controls");
-        if(doGround)
-        { 
+        doGround = GUILayout.Toggle(doGround, doGround ? "SHOWING HULL" : "SHOWING Controls");
+        if (doGround)
+        {
             for (int y = 1; y < Size.y - 1; y++)
             {
                 GUILayout.BeginHorizontal();
-                for (int x = 1; x < Size.x-1; x++)
+                for (int x = 1; x < Size.x - 1; x++)
                 {
                     if (y == center.z && x == center.x)
                         GUI.contentColor = Color.green;
-                    else if(tiles[x,y] > 0)
+                    else if (tiles[x, y] > 0)
                         GUI.contentColor = Color.white;
                     else
                         GUI.contentColor = Color.grey;
 
-                    if (GUILayout.Button(tiles[x, y].ToString(), GUILayout.Width(25)) && hasNeighbor(x,y) > 0)
+                    if (GUILayout.Button(tiles[x, y].ToString(), GUILayout.Width(25)) && hasNeighbor(x, y) > 0)
                     {
                         tiles[x, y] = tiles[x, y] == 1 ? 0 : 1;
                         if (tiles[x, y] == 0)
@@ -133,12 +172,13 @@ public class ShipSpawner : MonoBehaviour {
                 GUILayout.EndHorizontal();
             }
         }
-        else {
-            int index = 0;
+        else
+        {
+            int index = 1;
             foreach (var c in ControlList)
-            { 
+            {
                 if (GUILayout.Button(index + ":\t" + c.name))
-                { 
+                {
                     currentControl = index;
                 }
                 index++;
@@ -146,14 +186,14 @@ public class ShipSpawner : MonoBehaviour {
             for (int y = 1; y < Size.y - 1; y++)
             {
                 GUILayout.BeginHorizontal();
-                for (int x = 1; x < Size.x-1; x++)
+                for (int x = 1; x < Size.x - 1; x++)
                 {
                     if (tiles[x, y] == 1)
                     {
                         //if(hasNeighbor(x,y) == 4)
-                        if(matchConfig(ControlList[currentControl], x, y))
+                        if (matchConfig(ControlList[currentControl], x, y))
                         {
-                            if(controls[x, y] == -1)
+                            if (controls[x, y] == -1)
                                 GUI.contentColor = Color.green;
                             else
                                 GUI.contentColor = Color.white;
@@ -163,7 +203,8 @@ public class ShipSpawner : MonoBehaviour {
                                 controls[x, y] = currentControl;//ControlList.IndexOf(currentControl);
                                 changed = true;
                             }
-                            else if (controls[x, y] >= 0 && GUILayout.Button(controls[x, y].ToString(), GUILayout.Width(25))) { 
+                            else if (controls[x, y] >= 0 && GUILayout.Button(controls[x, y].ToString(), GUILayout.Width(25)))
+                            {
                                 controls[x, y] = -1;
                                 changed = true;
                             }
@@ -188,10 +229,20 @@ public class ShipSpawner : MonoBehaviour {
         }
     }
 
+    public void OnGUI()
+    {
+        if (!Show) return;
+
+        GUILayout.Window(4, new Rect(300, 100, 400, 500), buildWindow, "SHIP");
+    }
+
     bool matchConfig(GameObject go, int x, int y)
     {
         var spawnobj = go.GetComponent<IShipSpawnObject>();
         var config = spawnobj.TileConfig();
+
+        if (config.Count == 0)
+            return true;
 
         foreach (var c in config)
             if (tiles[x + c.x, y + c.y] == 0)

@@ -7,10 +7,11 @@ using System.Linq;
 public class ActivateShip : MonoBehaviour//, CmdObj
 {
     public Ship TargetShip;
-
+    MovementBase shipMovement;
     void Start()
     {
         TargetShip = GetComponentInParent<Ship>();
+        shipMovement = TargetShip.GetComponent<MovementBase>();
     }
 
     public void OnMouseUp()

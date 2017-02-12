@@ -94,15 +94,16 @@ public class MyAvatar : NetworkBehaviour
 
         if(isLocalPlayer)
         {
-            if(CurrentState == States.OnShip && Input.GetKeyDown(KeyCode.Escape) && CurrentMovementBase != null)
+            if(CurrentState == States.OnShip && Input.GetKeyDown(KeyCode.Escape))// && CurrentMovementBase != null)
             {
                 CmdDefaultMovementInput();
-                //SetMovementInput(CurrentMovementBase);
-                //CmdReleaseShip();
             }
         }
         if(isServer)
         {
+            if (transform.position.y < 0f)
+                transform.position += Vector3.up * Mathf.Abs(transform.position.y);
+
             //Debug.Log("Is server, handling movement");
             if(CurrentMovementBase != null)
             { 
@@ -183,9 +184,17 @@ public class MyAvatar : NetworkBehaviour
     }
 
     [Command]
-    public void CmdSpawnShip(int[,] t, int[,] c, int sizex, int sizey, Vector3 position, Quaternion rotation)
+    public void CmdSpawnShip(string t, string c, int sizex, int sizey, Vector3 position, Quaternion rotation)
     {
-        ShipSpawner.SrvCreateShip(t, c, sizex, sizey, position, rotation);
+        ShipSpawner.FromClientCreateShip(t, c, sizex, sizey, position, rotation);
+    }
+
+    [Command]
+    public void CmdWarpShip(NetworkInstanceId targetShip, Vector3 target)
+    {
+        var s = NetworkServer.FindLocalObject(targetShip);
+        if (s != null)
+            s.GetComponent<Ship>().ServerWarp(target);
     }
 }
 

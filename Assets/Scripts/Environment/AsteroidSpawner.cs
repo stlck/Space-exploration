@@ -182,6 +182,8 @@ public class AsteroidSpawner {
 
         lower.transform.SetParent(owner);
         lower.name = "lower region";
+        lower.layer = LayerMask.NameToLayer("Ship");
+        upper.layer = LayerMask.NameToLayer("ShipTop");
 
         upper.transform.SetParent(owner);
         upper.name = "upper region";
@@ -221,15 +223,14 @@ public class AsteroidSpawner {
                         addTileToWorld(i, j, k, upper.transform);
                 }
 
-        
-        lower.transform.localPosition = Vector3.down * y;
-        lower.layer = LayerMask.NameToLayer("Ship");
-        upper.transform.localPosition = Vector3.down * y;
-        upper.layer = LayerMask.NameToLayer("ShipTop");
+
+        lower.transform.localPosition = Vector3.down * y + Vector3.down / 2f;
+        upper.transform.localPosition = Vector3.down * y + Vector3.down / 2f;
     }
 
     void addTileToWorld(int x, int y, int z, Transform parent)
     {
-        MonoBehaviour.Instantiate(tileSet.GroundTiles[LocationTileSet.GetRandom()], new Vector3(x, y, z), Quaternion.identity, parent);
+        var c = MonoBehaviour.Instantiate(tileSet.GroundTiles[LocationTileSet.GetRandom()], new Vector3(x, y, z), Quaternion.identity, parent);
+        c.gameObject.layer = parent.gameObject.layer;
     }
 }

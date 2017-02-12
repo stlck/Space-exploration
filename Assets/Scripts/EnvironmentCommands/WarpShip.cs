@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class WarpShip : MonoBehaviour {
+public class WarpShip : NetworkBehaviour, IShipSpawnObject {
 
     public Rect MapRect;
     bool showMap = false;
@@ -24,24 +26,30 @@ public class WarpShip : MonoBehaviour {
     {
         if (GUILayout.Button("close"))
             showMap = false;
-        GUILayout.Label("Host only");
+        //GUILayout.Label("Host only");
 
-        if (MyAvatar.Instance.Identity.isServer)
+        //if (MyAvatar.Instance.Identity.isServer)
         foreach(var l in MyAvatar.Instance.EnvironmentCreator.MyLocations)
         {
-            if (GUILayout.Button(l.Name))
-                warpTo(l);
+                if (GUILayout.Button(l.Name))
+                    owningShip.WarpTo(l.Position - Vector3.right * 20);
+                //MyAvatar.Instance.CmdWarpShip(owningShip, l.Position);
         }
-    }
-
-    void warpTo(Location l)
-    {
-        owningShip.Warping = true;
-        owningShip.WarpPosition = l.Position;
     }
 
     public void OnMouseUp()
     {
         showMap = !showMap;
+    }
+
+    public List<Vector2Int> TileConfig()
+    {
+        // not needed,
+        return new List<Vector2Int>();
+    }
+
+    public void SetTilePosition(Vector2Int position)
+    {
+        // not needed,
     }
 }
