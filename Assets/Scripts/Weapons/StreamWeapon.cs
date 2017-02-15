@@ -5,7 +5,8 @@ using UnityEngine;
 public class StreamWeapon : BaseWeapon {
 
     public ParticleSystem VisualEffects;
-    
+    public float Range = 15;
+    public float Width = 2;
     public override void FireWeapon()
     {
         base.FireWeapon();
@@ -13,7 +14,7 @@ public class StreamWeapon : BaseWeapon {
         VisualEffects.Play();
 
         
-        var hits = Physics.SphereCastAll(transform.position + transform.forward * 1.8f, 2, transform.forward);
+        var hits = Physics.SphereCastAll(transform.position + transform.forward * Width * 1.1f, Width, transform.forward, Range);
         foreach (var h in hits)
         {
             var s = h.transform.GetComponent<StatBase>();

@@ -16,17 +16,20 @@ public class DrawInstanced : MonoBehaviour {
         }
     }
 
-    public List<Dictionary<Transform,Matrix4x4>> ToDraw = new List<Dictionary<Transform, Matrix4x4>>();
+    //public List<Dictionary<Transform,Matrix4x4>> ToDraw = new List<Dictionary<Transform, Matrix4x4>>();
+    Dictionary<Material, List<DrawContainer>> allContainers = new Dictionary<Material, List<DrawContainer>>();
     
     public Mesh TargetMesh;
     public Material TargetMaterial;
 
     int currentIndex = 0;
-
+    MaterialPropertyBlock propBlock;
     void Awake()
     {
         instance = this;
-        ToDraw.Add(new Dictionary<Transform, Matrix4x4>());
+        allContainers = new Dictionary<Material, List<DrawContainer>>();
+        propBlock = new MaterialPropertyBlock();
+        //ToDraw.Add(new Dictionary<Transform, Matrix4x4>());
     }
 
 	// Use this for initialization
@@ -36,34 +39,115 @@ public class DrawInstanced : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        
-		//foreach(var l in ToDraw)
-        for(int i = 0; i < ToDraw.Count; i++)
+        foreach(var c in allContainers)
         {
-            Graphics.DrawMeshInstanced(TargetMesh, 0, TargetMaterial, ToDraw[i].Values.ToArray());
+            foreach(var l in c.Value)
+            {
+                if(l.Updated)
+                {
+                    l.Matrixes = l.ToDraw.Values.ToArray();
+                    l.Updated = false;
+                }
+
+                Graphics.DrawMeshInstanced(TargetMesh, 0, c.Key, l.Matrixes, l.Matrixes.Count(), propBlock, UnityEngine.Rendering.ShadowCastingMode.On,true,l.Layer);
+            }
         }
+            
+		//foreach(var l in ToDraw)
+        //for(int i = 0; i < ToDraw.Count; i++)
+        //{
+        //    Graphics.DrawMeshInstanced(TargetMesh, 0, TargetMaterial, ToDraw[i].Values.ToArray());
+        //}
 	}
 
-    public int AddToDraw(Transform addMe)
+    public int AddToDraw(Transform addMe, Material mat = null)
     {
-        if (ToDraw[currentIndex].Count > 1020)
+        if(!allContainers.ContainsKey(mat))
         {
-            ToDraw.Add(new Dictionary<Transform, Matrix4x4>());
-            currentIndex++;
+            var newContainers = new List<DrawContainer>();
+            var newContainer = new DrawContainer(mat, addMe.gameObject.layer);
+            newContainer.AddToContainer(addMe);
+            newContainers.Add(newContainer);
+            allContainers.Add(mat, newContainers);
+            return 0;
+        }
+        else if(allContainers[mat].Last().Count > 1020)
+        {
+            var newContainer = new DrawContainer(mat, addMe.gameObject.layer);
+            newContainer.AddToContainer(addMe);
+            allContainers[mat].Add(newContainer);
+            return allContainers[mat].Count() -1;
+        }
+        else
+        {
+            allContainers[mat].Last().AddToContainer(addMe);
+            return allContainers[mat].Count() - 1;
+        }
+        //if (ToDraw[currentIndex].Count > 1020)
+        //{
+        //    ToDraw.Add(new Dictionary<Transform, Matrix4x4>());
+        //    currentIndex++;
+        //}
+
+        //ToDraw[currentIndex].Add(addMe, addMe.localToWorldMatrix);
+
+        //return currentIndex;
+    }
+
+    public void UpdateMatrix(Transform update, int collection, Material mat = null)
+    {
+        //ToDraw[collection][update] = update.localToWorldMatrix;
+        allContainers[mat][collection].UpdateMatrix(update);
+    }
+
+    public void RemoveFromDraw(Transform removeMe, int collection, Material mat = null)
+    {
+        //ToDraw[collection].Remove(removeMe);
+        allContainers[mat][collection].RemoveFromDraw(removeMe);
+    }
+
+    public class DrawContainer
+    {
+        public Material TargetMaterial;
+        public Dictionary<Transform, Matrix4x4> ToDraw;
+        public int Layer;
+        public int Count = 0;
+        public bool Updated = false;
+        public Matrix4x4[] Matrixes;
+        int currentIndex = 0;
+
+        public DrawContainer(Material mat, int l)
+        {
+            TargetMaterial = mat;
+            Layer = l;
+            ToDraw = new Dictionary<Transform, Matrix4x4>();
+            //ToDraw.Add(new Dictionary<Transform, Matrix4x4>());
         }
 
-        ToDraw[currentIndex].Add(addMe, addMe.localToWorldMatrix);
+        public void AddToContainer(Transform addMe)
+        {
+            //if (ToDraw[currentIndex].Count > 1020)
+            //{
+            //    ToDraw.Add(new Dictionary<Transform, Matrix4x4>());
+            //    currentIndex++;
+            //}
 
-        return currentIndex;
-    }
+            ToDraw/*[currentIndex]*/.Add(addMe, addMe.localToWorldMatrix);
+            Count++;
+            Updated = true;
+        }
 
-    public void UpdateMatrix(Transform update, int collection)
-    {
-        ToDraw[collection][update] = update.localToWorldMatrix;
-    }
+        public void UpdateMatrix(Transform update)
+        {
+            ToDraw[update] = update.localToWorldMatrix;
+            Updated = true;
+        }
 
-    public void RemoveFromDraw(Transform removeMe, int collection)
-    {
-        ToDraw[collection].Remove(removeMe);
+        public void RemoveFromDraw(Transform removeMe)
+        {
+            ToDraw.Remove(removeMe);
+            Count--;
+            Updated = true;
+        }
     }
 }

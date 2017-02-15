@@ -8,21 +8,23 @@ public class InstanceMe : MonoBehaviour {
     bool moved;
     Vector3 position;
 
+    public Material Material;
+
     void OnDisable()
     {
-        DrawInstanced.Instance.RemoveFromDraw(transform, collection);
+        DrawInstanced.Instance.RemoveFromDraw(transform, collection, Material);
     }
 
 	// Use this for initialization
 	void Start () {
-        collection = DrawInstanced.Instance.AddToDraw(transform);
+        collection = DrawInstanced.Instance.AddToDraw(transform, Material);
     }
 	
 	// Update is called once per frame
 	void Update () {
 		if(position != transform.position)
         {
-            DrawInstanced.Instance.UpdateMatrix(transform, collection);
+            DrawInstanced.Instance.UpdateMatrix(transform, collection, Material);
             position = transform.position;
         }
 	}

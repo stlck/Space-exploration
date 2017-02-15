@@ -118,16 +118,16 @@ public class StationSpawner
                     for (int y = 0; y < 5; y++)
                     {
                         var t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
-                        t.gameObject.layer = LayerMask.NameToLayer("Ship");
+                        //t.gameObject.layer = LayerMask.NameToLayer("Ship");
                     }
 
                 }
                 else if (map[i, j] > 0)
                 {
                     var t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down,Quaternion.identity, parent.transform);
-                    t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
+                    //t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
                     t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5 , Quaternion.identity, parent.transform);
-                    t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
+                    //t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
                 }
             }
     }

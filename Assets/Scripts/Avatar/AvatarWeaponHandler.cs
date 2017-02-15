@@ -17,8 +17,13 @@ public class AvatarWeaponHandler : NetworkBehaviour
 
     public override void OnStartLocalPlayer()
     {
+        base.OnStartLocalPlayer();
         MyAvatar.Instance.AvatarWeaponHandler = this;
-        CmdEquipWeapon(1);
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
     }
 
     public void UnEquipWeapon(int id)

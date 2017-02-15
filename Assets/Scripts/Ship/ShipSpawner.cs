@@ -191,7 +191,7 @@ public class ShipSpawner : MonoBehaviour {
                     if (tiles[x, y] == 1)
                     {
                         //if(hasNeighbor(x,y) == 4)
-                        if (matchConfig(ControlList[currentControl], x, y))
+                        if (matchConfig(ControlList[currentControl-1], x, y))
                         {
                             if (controls[x, y] == -1)
                                 GUI.contentColor = Color.green;
