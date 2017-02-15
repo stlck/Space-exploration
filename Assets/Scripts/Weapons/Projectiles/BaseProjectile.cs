@@ -69,6 +69,10 @@ public class BaseProjectile : MonoBehaviour
         {
             Destroy(Instantiate(HitEffect, collision.contacts[0].point, HitEffect.transform.rotation), 10f);
         }
-        Destroy(gameObject);
+
+        rb.isKinematic = true;
+        rb.velocity = Vector3.zero;
+        Destroy(gameObject,2f);
+        this.enabled = false;
     }    
 }
