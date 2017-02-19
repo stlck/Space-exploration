@@ -83,15 +83,6 @@ public class DrawInstanced : MonoBehaviour {
             allContainers[mat].Last().AddToContainer(addMe);
             return allContainers[mat].Count() - 1;
         }
-        //if (ToDraw[currentIndex].Count > 1020)
-        //{
-        //    ToDraw.Add(new Dictionary<Transform, Matrix4x4>());
-        //    currentIndex++;
-        //}
-
-        //ToDraw[currentIndex].Add(addMe, addMe.localToWorldMatrix);
-
-        //return currentIndex;
     }
 
     public void UpdateMatrix(Transform update, int collection, Material mat = null)

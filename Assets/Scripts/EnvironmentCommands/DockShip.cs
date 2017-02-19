@@ -7,10 +7,32 @@ using UnityEngine.Networking;
 
 public class DockShip : NetworkBehaviour, CmdObj, IShipSpawnObject
 {
+
+    public Transform AlignTo;
+    public float maxTime = 0;
+    [SyncVar]
+    public int TilePositionX;
+    [SyncVar]
+    public int TilePositionY;
+    public Vector3 AlignPosition;
+
     Ship ship;
+
     void Awake()
     {
         ship = GetComponentInParent<Ship>();
+        if (AlignTo == null)
+        {
+            AlignTo = new GameObject("AlignTArget").transform;
+            AlignTo.transform.SetParent(transform);
+            AlignTo.transform.localPosition = Vector3.zero;
+        }
+    }
+
+    // Use this for initialization
+    void Start()
+    {
+        setAlignToTarget();
     }
 
     public bool canExecuteCommand()
@@ -26,7 +48,10 @@ public class DockShip : NetworkBehaviour, CmdObj, IShipSpawnObject
         if (DockingPoint.DockingPoints.Any(m => Vector3.Distance(transform.position, m.transform.position) < 10))
         {
             var dockingTarget = DockingPoint.DockingPoints.First(m => Vector3.Distance(transform.position, m.transform.position) < 10);
-            ship.AlignToTarget = dockingTarget.DockAlign;
+            
+            // Use alignposition if a bridge is required!
+            ship.DocingPosition = dockingTarget.DockAlign.position - transform.localPosition * 2;// - AlignPosition;
+            ship.DocingRotation = dockingTarget.DockAlign.rotation;
             ship.Docking = true;
             maxTime = 5;
         }
@@ -40,21 +65,18 @@ public class DockShip : NetworkBehaviour, CmdObj, IShipSpawnObject
     void setAlignToTarget()
     {
         // depending on free tile
+        if(ship.tiles[TilePositionX +1, TilePositionY] == 0)
+        {
+            AlignPosition = /* transform.position +*/ Vector3.right * ship.ShipScale;
+        }
+        else if(ship.tiles[TilePositionX -1, TilePositionY] == 0)
+        {
+            AlignPosition =/* transform.position + */Vector3.left * ship.ShipScale;
+        }
     }
 
-    public Transform AlignTo;
-    public float maxTime = 0;
-    [SyncVar]
-    public int TilePositionX;
-    [SyncVar]
-    public int TilePositionY;
-
-    // Use this for initialization
-    void Start () {
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    // Update is called once per frame
+    void Update () {
         if (MyAvatar.Instance.isServer)
         {
             if (maxTime > 0)

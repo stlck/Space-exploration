@@ -33,7 +33,7 @@ public class ShipSpawner : MonoBehaviour {
         ControlList = Resources.LoadAll<GameObject>("ShipControls").ToList();
 
         if (ControlList.Any())
-            currentControl = 0;
+            currentControl = 1;
     }
 
     void OnMouseUp()
@@ -233,7 +233,7 @@ public class ShipSpawner : MonoBehaviour {
     {
         if (!Show) return;
 
-        GUILayout.Window(4, new Rect(300, 100, 400, 500), buildWindow, "SHIP");
+        GUILayout.Window(41, new Rect(300, 100, 400, 500), buildWindow, "SHIP");
     }
 
     bool matchConfig(GameObject go, int x, int y)

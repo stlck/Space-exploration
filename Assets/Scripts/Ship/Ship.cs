@@ -14,6 +14,8 @@ public class Ship : NetworkBehaviour {
 
     public bool Docking = false;
     public Transform AlignToTarget;
+    public Vector3 DocingPosition;
+    public Quaternion DocingRotation;
 
     public float CurrentSpeed = 0;
     public MoveShip ShipMovement;
@@ -29,10 +31,10 @@ public class Ship : NetworkBehaviour {
     public Material ShipMaterial;
 
     public List<NetworkSpawnObject> NetworkSpawnObjects;
-
+    public float ShipScale = 2;
     void Awake()
     {
-        transform.localScale = Vector3.one * 2;
+        transform.localScale = Vector3.one * ShipScale;
 
     }
 
@@ -160,8 +162,8 @@ public class Ship : NetworkBehaviour {
 
         else if(Docking)
         {
-            transform.position = Vector3.MoveTowards(transform.position, AlignToTarget.position, 5 * Time.deltaTime);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, AlignToTarget.rotation, 10 * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, DocingPosition/*AlignToTarget.position*/, 5 * Time.deltaTime);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, DocingRotation/* AlignToTarget.rotation*/, 10 * Time.deltaTime);
         }
 
         //if (isServer)

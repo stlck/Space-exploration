@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Duplicate : MonoBehaviour
+public class Duplicate : BaseAddForceObject
 {
-    public float minForce;
+    //public float minForce;
     public float Health = 150;
 
-    bool hit = false;
+    //bool hit = false;
     float timer = 0f;
     Material mat;
-    Rigidbody rigidBody;
+    public bool CanSplit = true;
 
     // Use this for initialization
     void Awake()
@@ -21,20 +21,16 @@ public class Duplicate : MonoBehaviour
             rigidBody.isKinematic = true;
             rigidBody.mass = 5;
         }
-        //mat = GetComponent<MeshRenderer>().material;
-        //mat.SetTextureOffset("_MainTex", new Vector2(((float)Random.Range(1,5))/4f, ((float)Random.Range(1, 5)) / 4f));
+
 
     }
     
-    public void ApplyForce(Vector3 origin, float force, float radius)
+    public override void ApplyForce(Vector3 origin, float force, float radius)
     {
-        if(!hit )
+        base.ApplyForce(origin, force, radius);
+        if(hit)
         {
             doCollision(origin, force);
-        }
-        else
-        {
-            rigidBody.AddExplosionForce(force, origin, radius);
         }
     }
 
@@ -65,6 +61,8 @@ public class Duplicate : MonoBehaviour
         hit = true;
         var pos = transform.position;
         var scale = transform.localScale / 4f;
+        if(CanSplit)
+        { 
         for (int i = 0; i < 2; i++)
             for (int j = 0; j < 2; j++)
                 for (int k = 0; k < 2; k++)
@@ -75,6 +73,7 @@ public class Duplicate : MonoBehaviour
                         t.localScale = transform.localScale / 2.05f;
                         //t.GetComponent<Duplicate>().enabled = false;
                         t.GetComponent<Duplicate>().hit = true;
+                        t.GetComponent<Duplicate>().CanSplit = transform.localScale.magnitude > .2f && Random.Range(0, 100) > 80;
                         t.GetComponent<Rigidbody>().isKinematic = false;
                         t.GetComponent<Rigidbody>().mass = rigidBody.mass/2;
                         if (t.gameObject.layer != LayerMask.NameToLayer("Ship"))
@@ -84,38 +83,8 @@ public class Duplicate : MonoBehaviour
                 }
 
         Destroy(gameObject);
+        }
         return true;
     }
-
-   /* void Update()
-    {
-        if(hit)
-        {
-            timer += Time.deltaTime;
-            if(timer >= 3f)
-            {
-                //mat.SetFloat("_SliceAmount", timer - 3f);
-                if (timer >= 4f)
-                {
-                    var pos = transform.position;
-                    var scale = transform.localScale/4f;
-                    for(int i = 0; i < 2; i++)
-                        for(int j = 0; j < 2; j++)
-                            for(int k = 0; k < 2; k++)
-                        {
-                                var t = Instantiate(transform, pos + scale.x * transform.right * i + scale.y * transform.up * j + scale.z * transform.forward * k, transform.rotation);
-                                t.localScale = transform.localScale / 2;
-                                t.GetComponent<Duplicate>().enabled = false;
-                                Destroy(t.gameObject, Random.Range(4, 8));
-                        }
-                    Destroy(gameObject);
-                }
-            }
-        }
-        else if(Health<= 0)
-        {
-            timer = Random.Range(-2f, 2f);
-            hit = true;
-        }
-    }*/
+    
 }
