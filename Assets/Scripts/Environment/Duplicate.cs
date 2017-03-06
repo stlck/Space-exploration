@@ -21,8 +21,6 @@ public class Duplicate : BaseAddForceObject
             rigidBody.isKinematic = true;
             rigidBody.mass = 5;
         }
-
-
     }
     
     public override void ApplyForce(Vector3 origin, float force, float radius)

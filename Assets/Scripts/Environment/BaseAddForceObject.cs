@@ -10,7 +10,7 @@ public class BaseAddForceObject : MonoBehaviour {
     public bool hit = false;
 
     // Use this for initialization
-    void Start () {
+    public virtual void Start () {
 		if(rigidBody == null)
         {
             rigidBody = GetComponent<Rigidbody>();
@@ -35,6 +35,7 @@ public class BaseAddForceObject : MonoBehaviour {
             if (tForce >= minForce)
             {
                 hit = true;
+                gameObject.SendMessage("UpdateTransformMatrix");
             }
         }
 

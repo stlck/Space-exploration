@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CreateBoxMan : BaseAddForceObject {
+public class CreateBoxMan : NpcBase {
 
     [ContextMenuItem("Create","Create")]
     public Transform Prefab;
@@ -14,13 +14,8 @@ public class CreateBoxMan : BaseAddForceObject {
 
     public float ExternalExplosionModifier = 4f;
     public StatBase MyStats;
-    public NPCStates currentState;
-    float stateTimer = 0f;
     
-    [ContextMenuItem("moveTo", "moveTo")]
-    public Vector3 stateTarget;
     public Transform Parent;
-    public float StateUpdateTime = 2f;
     public float Hittimer = 1f;
 
     // Use this for initialization
@@ -30,6 +25,7 @@ public class CreateBoxMan : BaseAddForceObject {
 	
     public void Create()
     {
+        var c = GetComponent<Collider>();
         for (int i = 0; i < Size.x; i++)
             for (int j = 0; j < Size.y; j++)
                 for (int k = 0; k < Size.z; k++)
@@ -45,62 +41,39 @@ public class CreateBoxMan : BaseAddForceObject {
                         TargetLocalPosition = p,
                         rigidBody = t.GetComponent<Rigidbody>()
                     });
+                    Physics.IgnoreCollision(c, t.GetComponent<Collider>());
+                    var cm = t.gameObject.AddComponent<CollisionMessage>();
+                    cm.CollisionEntered += Cm_CollisionEntered;
                 }
     }
 
-	// Update is called once per frame
-	void Update () {
-        realignParts();
-
-        //switch(currentState)
-        //{
-        //    case NPCStates.Idle:
-        //        break;
-        //    case NPCStates.Moving:
-        //        break;
-        //    case NPCStates.Attacking:
-        //        break;
-        //}
-
-        stateTimer += Time.deltaTime;
-        if(stateTimer >= StateUpdateTime)
-        {
-            stateTimer = 0f;
-            calcState();
-        }
-	}
-
-    void calcState()
+    private void Cm_CollisionEntered(Collision col)
     {
-        switch (currentState)
-        {
-            case NPCStates.Idle:
-                // chec for enemies
-                break;
-            case NPCStates.Moving:
-                // go attac if enemies
-                // else idle
-                currentState = NPCStates.Idle;
-                break;
-            case NPCStates.Attacking:
-                // go idle
-                break;
-        }
+
     }
-    public void moveTo()
+
+    // Update is called once per frame
+    public override void Update () {
+        base.Update();
+
+        realignParts();
+	}
+    public override void Move(Vector3 position)
     {
+        base.Move(position);
+
         //transform.LookAt(stateTarget);
         var from = transform.position + new Vector3(
                     Random.Range(0, Size.x * Scale),
                     Random.Range(0, Size.y * Scale),
                     Random.Range(0, Size.z * Scale));
         //for (int i = 0; i < Parts.Count; i++)
-            ApplyForce(
-                from/*+ Scale * Size / 2 + Random.Range(-1.5f,1.5f) * Vector3.up*/, 
-                ExternalExplosionModifier, 
-                4);//Parts[i].rigidBody.AddExplosionForce(200, transform.position - transform.forward, 6);
+        ApplyForce(
+            from/*+ Scale * Size / 2 + Random.Range(-1.5f,1.5f) * Vector3.up*/,
+            ExternalExplosionModifier,
+            4);//Parts[i].rigidBody.AddExplosionForce(200, transform.position - transform.forward, 6);
 
-        transform.position = stateTarget;
+        transform.position = position;
     }
 
     void realignParts()
@@ -136,7 +109,6 @@ public class CreateBoxMan : BaseAddForceObject {
 
     public override void ApplyForce(Vector3 origin, float force, float radius)
     {
-        Debug.Log("Applying " + force + " " + radius + " at " + transform.InverseTransformPoint(origin));
         for (int i = 0; i < Parts.Count; i++)
         {
             Parts[i].rigidBody.AddExplosionForce(force * ExternalExplosionModifier, origin, radius);
@@ -155,11 +127,4 @@ public class CreateBoxMan : BaseAddForceObject {
         public float HitTimer = 0f;
         public Vector3 TargetLocalPosition;
     }
-}
-
-public enum NPCStates
-{
-    Idle,
-    Moving,
-    Attacking
 }

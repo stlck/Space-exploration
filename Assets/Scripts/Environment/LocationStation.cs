@@ -13,13 +13,24 @@ public class LocationStation : Location
     public int HalfCorridorSize = 2;
     public int MinRoomSize = 8;
 
+    public int[,] Tiles;
+
     public override void SpawnLocation(Transform owner, int _seed)
     {
         Debug.Log("Spawning station " + _seed);
         base.SpawnLocation(owner, _seed);
 
         var spawner = new StationSpawner();
-        spawner.Generate(owner, seed, Size, Splits, MinRoomSize, HalfCorridorSize, TileSet);
+        Tiles = spawner.Generate(owner, seed, Size, Splits, MinRoomSize, HalfCorridorSize, TileSet);
+
+        BestFirstSearch = new BestFirstSearch(Size, Size);
+
+        for(int i = 0; i < Size; i++)
+            for(int j = 0; j < Size; j++)
+            {
+                if (Tiles[i, j] == 0)
+                    BestFirstSearch.AddObstacle(i,j);
+            }
     }
 
     /*public int WallHeight = 4;

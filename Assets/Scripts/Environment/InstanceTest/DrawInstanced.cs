@@ -20,7 +20,6 @@ public class DrawInstanced : MonoBehaviour {
     Dictionary<Material, List<DrawContainer>> allContainers = new Dictionary<Material, List<DrawContainer>>();
     
     public Mesh TargetMesh;
-    public Material TargetMaterial;
 
     int currentIndex = 0;
     MaterialPropertyBlock propBlock;
@@ -52,12 +51,7 @@ public class DrawInstanced : MonoBehaviour {
                 Graphics.DrawMeshInstanced(TargetMesh, 0, c.Key, l.Matrixes, l.Matrixes.Count(), propBlock, UnityEngine.Rendering.ShadowCastingMode.On,true,l.Layer);
             }
         }
-            
-		//foreach(var l in ToDraw)
-        //for(int i = 0; i < ToDraw.Count; i++)
-        //{
-        //    Graphics.DrawMeshInstanced(TargetMesh, 0, TargetMaterial, ToDraw[i].Values.ToArray());
-        //}
+           
 	}
 
     public int AddToDraw(Transform addMe, Material mat = null)

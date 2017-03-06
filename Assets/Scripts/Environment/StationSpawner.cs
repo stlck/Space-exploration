@@ -12,8 +12,9 @@ public class StationSpawner
     int halfCorridorSize = 1;
     Transform parent;
     TileSet TileSet;
+    public BspStationTest Tester;
 
-    public void Generate(Transform _parent, int seed, int _size, int _splits = 5, int _minRoomSize = 8, int _halfCorridorSize = 1, TileSet _tileSet = TileSet.BlackAsteroid)
+    public int[,] Generate(Transform _parent, int seed, int _size, int _splits = 5, int _minRoomSize = 8, int _halfCorridorSize = 1, TileSet _tileSet = TileSet.BlackAsteroid, bool buildmesh = true)
     {
         size = _size;
         map = new int[size, size];
@@ -27,20 +28,32 @@ public class StationSpawner
         parent = _parent;
         TileSet = _tileSet;
 
-        doAll();
+        doAll(buildmesh);
+
+        return map;
     }
 
-    void doAll()
+    void doAll(bool meshit)
     {
+        var timer = Time.realtimeSinceStartup;
+        Debug.Log("t1 : " + (Time.realtimeSinceStartup - timer));
         root = new BspCell(size / 2, size / 2, size, size);
         var cite = iterations;
         split(root, cite);
+        Debug.Log("t1 : " + (Time.realtimeSinceStartup - timer));
         offset(root);
+        Debug.Log("t2 : " + (Time.realtimeSinceStartup - timer));
         toMap(root);
+        Debug.Log("t3 : " + (Time.realtimeSinceStartup - timer));
         connectCells(root.child1, root.child2);
+        Debug.Log("t4 : " + (Time.realtimeSinceStartup - timer));
         peelOuterLayer();
+        Debug.Log("t5 : " + (Time.realtimeSinceStartup - timer));
         entrance();
-        meshIt();
+        Debug.Log("t6 : " + (Time.realtimeSinceStartup - timer));
+        if (meshit)
+            meshIt();
+        Debug.Log("t7 : " + (Time.realtimeSinceStartup - timer));
     }
 
     void meshIt()
@@ -51,7 +64,8 @@ public class StationSpawner
             {
                 if (map[i, j] == 1 )
                 {
-                    var t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.Ground], Vector3.right * i + Vector3.forward * j, Quaternion.identity, parent.transform);
+
+                    Tester.Enqueue(set.GroundTiles[LocationTileSet.Ground], Vector3.right * i + Vector3.forward * j, Quaternion.identity, parent.transform);
                     
                 }
                 else if (hasNeighbor(i, j, 1) && i > 0)
@@ -59,7 +73,7 @@ public class StationSpawner
                     for (int y = 0; y < 4; y++)
                     {
                         map[i, j] = 2;
-                        var t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.InnerWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                        Tester.Enqueue(set.GroundTiles[LocationTileSet.InnerWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
                         //t.localPosition = Vector3.right * i + Vector3.forward * j + Vector3.up * y;
                     }
                 }
@@ -117,16 +131,16 @@ public class StationSpawner
                     //if (i == 0 || j == 0 || i == size - 1 || j == size - 1)
                     for (int y = 0; y < 5; y++)
                     {
-                        var t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                        Tester.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
                         //t.gameObject.layer = LayerMask.NameToLayer("Ship");
                     }
 
                 }
                 else if (map[i, j] > 0)
                 {
-                    var t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down,Quaternion.identity, parent.transform);
+                    Tester.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down,Quaternion.identity, parent.transform);
                     //t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
-                    t = MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5 , Quaternion.identity, parent.transform);
+                    Tester.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5 , Quaternion.identity, parent.transform);
                     //t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
                 }
             }

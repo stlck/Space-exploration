@@ -14,6 +14,8 @@ public class Location : ScriptableObject {
     public LocationTypes Type;
     public LocationStandings Standing;
 
+    public BestFirstSearch BestFirstSearch;
+
     public void TestSpawnLocation()
     {
         var t = GameObject.Find(name);
@@ -29,6 +31,7 @@ public class Location : ScriptableObject {
         Debug.Log("Location base spawn");
         seed = _seed;
     }
+    
 }
 
 public enum LocationTypes
