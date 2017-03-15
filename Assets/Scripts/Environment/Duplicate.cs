@@ -5,8 +5,8 @@ public class Duplicate : BaseAddForceObject
 {
     //public float minForce;
     public float Health = 150;
-
-    //bool hit = false;
+    public DuplicateFragment SpawnOnHit;
+    
     float timer = 0f;
     Material mat;
     public bool CanSplit = true;
@@ -59,28 +59,40 @@ public class Duplicate : BaseAddForceObject
         hit = true;
         var pos = transform.position;
         var scale = transform.localScale / 4f;
+
         if(CanSplit)
         { 
-        for (int i = 0; i < 2; i++)
-            for (int j = 0; j < 2; j++)
-                for (int k = 0; k < 2; k++)
-                {
-                    if(Random.Range(0,100) > 40)
-                    { 
-                        var t = Instantiate(transform, pos + scale.x * transform.right * i + scale.y * transform.up * j + scale.z * transform.forward * k, transform.rotation, transform.parent);
-                        t.localScale = transform.localScale / 2.05f;
-                        //t.GetComponent<Duplicate>().enabled = false;
-                        t.GetComponent<Duplicate>().hit = true;
-                        t.GetComponent<Duplicate>().CanSplit = transform.localScale.magnitude > .2f && Random.Range(0, 100) > 80;
-                        t.GetComponent<Rigidbody>().isKinematic = false;
-                        t.GetComponent<Rigidbody>().mass = rigidBody.mass/2;
-                        if (t.gameObject.layer != LayerMask.NameToLayer("Ship"))
-                            t.gameObject.layer = LayerMask.NameToLayer("Ship");
-                        Destroy(t.gameObject, Random.Range(20, 50));
-                    }
-                }
+            for (int i = 0; i < 2; i++)
+                for (int j = 0; j < 2; j++)
+                    for (int k = 0; k < 2; k++)
+                    {
+                        if(Random.Range(0,100) > 40)
+                        {
+                            Transform t;
+                            if (SpawnOnHit != null)
+                            {
+                                var fragment = Instantiate(SpawnOnHit, pos + scale.x * transform.right * i + scale.y * transform.up * j + scale.z * transform.forward * k, transform.rotation, transform.parent);
+                                fragment.SetMaterial( GetComponent<InstanceMe>().Material);
+                                t = fragment.transform;
+                            }
+                            else
+                            {
+                                t = Instantiate(transform, pos + scale.x * transform.right * i + scale.y * transform.up * j + scale.z * transform.forward * k, transform.rotation, transform.parent);
+                                t.localScale = transform.localScale / 2.05f;
 
-        Destroy(gameObject);
+                                t.GetComponent<Duplicate>().hit = true;
+                                t.GetComponent<Duplicate>().CanSplit = transform.localScale.magnitude > .2f && Random.Range(0, 100) > 80;
+                                t.GetComponent<Rigidbody>().isKinematic = false;
+                                t.GetComponent<Rigidbody>().mass = rigidBody.mass / 2;
+                            }
+
+                            if (t.gameObject.layer != LayerMask.NameToLayer("Ship"))
+                                t.gameObject.layer = LayerMask.NameToLayer("Ship");
+                            Destroy(t.gameObject, Random.Range(20, 50));
+                        }
+                    }
+
+            Destroy(gameObject);
         }
         return true;
     }

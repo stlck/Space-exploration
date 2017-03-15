@@ -65,7 +65,7 @@ public class StationSpawner
                 if (map[i, j] == 1 )
                 {
 
-                    Tester.Enqueue(set.GroundTiles[LocationTileSet.Ground], Vector3.right * i + Vector3.forward * j, Quaternion.identity, parent.transform);
+                    MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.Ground], Vector3.right * i + Vector3.forward * j, Quaternion.identity, parent.transform);
                     
                 }
                 else if (hasNeighbor(i, j, 1) && i > 0)
@@ -73,7 +73,7 @@ public class StationSpawner
                     for (int y = 0; y < 4; y++)
                     {
                         map[i, j] = 2;
-                        Tester.Enqueue(set.GroundTiles[LocationTileSet.InnerWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                        MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.InnerWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
                         //t.localPosition = Vector3.right * i + Vector3.forward * j + Vector3.up * y;
                     }
                 }
@@ -131,16 +131,16 @@ public class StationSpawner
                     //if (i == 0 || j == 0 || i == size - 1 || j == size - 1)
                     for (int y = 0; y < 5; y++)
                     {
-                        Tester.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                        MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
                         //t.gameObject.layer = LayerMask.NameToLayer("Ship");
                     }
 
                 }
                 else if (map[i, j] > 0)
                 {
-                    Tester.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down,Quaternion.identity, parent.transform);
+                    MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down,Quaternion.identity, parent.transform);
                     //t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
-                    Tester.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5 , Quaternion.identity, parent.transform);
+                    MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5 , Quaternion.identity, parent.transform);
                     //t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
                 }
             }

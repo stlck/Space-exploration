@@ -27,13 +27,15 @@ public class InstanceMe : MonoBehaviour {
         moved = true;
         StartCoroutine(updateMyMatrix());
     }
+
     float magnitudeLimit = 0.1f;
     IEnumerator updateMyMatrix()
     {
+        Debug.Log("Started updating transform Matrix");
         while(gameObject.activeInHierarchy)
         {
             yield return new WaitForFixedUpdate();
-            if(rb.velocity.magnitude < magnitudeLimit)
+            if(rb.velocity.magnitude > magnitudeLimit)
                 DrawInstanced.Instance.UpdateMatrix(transform, collection, Material);
         }
     }
