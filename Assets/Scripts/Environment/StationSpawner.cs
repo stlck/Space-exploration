@@ -39,25 +39,99 @@ public class StationSpawner
         Debug.Log("t1 : " + (Time.realtimeSinceStartup - timer));
         root = new BspCell(size / 2, size / 2, size, size);
         var cite = iterations;
+        // use bspcell
         split(root, cite);
         Debug.Log("t1 : " + (Time.realtimeSinceStartup - timer));
+        // use bspcell
         offset(root);
         Debug.Log("t2 : " + (Time.realtimeSinceStartup - timer));
+        // use bspcell
         toMap(root);
         Debug.Log("t3 : " + (Time.realtimeSinceStartup - timer));
+        // use map
         connectCells(root.child1, root.child2);
         Debug.Log("t4 : " + (Time.realtimeSinceStartup - timer));
+        // use map
         peelOuterLayer();
         Debug.Log("t5 : " + (Time.realtimeSinceStartup - timer));
+        // use map
         entrance();
         Debug.Log("t6 : " + (Time.realtimeSinceStartup - timer));
-        if (meshit)
-            meshIt();
+
+        toTileMap();
+        tileMeshIt();
+
+        //if (meshit)
+        // use map
+            //meshIt();
         Debug.Log("t7 : " + (Time.realtimeSinceStartup - timer));
+    }
+
+    void toTileMap()
+    {
+        tileMap = new TileNode[size, size];
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+            {
+                tileMap[i, j] = new TileNode();
+                tileMap[i, j].TileValue = map[i, j];
+                tileMap[i, j].neighbor1 = hasNeighbor(i, j, 1);
+                tileMap[i, j].neighbor2 = hasNeighbor(i, j, 1);
+                if(tileMap[i,j].neighbor1 && map[i,j] > 0)
+                {
+                    map[i,j] = 2;
+                    tileMap[i, j].TileValue = 2;
+                }
+            }
+    }
+
+    void tileMeshIt()
+    {
+        var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+            {
+                var tn = tileMap[i, j];
+                if(tn.TileValue == 0)
+                {
+                    if(tn.neighbor2)
+                    {
+                        // walls bordering outside
+                        for (int y = 0; y < 5; y++)
+                            CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                        //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                    }
+                }
+                else if(tn.TileValue == 1)
+                {
+                    // inside with floor
+                    //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.Ground], Vector3.right * i + Vector3.forward * j, Quaternion.identity, parent.transform);
+                    //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
+                    //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
+                    CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.Ground], Vector3.right * i + Vector3.forward * j, Quaternion.identity, parent.transform);
+                    CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
+                    CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
+
+                }
+                else if(tn.TileValue == 2)
+                {
+                    // inside walls
+                    //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
+                    //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
+                    CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
+                    CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
+                    for (int y = 0; y < 4; y++)
+                        CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.InnerWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                    //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.InnerWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                }
+            }
+
     }
 
     void meshIt()
     {
+        var timer = Time.realtimeSinceStartup;
+        Debug.Log("t7.0 : " + (Time.realtimeSinceStartup - timer));
         var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
@@ -80,7 +154,35 @@ public class StationSpawner
 
             }
 
+        Debug.Log("t7.1 : " + (Time.realtimeSinceStartup - timer));
         outerLayer();
+        Debug.Log("t7.2 : " + (Time.realtimeSinceStartup - timer));
+    }
+
+    void outerLayer ()
+    {
+        var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+            {
+                if (map[i, j] == 0 && hasNeighbor(i, j, 2))
+                {
+                    //if (i == 0 || j == 0 || i == size - 1 || j == size - 1)
+                    for (int y = 0; y < 5; y++)
+                    {
+                        MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                        //t.gameObject.layer = LayerMask.NameToLayer("Ship");
+                    }
+
+                }
+                else if (map[i, j] > 0)
+                {
+                    MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
+                    //t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
+                    MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
+                    //t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
+                }
+            }
     }
 
     void entrance()
@@ -118,32 +220,6 @@ public class StationSpawner
             map[size - 1, j] = 0;
             map[size - 2, j] = 0;
         }
-    }
-
-    void outerLayer()
-    {
-        var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
-        for (int i = 0; i < size; i++)
-            for (int j = 0; j < size; j++)
-            {
-                if (map[i, j] == 0 && hasNeighbor(i, j, 2))
-                {
-                    //if (i == 0 || j == 0 || i == size - 1 || j == size - 1)
-                    for (int y = 0; y < 5; y++)
-                    {
-                        MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
-                        //t.gameObject.layer = LayerMask.NameToLayer("Ship");
-                    }
-
-                }
-                else if (map[i, j] > 0)
-                {
-                    MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down,Quaternion.identity, parent.transform);
-                    //t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
-                    MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5 , Quaternion.identity, parent.transform);
-                    //t.gameObject.layer = LayerMask.NameToLayer("ShipTop");
-                }
-            }
     }
 
     void offset(BspCell cell)
@@ -255,6 +331,14 @@ public class StationSpawner
                     return true;
 
         return false;
+    }
+
+    TileNode[,] tileMap;
+    public struct TileNode
+    {
+        public int TileValue;
+        public bool neighbor1;
+        public bool neighbor2;
     }
 }
 
