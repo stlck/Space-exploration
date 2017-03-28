@@ -1,0 +1,45 @@
+ERRORS:
+
+- Fix start ship position
+- Ship verification (has required items)
+- Ship collision
+
+TODO:
+
+- Add hostile ships
+- Make loot system
+- Pickups (weapons, creds etc)
+- Respawn system
+- Minor asteroids
+  - drop resources?
+- possible attributes system
+  - Determines speed, health, regen, accuracy
+- Skill system
+  - Boost effectiveness of Command objects
+  - Boost weapons/teammates
+  - Grenade/aoe like effects
+  - Healing 
+- Expand ship system:
+  - Power
+  - Shields
+  - Engines
+  - (Positional damage)
+  - Missiles
+  - Seeker Missiles
+- (Generated weapons)
+
+Nearing Done:
+
+- Station spawning
+- Asteroid spawning
+- weapon system
+
+
+Content
+
+- lots of guns
+  - generated?
+- missions
+  - generated stations/asteroids/ships
+- Progress
+  - Character advancement

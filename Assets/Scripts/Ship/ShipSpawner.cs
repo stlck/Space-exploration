@@ -146,7 +146,8 @@ public class ShipSpawner : MonoBehaviour {
         if (GUILayout.Button("test create ship2"))
             createShipTest();
 
-        doGround = GUILayout.Toggle(doGround, doGround ? "SHOWING HULL" : "SHOWING Controls");
+        doGround = GUILayout.Toggle(doGround, doGround ? "SHOW CONTROLS" : "SHOW HULL");
+
         if (doGround)
         {
             for (int y = 1; y < Size.y - 1; y++)

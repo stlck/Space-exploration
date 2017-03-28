@@ -39,7 +39,8 @@ public class CoroutineSpawner : MonoBehaviour {
             {
                 timer = (Time.realtimeSinceStartup - real);
                 var c = SpawnQueue.Dequeue();
-                var t = Instantiate(c.t, c.position * BlockSize, Quaternion.identity, c.Parent);
+                var t = Instantiate(c.t, c.Parent);
+                t.localPosition = c.position * BlockSize;
                 t.localScale = c.Size;
                 InstantiateCount++;
             }

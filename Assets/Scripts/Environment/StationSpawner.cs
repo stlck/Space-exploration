@@ -74,15 +74,24 @@ public class StationSpawner
             for (int j = 0; j < size; j++)
             {
                 tileMap[i, j] = new TileNode();
+
                 tileMap[i, j].TileValue = map[i, j];
                 tileMap[i, j].neighbor1 = hasNeighbor(i, j, 1);
-                tileMap[i, j].neighbor2 = hasNeighbor(i, j, 1);
-                if(tileMap[i,j].neighbor1 && map[i,j] > 0)
+            }
+
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+            {
+                if (tileMap[i, j].neighbor1 && map[i, j] == 0)
                 {
-                    map[i,j] = 2;
+                    map[i, j] = 2;
                     tileMap[i, j].TileValue = 2;
                 }
             }
+
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+                tileMap[i, j].neighbor2 = hasNeighbor(i, j, 2);
     }
 
     void tileMeshIt()
@@ -94,35 +103,34 @@ public class StationSpawner
                 var tn = tileMap[i, j];
                 if(tn.TileValue == 0)
                 {
-                    if(tn.neighbor2)
+                    // outside walls
+                    if (tn.neighbor2)
                     {
-                        // walls bordering outside
                         for (int y = 0; y < 5; y++)
                             CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
-                        //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
                     }
                 }
-                else if(tn.TileValue == 1)
+                // inside with floor
+                else if (tn.TileValue == 1)
                 {
-                    // inside with floor
-                    //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.Ground], Vector3.right * i + Vector3.forward * j, Quaternion.identity, parent.transform);
-                    //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
-                    //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
+                    // ground
                     CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.Ground], Vector3.right * i + Vector3.forward * j, Quaternion.identity, parent.transform);
+                    // layer beneath ground
                     CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
+                    // roof
                     CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
 
                 }
+                // inside walls
                 else if(tn.TileValue == 2)
                 {
-                    // inside walls
-                    //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
-                    //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
+                    // layer beneath ground
                     CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
+                    // roof
                     CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
-                    for (int y = 0; y < 4; y++)
+                    // inside wall
+                    for (int y = 0; y < 5; y++)
                         CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.InnerWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
-                    //MonoBehaviour.Instantiate(set.GroundTiles[LocationTileSet.InnerWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
                 }
             }
 
