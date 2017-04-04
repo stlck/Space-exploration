@@ -11,7 +11,7 @@ public class ProjectileWeapon : BaseWeapon {
         base.FireWeapon();
 
         var t = Instantiate(Projectile, transform.position + transform.forward, transform.rotation);
-        //Debug.Log("bullet at " + t.transform.position);
+        //Debug.Log("bullet at " + t.transform.position);  
         t.Owner = this;
     }
 
