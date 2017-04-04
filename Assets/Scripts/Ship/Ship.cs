@@ -59,6 +59,10 @@ public class Ship : NetworkBehaviour {
                 //Debug.Log(output);
                 RpcBuildShip(output, Sizex, Sizey);
             }
+
+            var dock = GetComponentInChildren<DockShip>();
+            if (dock != null)
+                dock.doCommand(0);
         }
 
     }
@@ -89,8 +93,6 @@ public class Ship : NetworkBehaviour {
                 output += tiles[i, j];
                 counter++;
             }
-        Debug.Log(shipString);
-        Debug.Log(output);
 
         var mTarget = transform;// GetComponentInChildren<MeshFilter>();
         ShipSpawner.ShipToMesh(mTarget, sizex, sizey, tiles,ShipMaterial);

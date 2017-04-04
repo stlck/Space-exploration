@@ -10,10 +10,16 @@ public class LocationAsteroid : Location
     public int TileSize = 1;
     public List<int> SizeArray = new List<int>();
 
-    public override void SpawnLocation(Transform owner, int _seed)
+    public override InstantiatedLocation SpawnLocation (Transform owner, int _seed)
     {
-        base.SpawnLocation(owner, _seed);
+        seed = _seed;
+        var ret = owner.GetComponent<InstantiatedLocation>();
+        if (ret == null)
+            ret = owner.gameObject.AddComponent<InstantiatedLocation>();
+        ret.TargetLocation = this;
+        //var ret = base.SpawnLocation(owner, _seed);
         spawn(owner);
+        return ret;
     }
 
     void spawn(Transform Owner)

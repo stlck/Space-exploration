@@ -17,19 +17,24 @@ public class NpcBase : BaseAddForceObject {
     public float currentTimer = 0f;
     public float currentTime = 0f;
 
-    public Location Spawner;
+    public InstantiatedLocation Spawner;
+
+    public virtual void SpawnEnemy(InstantiatedLocation owner, Vector3 position)
+    {
+        Spawner = owner;
+        transform.position = position;
+    }
 
     // Use this for initialization
     public override void Start()
     {
-        SetIdleState();
+        //SetIdleState();
     }
 
     // Update is called once per frame
     public virtual void Update()
     {
         currentTimer += Time.deltaTime;
-        UpdateState();
 
         if (currentTimer >= currentTime)
         {
@@ -42,6 +47,8 @@ public class NpcBase : BaseAddForceObject {
             else
                 SetChaseState(CurrentTarget);
         }
+
+        UpdateState();
     }
 
     void UpdateState()
@@ -54,15 +61,15 @@ public class NpcBase : BaseAddForceObject {
             case NPCStates.Idle:
                 UpdateIdle();
                 break;
-            case NPCStates.Moving:
-                UpdateMove();
+            case NPCStates.Chase:
+                UpdateChase();
                 break;
         }
     }
 
-    public virtual void UpdateMove()
+    public virtual void UpdateChase()
     {
-
+        
     }
 
     public virtual void UpdateAttack()
@@ -78,7 +85,7 @@ public class NpcBase : BaseAddForceObject {
         }
     }
 
-    public virtual void Move(Vector3 position)
+    public virtual void Chase(Vector3 position)
     {
 
     }
@@ -99,6 +106,7 @@ public class NpcBase : BaseAddForceObject {
         currentTimer = 0f;
         CurrentTarget = target;
         CurrentState = NPCStates.Attacking;
+        transform.LookAt(target);
         Attack(target);
     }
 
@@ -107,8 +115,8 @@ public class NpcBase : BaseAddForceObject {
         currentTime = ChaseTime;
         currentTimer = 0f;
         CurrentTarget = target;
-        CurrentState = NPCStates.Moving;
-        Move(target.position);
+        CurrentState = NPCStates.Chase;
+        Chase(target.position);
     }
 
     public virtual void SetIdleState()
@@ -122,6 +130,6 @@ public class NpcBase : BaseAddForceObject {
 public enum NPCStates
 {
     Idle,
-    Moving,
+    Chase,
     Attacking
 }

@@ -35,7 +35,7 @@ public class BaseAddForceObject : MonoBehaviour {
             if (tForce >= minForce)
             {
                 hit = true;
-                gameObject.SendMessage("UpdateTransformMatrix");
+                gameObject.SendMessage("UpdateTransformMatrix", SendMessageOptions.DontRequireReceiver);
             }
         }
 

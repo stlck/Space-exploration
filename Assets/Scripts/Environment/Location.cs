@@ -24,12 +24,18 @@ public class Location : ScriptableObject {
         var owner = new GameObject(Name);
         owner.transform.position = Position;
         SpawnLocation(owner.transform, seed);
+
     }
 
-    public virtual void SpawnLocation(Transform owner, int _seed = -1)
+    public virtual InstantiatedLocation SpawnLocation (Transform owner, int _seed = -1)
     {
         Debug.Log("Location base spawn");
         seed = _seed;
+
+        var go = new GameObject().AddComponent<InstantiatedLocation>();
+        go.TargetLocation = this;
+
+        return go;
     }
     
 }

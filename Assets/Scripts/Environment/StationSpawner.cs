@@ -29,7 +29,7 @@ public class StationSpawner
         TileSet = _tileSet;
 
         doAll(buildmesh);
-
+        
         return map;
     }
 
@@ -59,7 +59,8 @@ public class StationSpawner
         Debug.Log("t6 : " + (Time.realtimeSinceStartup - timer));
 
         toTileMap();
-        tileMeshIt();
+        if(meshit)
+            tileMeshIt();
 
         //if (meshit)
         // use map

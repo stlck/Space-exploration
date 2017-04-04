@@ -21,7 +21,9 @@ public class TestSearch : MonoBehaviour {
 
     void Awake()
     {
-        map = new StationSpawner().Generate(transform, Station.seed, Station.Size, Station.Splits, Station.MinRoomSize, Station.HalfCorridorSize, Station.TileSet, false);
+        //map = new StationSpawner().Generate(transform, Station.seed, Station.Size, Station.Splits, Station.MinRoomSize, Station.HalfCorridorSize, Station.TileSet, false);
+        Station.SpawnLocation(transform, Station.seed);
+        map = Station.Tiles;
         
     }
     // Use this for initialization
@@ -34,9 +36,10 @@ public class TestSearch : MonoBehaviour {
         for (int i = 0; i < Station.Size; i++)
             for (int j = 0; j < Station.Size; j++)
             {
-                if (map[i, j] == 1)
-                    Instantiate(c, Vector3.right * i + Vector3.forward * j, Quaternion.identity, transform);
-                else
+                //if (map[i, j] == 1)
+                //    Instantiate(c, Vector3.right * i + Vector3.forward * j, Quaternion.identity, transform);
+                //else
+                if (map[i, j] != 1)
                     bfs.AddObstacle(i, j);
             }
         
@@ -102,7 +105,7 @@ public class TestSearch : MonoBehaviour {
 
         Debug.Log(x + "," + z + " to " + tox + "," + toz);
         //route.Clear();
-        route = bfs.FindPath(x, z, tox, toz);
+        route = bfs.FindPath(x, z, tox, toz, MoveToTarget.position.y);
         prev = MoveTarget.position;
 
         line.numPositions = route.Count;

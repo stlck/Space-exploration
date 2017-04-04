@@ -11,49 +11,103 @@ public class WalkingEnemy : NpcBase{
     Vector3 prevPosition;
     BestFirstSearch bfs;
 
+    public float WalkingSpeed = 5f;
+    float targetRefreshTimer = 0f;
     public override void Start()
     {
         base.Start();
-        if(Spawner.BestFirstSearch != null)
+        currentTime = 1f;
+        if(Spawner.TargetLocation.BestFirstSearch != null)
         {
-            bfs = Spawner.BestFirstSearch;
+            bfs = Spawner.TargetLocation.BestFirstSearch;
+
+            if (CurrentTarget != null)
+                Route = bfs.FindPath((int)transform.position.x, (int)transform.position.z, (int)CurrentTarget.position.x, (int)CurrentTarget.position.z, 1);
         }
     }
+
 
     public override void Update()
     {
-        base.Update();
+        //base.Update();
         //currentTimer += Time.deltaTime;
+        targetRefreshTimer += Time.deltaTime;
+        if (targetRefreshTimer >= 1f)
+        {
+            // it timer - find target
+            if (NetworkHelper.Instance.AllPlayers.Any(m => Vector3.Distance(m.transform.position, transform.position) < ChaseRange))
+            {
+                CurrentTarget = NetworkHelper.Instance.AllPlayers.First(m => Vector3.Distance(m.transform.position, transform.position) < ChaseRange).transform;
+                var tPos = ownerLocalPosition(CurrentTarget.position);
+                var lPos = ownerLocalPosition(transform.position);
+                Route = bfs.FindPath((int)transform.localPosition.x, (int)transform.localPosition.z, (int)CurrentTarget.localPosition.x, (int)CurrentTarget.localPosition.z, 1);
+                //Route = bfs.FindPath((int)transform.localPosition.x, (int)transform.localPosition.z, (int)CurrentTarget.localPosition.x, (int)CurrentTarget.localPosition.z, 1);
+            }
+            targetRefreshTimer = 0f;
+        }
+        RaycastHit hit;
+        if(CurrentTarget != null && Physics.Raycast(transform.position + transform.forward, CurrentTarget.position - transform.position, out hit, AttackRange) && hit.transform == CurrentTarget)
+        {
+            transform.LookAt(CurrentTarget);
+            if (Weapon != null && Weapon.CanFire())
+                Weapon.FireWeapon();
+        }
+        // if can see && within attackrange - attack
+        //  else
+        else if (Route.Any())
+        {
+            currentTimer += Time.deltaTime * WalkingSpeed;
+            var tpos = Spawner.transform.TransformPoint(Route[0]);
+            transform.position = Vector3.MoveTowards(transform.position, tpos, Time.deltaTime * WalkingSpeed);
+            transform.LookAt(tpos);
+            //transform.position = Vector3.Lerp(prevPosition, tpos, currentTimer / currentTime);
+
+            if ( Vector3.Distance( transform.position, tpos) < 1f)
+            //if (currentTimer >= currentTime)
+            {
+                var tPos = ownerLocalPosition(CurrentTarget.position);
+                var lPos = ownerLocalPosition(transform.position);
+
+                //Route = bfs.FindPath((int)transform.localPosition.x, (int)transform.localPosition.z, (int)CurrentTarget.localPosition.x, (int)CurrentTarget.localPosition.z, 1);
+                //if (Route.Any())
+                Route.RemoveAt(0);
+                currentTimer = 0f;
+            }
+        }
+
+        if(CurrentTarget != null && Vector3.Distance(CurrentTarget.position, transform.position) > ChaseRange)
+        {
+            Route.Clear();
+            CurrentTarget = null;
+        }
     }
 
-    public override void Move(Vector3 position)
+    Vector3 ownerLocalPosition(Vector3 position)
     {
-        base.Move(position);
-        Route = bfs.FindPath((int)transform.position.x, (int)transform.position.z, (int)position.x, (int)position.z);
-        if (Route.Any())
-        {
-            prevPosition = transform.position;
-            currentRouteTarget = Route.First() + Vector3.up;
-        }
-        //bfs.FindPath((int)transform.localPosition.x, (int)transform.localPosition.z, (int)position.x, (int)position.z);
+        return Spawner.transform.InverseTransformVector(position);
     }
 
-    public override void UpdateMove()
+    Vector3 ownerWorldPosition(Vector3 localPosition)
     {
-        base.UpdateMove();
-        transform.position = Vector3.Lerp(prevPosition, currentRouteTarget, currentTimer / currentTime);
-
-        if (currentTimer / currentTime >= 1f)
-        {
-            Route.RemoveAt(0);
-            currentTimer = ChaseTime;
-        }
+        return Spawner.transform.TransformVector(localPosition);
     }
 
     public override void Attack(Transform target)
     {
         base.Attack(target);
-        if (Weapon.CanFire())
+        if (Weapon != null && Weapon.CanFire())
             Weapon.FireWeapon();
+    }
+
+    public override void UpdateAttack ()
+    {
+        base.UpdateAttack();
+    }
+
+    public override void SetAttackState (Transform target)
+    {
+        Ray r = new Ray(transform.position, transform.forward);
+        if(Physics.Raycast(r, AttackRange, LayerMask.NameToLayer("Player")))
+            base.SetAttackState(target);
     }
 }

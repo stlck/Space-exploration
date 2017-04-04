@@ -12,15 +12,15 @@ public class TurretEnemy : NpcBase{
 
     }
 
-    public override void UpdateMove()
+    public override void UpdateChase()
     {
-        base.UpdateMove();
+        base.UpdateChase();
         transform.LookAt(CurrentTarget.position);
     }
 
-    public override void Move(Vector3 position)
+    public override void Chase(Vector3 position)
     {
-        base.Move(position);
+        base.Chase(position);
         transform.LookAt(position);
     }
 

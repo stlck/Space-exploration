@@ -58,9 +58,9 @@ public class CreateBoxMan : NpcBase {
 
         realignParts();
 	}
-    public override void Move(Vector3 position)
+    public override void Chase(Vector3 position)
     {
-        base.Move(position);
+        base.Chase(position);
 
         //transform.LookAt(stateTarget);
         var from = transform.position + new Vector3(

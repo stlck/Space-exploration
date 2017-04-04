@@ -127,7 +127,7 @@ public class ShipSpawner : MonoBehaviour {
 
         if (GUILayout.Button("Cmd! Create Ship")) { 
             if(MyAvatar.Instance.isServer)
-                SrvCreateShip(tiles, controls, Size.x, Size.y, TargetDock.DockAlign.position, TargetDock.DockAlign.rotation);//createShip();
+                SrvCreateShip(tiles, controls, Size.x, Size.y, TargetDock.transform.position, TargetDock.DockAlign.rotation);//createShip();
             else
             {
                 var shipString = "";

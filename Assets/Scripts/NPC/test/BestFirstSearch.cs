@@ -74,7 +74,7 @@ public class BestFirstSearch
     //
     // Find a path from (startx, starty) to (goalx, goaly)
     //
-    public List<Vector3> FindPath(int startx, int starty, int goalx, int goaly)
+    public List<Vector3> FindPath(int startx, int starty, int goalx, int goaly, float targetAlt)
     {
         var ret = new List<Vector3>();
         if (TestWidthBounds(startx) == false)
@@ -127,12 +127,12 @@ public class BestFirstSearch
         }
 
 
-        Debug.Log("The following path was found:");
+        //Debug.Log("The following path was found:");
         while (n != null)
         {
             string coord = string.Format("{0}, {1}", n.x, n.y);
-            Debug.Log(coord);
-            ret.Add(new Vector3(n.x, 0, n.y));
+            //Debug.Log(coord);
+            ret.Add(new Vector3(n.x, targetAlt, n.y));
             n = n.parent;
         }
 
