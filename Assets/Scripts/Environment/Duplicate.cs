@@ -11,25 +11,36 @@ public class Duplicate : BaseAddForceObject
     Material mat;
     public bool CanSplit = true;
 
+    public bool NewCollision = false;
+    public Transform EffectOnDeath;
+    public Transform EffectOnHit;
+
     // Use this for initialization
     void Awake()
     {
         tag = "Block";
-        rigidBody = GetComponent<Rigidbody>();
-        if (rigidBody == null)
-        {
-            rigidBody = gameObject.AddComponent<Rigidbody>();
-            rigidBody.isKinematic = true;
-            rigidBody.mass = 5;
+        if(!NewCollision)
+        { 
+            rigidBody = GetComponent<Rigidbody>();
+            if (rigidBody == null)
+            {
+                rigidBody = gameObject.AddComponent<Rigidbody>();
+                rigidBody.isKinematic = true;
+                rigidBody.mass = 5;
+            }
         }
     }
     
     public override void ApplyForce(Vector3 origin, float force, float radius)
     {
         base.ApplyForce(origin, force, radius);
+        
         if(hit)
         {
-            doCollision(origin, force);
+            if (!NewCollision)
+                doCollision(origin, force);
+            else
+                newCollisionTest(origin, force * Vector3.Distance(transform.position, origin) / radius);
         }
     }
 
@@ -48,6 +59,28 @@ public class Duplicate : BaseAddForceObject
                 }
             }
         }
+    }
+
+    bool newCollisionTest(Vector3 originPoint, float damage)
+    {
+        var pos = transform.position;
+        Health -= damage;
+
+        if (Health <= 0)
+        {
+            //hit = true;
+            //rigidBody.isKinematic = false;
+            if (EffectOnDeath != null)
+            {
+                Instantiate(EffectOnDeath, pos, EffectOnDeath.rotation);
+                //t = fragment.transform;
+            }
+            Destroy(gameObject);
+        }
+        else
+            Instantiate(EffectOnHit, originPoint, EffectOnHit.rotation);
+
+        return true;
     }
 
     bool doCollision(Vector3 originPoint, float force)
