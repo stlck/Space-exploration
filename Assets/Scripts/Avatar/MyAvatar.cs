@@ -57,9 +57,6 @@ public class MyAvatar : NetworkBehaviour
         base.OnStartLocalPlayer();
 
         instance = this;
-        //MyInput.EventAxisOut += updateMovement;
-        //MyInput.EventLookingAtPosition += updateLookingAt;
-
         IsLocal.Invoke();
     }
 
@@ -76,8 +73,6 @@ public class MyAvatar : NetworkBehaviour
             if(!isLocalPlayer)
             {
                 IsLocal.Invoke();
-                //MyInput.EventAxisOut += updateMovement;
-                //MyInput.EventLookingAtPosition += updateLookingAt;
             }
         }
     }

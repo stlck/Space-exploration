@@ -4,24 +4,16 @@ using UnityEngine.Networking;
 
 public class ReadInput : NetworkBehaviour
 {
-    //public delegate void DualAxisInput(float ver, float hor);
-    //public delegate void LookingAtInput(Vector3 t);
-    //public delegate void MouseBtnClicked(int index, bool isown);
-
     [SyncVar]
     public float lastHorizontal;
     [SyncVar]
     public float lastVertical;
 
-    //public event DualAxisInput EventAxisOut;
-
     [SyncVar]
     public Vector3 lookingAtPosition;
-    //public event LookingAtInput EventLookingAtPosition;
 
     [SyncVar]
     public bool isMouseDown;
-    //public event MouseBtnClicked EventMouseDown;
 
     void Start()
     {
@@ -41,7 +33,7 @@ public class ReadInput : NetworkBehaviour
 
                 CmdSendInputToServer(myValVer, myValHor);
 
-                getLookingAt();
+                lookAtMouse();
 
                 if (Input.GetMouseButtonUp(1))
                     CmdSendMouseBtnClick(1, false);
@@ -57,38 +49,83 @@ public class ReadInput : NetworkBehaviour
                 lastHorizontal = Input.GetAxis("Horizontal");
                 lastVertical = Input.GetAxis("Vertical");
 
-                getLookingAt();
+                lookAtMouse();
 
                 if (Input.GetMouseButtonUp(1))
                 {
                     isMouseDown = false;
-                    //EventMouseDown(1, false);
                 }
                 else if (Input.GetMouseButtonDown(1))
                 {
                     isMouseDown = true;
-                    //EventMouseDown(1, true);
                 }
             }
         }
-
-        //if (EventAxisOut != null)
-        //    EventAxisOut(lastVertical, lastHorizontal);
     }
 
     void getLookingAt()
     {
-        var t = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.y - transform.position.y));
+        Vector3 t = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.y - transform.position.y));
 
         if (isServer)
-        {
             lookingAtPosition = t;
-        }
-
         if (isClient)
             CmdSendLookingAt(t);
+    }
 
-        //EventLookingAtPosition(lookingAtPosition);
+    void lookAtMouse ()
+    {
+        Plane playerPlane = new Plane(Vector3.up, transform.position + Vector3.up);
+
+        // Generate a ray from the cursor position
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        float hitdist = 0.0f;
+        // If the ray is parallel to the plane, Raycast will return false.
+        if (playerPlane.Raycast(ray, out hitdist))
+        {
+            bool FoundTarget = false;
+            Vector3 targetPoint = Vector3.zero;
+            RaycastHit info;
+            if (Physics.Raycast(ray, out info, 100, Camera.main.cullingMask))
+            {
+
+                switch (info.collider.tag)
+                {
+                    case "Block":
+                        FoundTarget = true;
+                        // if y < player add V3.up
+                        // else aim at point
+                        targetPoint = info.point;
+                        if (info.point.y <= transform.position.y)
+                            targetPoint.y += 1f;
+
+                        break;
+                    case "Player":
+                        FoundTarget = true;
+                        targetPoint = info.point;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Get the point along the ray that hits the calculated distance.
+            if (!FoundTarget)
+            {
+                targetPoint = ray.GetPoint(hitdist);
+                targetPoint.y = transform.position.y;
+            }
+            var transformlookat = targetPoint;
+            transformlookat.y = transform.position.y;
+            //transform.LookAt(transformlookat);
+            if (isServer)
+                lookingAtPosition = (targetPoint);
+            else if (isClient)
+                CmdSendLookingAt(targetPoint);
+
+            //IKRight.LookAt(targetPoint);
+        }
     }
 
     public void OnDrawGizmos()
@@ -107,13 +144,11 @@ public class ReadInput : NetworkBehaviour
     void CmdSendLookingAt(Vector3 target)
     {
         lookingAtPosition = target;
-        //EventLookingAtPosition(lookingAtPosition);
     }
 
     [Command]
     void CmdSendMouseBtnClick(int index, bool down)
     {
         isMouseDown = down;
-        //EventMouseDown(index, down);
     }
 }

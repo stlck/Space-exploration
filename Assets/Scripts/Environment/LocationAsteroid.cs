@@ -13,6 +13,9 @@ public class LocationAsteroid : Location
     public override InstantiatedLocation SpawnLocation (Transform owner, int _seed)
     {
         seed = _seed;
+        if (seed >= 0)
+            UnityEngine.Random.InitState(seed);
+
         var ret = owner.GetComponent<InstantiatedLocation>();
         if (ret == null)
             ret = owner.gameObject.AddComponent<InstantiatedLocation>();

@@ -74,13 +74,19 @@ public class NetworkHelper : NetworkBehaviour
         go.transform.SetParent(parent.transform, true);
     }
 
+    
     [ClientRpc]
     public void RpcSpawnLocation(string locationName, int seed)
     {
         var c = MyLocations.First(m => m.Name == locationName);
         var go = new GameObject(c.name);
-        c.SpawnLocation(go.transform, seed);
+        var location = c.SpawnLocation(go.transform, seed);
         go.transform.position = c.Position;
+
+        if (c.Standing == LocationStandings.Hostile)
+        {
+            
+        }
     }
 }
 

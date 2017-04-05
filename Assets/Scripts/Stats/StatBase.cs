@@ -10,11 +10,31 @@ public class StatBase : MonoBehaviour {
     public float CurrentHealth = 10;
     Texture2D hpTex;
 
+    public Transform EffectOnDeath;
+    public Transform EffectOnSpawn;
+    public Transform EffectOnHit;
+
     void Awake()
     {
         hpTex = new Texture2D(1,1);
         hpTex.SetPixel(0, 0, Color.red);
         hpTex.Apply();
+    }
+
+    void Start()
+    {
+        if(EffectOnSpawn != null)
+        {
+            Instantiate(EffectOnSpawn, transform.position, EffectOnSpawn.rotation);
+        }
+    }
+
+    void OnDestroy()
+    {
+        if(Application.isPlaying && EffectOnDeath != null)
+        {
+            Instantiate(EffectOnDeath, transform.position, EffectOnDeath.rotation);
+        }
     }
 
     // Update is called once per frame
@@ -24,9 +44,13 @@ public class StatBase : MonoBehaviour {
             NetworkServer.Destroy(gameObject);
 	}
 
-    public void TakeDamage(float amount)
+    public void TakeDamage(float amount, Vector3 hitPoint, Vector3 directionFrom)
     {
         CurrentHealth -= amount;
+        if(EffectOnHit != null)
+        {
+            Instantiate(EffectOnHit, hitPoint, Quaternion.Euler(-directionFrom));
+        }
     }
 
     void OnGUI()

@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class NpcBase : BaseAddForceObject {
+
+    public NetworkIdentity NetworkIdentity;
 
     public NPCStates CurrentState;
     public float ChaseTime = 1f;
@@ -21,6 +24,8 @@ public class NpcBase : BaseAddForceObject {
 
     public virtual void SpawnEnemy(InstantiatedLocation owner, Vector3 position)
     {
+        NetworkServer.Spawn(gameObject);
+
         Spawner = owner;
         transform.position = position;
     }

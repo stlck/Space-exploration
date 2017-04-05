@@ -48,6 +48,8 @@ public class WalkingEnemy : NpcBase{
         RaycastHit hit;
         if(CurrentTarget != null && Physics.Raycast(transform.position + transform.forward, CurrentTarget.position - transform.position, out hit, AttackRange) && hit.transform == CurrentTarget)
         {
+            var lookAtPosition = CurrentTarget.position;
+            lookAtPosition.y = transform.position.y;
             transform.LookAt(CurrentTarget);
             if (Weapon != null && Weapon.CanFire())
                 Weapon.FireWeapon();

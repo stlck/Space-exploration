@@ -33,20 +33,20 @@ public class BaseProjectile : MonoBehaviour
         if (hasHit) return;
         hasHit = true;
 
-        if ( MyAvatar.Instance.GetComponent<Collider>() == collision.collider)
+        /*if ( MyAvatar.Instance.GetComponent<Collider>() == collision.collider)
         {
             Physics.IgnoreCollision(collision.collider, this.GetComponent<Collider>(), true);
             return;
-        }
+        }*/
 
         //Debug.Log("Collision " + collision.gameObject.name, collision.gameObject);
-        if(MyAvatar.Instance.isServer)
+        //if(MyAvatar.Instance.isServer)
         { 
             //Debug.Log("Collision on server");
             var tStats = collision.transform.GetComponent<StatBase>();
             if (tStats != null)
             {
-                tStats.TakeDamage(Owner.DamagePerHit);
+                tStats.TakeDamage(Owner.DamagePerHit, collision.contacts[0].point, transform.forward);
             }
         }
 

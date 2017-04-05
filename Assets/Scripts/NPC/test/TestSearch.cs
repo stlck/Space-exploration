@@ -108,7 +108,7 @@ public class TestSearch : MonoBehaviour {
         route = bfs.FindPath(x, z, tox, toz, MoveToTarget.position.y);
         prev = MoveTarget.position;
 
-        line.numPositions = route.Count;
+        line.positionCount = route.Count;
         for(int i = 0; i < route.Count ; i++)
         line.SetPosition(i, route[i] + Vector3.up);
         //e.Route = route;

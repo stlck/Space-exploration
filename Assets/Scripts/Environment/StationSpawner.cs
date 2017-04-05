@@ -13,14 +13,12 @@ public class StationSpawner
     Transform parent;
     TileSet TileSet;
     public BspStationTest Tester;
+    public List<BspCell> Rooms;
 
     public int[,] Generate(Transform _parent, int seed, int _size, int _splits = 5, int _minRoomSize = 8, int _halfCorridorSize = 1, TileSet _tileSet = TileSet.BlackAsteroid, bool buildmesh = true)
     {
         size = _size;
         map = new int[size, size];
-
-        if (seed >= 0)
-            Random.InitState(seed);
 
         iterations = _splits;
         minRoomSize = _minRoomSize;
@@ -36,27 +34,28 @@ public class StationSpawner
     void doAll(bool meshit)
     {
         var timer = Time.realtimeSinceStartup;
-        Debug.Log("t1 : " + (Time.realtimeSinceStartup - timer));
+        //Debug.Log("t1 : " + (Time.realtimeSinceStartup - timer));
         root = new BspCell(size / 2, size / 2, size, size);
+        Rooms = new List<BspCell>();
         var cite = iterations;
         // use bspcell
         split(root, cite);
-        Debug.Log("t1 : " + (Time.realtimeSinceStartup - timer));
+        //Debug.Log("t1 : " + (Time.realtimeSinceStartup - timer));
         // use bspcell
         offset(root);
-        Debug.Log("t2 : " + (Time.realtimeSinceStartup - timer));
+        //Debug.Log("t2 : " + (Time.realtimeSinceStartup - timer));
         // use bspcell
         toMap(root);
-        Debug.Log("t3 : " + (Time.realtimeSinceStartup - timer));
+        //Debug.Log("t3 : " + (Time.realtimeSinceStartup - timer));
         // use map
         connectCells(root.child1, root.child2);
-        Debug.Log("t4 : " + (Time.realtimeSinceStartup - timer));
+        //Debug.Log("t4 : " + (Time.realtimeSinceStartup - timer));
         // use map
         peelOuterLayer();
-        Debug.Log("t5 : " + (Time.realtimeSinceStartup - timer));
+        //Debug.Log("t5 : " + (Time.realtimeSinceStartup - timer));
         // use map
         entrance();
-        Debug.Log("t6 : " + (Time.realtimeSinceStartup - timer));
+        //Debug.Log("t6 : " + (Time.realtimeSinceStartup - timer));
 
         toTileMap();
         if(meshit)
@@ -65,7 +64,7 @@ public class StationSpawner
         //if (meshit)
         // use map
             //meshIt();
-        Debug.Log("t7 : " + (Time.realtimeSinceStartup - timer));
+        Debug.Log("SPAWN TIME : " + (Time.realtimeSinceStartup - timer));
     }
 
     void toTileMap()
@@ -119,7 +118,7 @@ public class StationSpawner
                     // layer beneath ground
                     CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
                     // roof
-                    CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
+                    CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.InnerWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform, 9);
 
                 }
                 // inside walls
@@ -128,10 +127,10 @@ public class StationSpawner
                     // layer beneath ground
                     CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
                     // roof
-                    CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform);
+                    CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.InnerWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform, 9);
                     // inside wall
                     for (int y = 0; y < 5; y++)
-                        CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.InnerWall], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
+                        CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.Room], Vector3.right * i + Vector3.forward * j + Vector3.up * y, Quaternion.identity, parent.transform);
                 }
             }
 
@@ -265,6 +264,8 @@ public class StationSpawner
                     if (i > 0 && j > 0 && i < size && j < size)
                         map[i, j] = 1;
                 }
+
+            Rooms.Add(cell);
         }
     }
 

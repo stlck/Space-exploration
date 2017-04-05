@@ -9,6 +9,7 @@ public class AvatarWeaponHandler : NetworkBehaviour
     public BaseWeapon EquippedWeapon;
 
     public static List<BaseWeapon> LoadedWeapons = new List<BaseWeapon>();
+    public Transform WeaponPoint;
 
     void Awake()
     {
@@ -34,17 +35,6 @@ public class AvatarWeaponHandler : NetworkBehaviour
     public void EquipWeapon(int id)
     {
         CmdEquipWeapon(id);
-    }
-
-    void Update()
-    {
-       /* if(isLocalPlayer)
-        {
-            if(Input.GetMouseButton(1))
-            {
-                tryFire();
-            }
-        }*/
     }
 
     void OnGUI()
@@ -79,7 +69,7 @@ public class AvatarWeaponHandler : NetworkBehaviour
     {
         BaseWeapon w = Instantiate(LoadedWeapons.First(m => m.Id == id));
         //NetworkServer.Spawn(w.gameObject);
-        w.transform.parent = transform;
+        w.transform.parent = WeaponPoint;
         w.transform.localPosition = w.transform.position;
         w.transform.localEulerAngles = Vector3.zero;
 

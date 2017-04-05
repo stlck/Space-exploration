@@ -32,12 +32,19 @@ public class Location : ScriptableObject {
         Debug.Log("Location base spawn");
         seed = _seed;
 
+        if (seed >= 0)
+            UnityEngine.Random.InitState(seed);
+
         var go = new GameObject().AddComponent<InstantiatedLocation>();
         go.TargetLocation = this;
 
         return go;
     }
-    
+
+    public virtual Vector3 GetRandomSpotInLocation()
+    {
+        return new Vector3();
+    }
 }
 
 public enum LocationTypes

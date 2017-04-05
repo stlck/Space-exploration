@@ -23,9 +23,18 @@ public class CoroutineSpawner : MonoBehaviour {
     public float SpawnFrameLimit = .2f;
     public int InstantiateCount = 0;
 
-    public void Enqueue (Transform transform, Vector3 position, Quaternion q, Transform p)
+    void Awake()
     {
-        SpawnQueue.Enqueue(new SpawnCase( transform, position, p, BlockSize * Vector3.one));
+        if (instance == null)
+        {
+            instance = this;
+            StartCoroutine(instance.SpawnRoutine());
+        }
+    }
+
+    public void Enqueue (Transform transform, Vector3 position, Quaternion q, Transform p, int layer = 8)
+    {
+        SpawnQueue.Enqueue(new SpawnCase( transform, position, p, BlockSize * Vector3.one, layer));
     }
 
     IEnumerator SpawnRoutine ()
@@ -40,6 +49,7 @@ public class CoroutineSpawner : MonoBehaviour {
                 timer = (Time.realtimeSinceStartup - real);
                 var c = SpawnQueue.Dequeue();
                 var t = Instantiate(c.t, c.Parent);
+                t.gameObject.layer = c.Layer;
                 t.localPosition = c.position * BlockSize;
                 t.localScale = c.Size;
                 InstantiateCount++;
@@ -50,16 +60,18 @@ public class CoroutineSpawner : MonoBehaviour {
     }
     public struct SpawnCase
     {
-        public SpawnCase(Transform T, Vector3 Position, Transform parent, Vector3 size)
+        public SpawnCase(Transform T, Vector3 Position, Transform parent, Vector3 size, int layer)
         {
             t = T;
             position = Position;
             Parent = parent;
             Size = size;
+            Layer = layer;
         }
         public Transform t;
         public Vector3 position;
         public Transform Parent;
         public Vector3 Size;
+        public int Layer;
     }
 }

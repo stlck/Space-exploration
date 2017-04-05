@@ -111,12 +111,6 @@ public class DrawInstanced : MonoBehaviour {
 
         public void AddToContainer(Transform addMe)
         {
-            //if (ToDraw[currentIndex].Count > 1020)
-            //{
-            //    ToDraw.Add(new Dictionary<Transform, Matrix4x4>());
-            //    currentIndex++;
-            //}
-
             ToDraw/*[currentIndex]*/.Add(addMe, addMe.localToWorldMatrix);
             Count++;
             Updated = true;

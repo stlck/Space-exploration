@@ -14,18 +14,25 @@ public class LocationStation : Location
     public int MinRoomSize = 8;
 
     public int[,] Tiles;
+    public List<BspCell> Rooms;
 
-    public override InstantiatedLocation SpawnLocation (Transform owner, int _seed)
+    public override InstantiatedLocation SpawnLocation (Transform owner, int _seed/*, int Size = 50, int TileSize = 1*/)
     {
         seed = _seed;
+        if (seed >= 0)
+            UnityEngine.Random.InitState(seed);
+
         var ret = owner.GetComponent<InstantiatedLocation>();
         if (ret == null)
             ret = owner.gameObject.AddComponent<InstantiatedLocation>();
 
         ret.TargetLocation = this;
 
+        //var splits = Splits + Random.Range
+
         var spawner = new StationSpawner();
         Tiles = spawner.Generate(owner, seed, Size, Splits, MinRoomSize, HalfCorridorSize, TileSet);
+        Rooms = spawner.Rooms;
 
         BestFirstSearch = new BestFirstSearch(Size, Size);
 
@@ -37,6 +44,13 @@ public class LocationStation : Location
             }
 
         return ret;
+    }
+
+    public override Vector3 GetRandomSpotInLocation ()
+    {
+        var room = Rooms[Random.Range(0, Rooms.Count)];
+
+        return new Vector3(room.x, 1, room.y);
     }
 }
 

@@ -20,14 +20,17 @@ public class Testing : MonoBehaviour {
 
     void OnGUI()
     {
-        if(GUILayout.Button("Spawn Enemy"))
-        {
-            if (Owner == null)
-                Owner = GameObject.FindObjectOfType<InstantiatedLocation>();
+        if(MyAvatar.Instance.isServer)
+        { 
+            if(GUILayout.Button("Spawn Enemy"))
+            {
+                if (Owner == null)
+                    Owner = GameObject.FindObjectOfType<InstantiatedLocation>();
+            
+                var e = Instantiate(Enemies[0], Owner.transform);
+                e.SpawnEnemy(Owner, Owner.FindOpenSpotInLocation());
 
-            var e = Instantiate(Enemies[0], Owner.transform);
-            e.SpawnEnemy(Owner, Owner.transform.position + Vector3.right * 8 + Vector3.up + Vector3.forward * 10);
-
+            }
         }
     }
 }

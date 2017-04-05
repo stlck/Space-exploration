@@ -8,6 +8,7 @@ public class MoveAvator : MovementBase
     public float StrafeSpeed = 2;
     public LayerMask walkable;
     public NetworkTransform nTransform;
+    public Transform XAxisRotationTransform;
     CharacterController charCtrl;
 
     // Use this for initialization
@@ -54,7 +55,7 @@ public class MoveAvator : MovementBase
                 }
                 
                 charCtrl.Move((forward + right + grav) * Time.deltaTime);
-                transform.LookAt(MouseLookAt);
+                rotateTransform();
             }
         }
         else if(isServer || isLocalPlayer && nTransform.lastSyncTime > Time.deltaTime)
@@ -72,7 +73,16 @@ public class MoveAvator : MovementBase
                 !Physics.Raycast(new Ray(transform.position, right), .5f, walkable))
                 transform.position = transform.position + (right * Time.deltaTime);
 
-            transform.LookAt(MouseLookAt);
+                rotateTransform();
         }
+    }
+
+    void rotateTransform()
+    {
+        var lookAt = MouseLookAt;
+        lookAt.y = transform.position.y;
+        transform.LookAt(lookAt);
+        XAxisRotationTransform.LookAt(MouseLookAt);
+        //XAxisRotationTransform
     }
 }

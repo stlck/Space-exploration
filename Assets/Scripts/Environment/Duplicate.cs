@@ -14,6 +14,7 @@ public class Duplicate : BaseAddForceObject
     // Use this for initialization
     void Awake()
     {
+        tag = "Block";
         rigidBody = GetComponent<Rigidbody>();
         if (rigidBody == null)
         {

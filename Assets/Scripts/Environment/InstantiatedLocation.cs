@@ -15,4 +15,9 @@ public class InstantiatedLocation : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    public Vector3 FindOpenSpotInLocation()
+    {
+        return TargetLocation.GetRandomSpotInLocation() + transform.position;
+    }
 }

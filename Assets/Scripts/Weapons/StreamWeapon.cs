@@ -12,14 +12,13 @@ public class StreamWeapon : BaseWeapon {
         base.FireWeapon();
 
         VisualEffects.Play();
-
         
         var hits = Physics.SphereCastAll(transform.position + transform.forward * Width * 1.1f, Width, transform.forward, Range);
         foreach (var h in hits)
         {
             var s = h.transform.GetComponent<StatBase>();
             if (s != null)
-                s.TakeDamage(DamagePerHit);
+                s.TakeDamage(DamagePerHit, h.point, transform.forward);
         }
     }
 

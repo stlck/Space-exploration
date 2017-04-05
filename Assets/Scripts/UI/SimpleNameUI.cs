@@ -33,8 +33,8 @@ public class SimpleNameUI : MonoBehaviour {
             return;
 
         var p = Camera.main.WorldToScreenPoint(transform.position + offset);
-        GUILayout.BeginArea(new Rect(p.x, Screen.height - p.y, width, height));
-        GUILayout.TextArea(Label);
+        GUILayout.BeginArea(new Rect(p.x - width/2, Screen.height - p.y, width, height));
+        GUILayout.Label(Label);
         GUILayout.EndArea();
     }
 }
