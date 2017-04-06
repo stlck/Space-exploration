@@ -12,14 +12,16 @@ public class Duplicate : BaseAddForceObject
     public bool CanSplit = true;
 
     public bool NewCollision = false;
-    public Transform EffectOnDeath;
-    public Transform EffectOnHit;
+    public DuplicateFragment EffectOnDeath;
+    public DuplicateFragment EffectOnHit;
 
     // Use this for initialization
     void Awake()
     {
         tag = "Block";
-        if(!NewCollision)
+        if (GetComponent<InstanceMe>() != null)
+        mat = GetComponent<InstanceMe>().Material;
+        if (!NewCollision)
         { 
             rigidBody = GetComponent<Rigidbody>();
             if (rigidBody == null)
@@ -30,7 +32,12 @@ public class Duplicate : BaseAddForceObject
             }
         }
     }
-    
+
+    public override void Start ()
+    {
+        
+    }
+
     public override void ApplyForce(Vector3 origin, float force, float radius)
     {
         base.ApplyForce(origin, force, radius);
@@ -46,18 +53,25 @@ public class Duplicate : BaseAddForceObject
 
     public void OnCollisionEnter(Collision collision)
     {
-        if (!hit )// && collision.relativeVelocity.magnitude > minForce)
+        if (!NewCollision)
         {
-            if(!doCollision(collision.contacts[0].point, collision.relativeVelocity.magnitude))
+            if (!hit )// && collision.relativeVelocity.magnitude > minForce)
             {
-                Health -= collision.relativeVelocity.magnitude;
-                if(Health <= 0)
+                if (!doCollision(collision.contacts[0].point, collision.relativeVelocity.magnitude))
                 {
-                    hit = true;
-                    rigidBody.isKinematic = false;
-                    Destroy(gameObject, Random.Range( 10, 30));
+                    Health -= collision.relativeVelocity.magnitude;
+                    if (Health <= 0)
+                    {
+                        hit = true;
+                        rigidBody.isKinematic = false;
+                        Destroy(gameObject, Random.Range(10, 30));
+                    }
                 }
             }
+        }
+        else
+        {
+            newCollisionTest(collision.contacts[0].point, collision.relativeVelocity.magnitude);
         }
     }
 
@@ -72,13 +86,17 @@ public class Duplicate : BaseAddForceObject
             //rigidBody.isKinematic = false;
             if (EffectOnDeath != null)
             {
-                Instantiate(EffectOnDeath, pos, EffectOnDeath.rotation);
+                var e = Instantiate(EffectOnDeath, originPoint, EffectOnDeath.transform.rotation);
+                e.SetMaterial(mat);
                 //t = fragment.transform;
             }
             Destroy(gameObject);
         }
-        else
-            Instantiate(EffectOnHit, originPoint, EffectOnHit.rotation);
+        else if(EffectOnHit != null)
+        {
+            var e = Instantiate(EffectOnHit, originPoint, EffectOnHit.transform.rotation);
+            e.SetMaterial(mat);
+        }
 
         return true;
     }

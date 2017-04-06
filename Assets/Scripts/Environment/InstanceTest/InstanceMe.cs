@@ -35,7 +35,7 @@ public class InstanceMe : MonoBehaviour {
         while(gameObject.activeInHierarchy)
         {
             yield return new WaitForFixedUpdate();
-            if(rb.velocity.magnitude > magnitudeLimit)
+            if(rb != null && rb.velocity.magnitude > magnitudeLimit)
                 DrawInstanced.Instance.UpdateMatrix(transform, collection, Material);
         }
     }

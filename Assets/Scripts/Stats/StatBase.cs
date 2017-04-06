@@ -8,6 +8,8 @@ public class StatBase : MonoBehaviour {
 
     public float MaxHealth = 10;
     public float CurrentHealth = 10;
+    public int CreditsOnKill = 0;
+
     Texture2D hpTex;
 
     public Transform EffectOnDeath;
@@ -40,9 +42,10 @@ public class StatBase : MonoBehaviour {
     // Update is called once per frame
     //[ServerCallback]
     void Update () {
-		if (CurrentHealth <= 0 && MyAvatar.Instance != null && MyAvatar.Instance.isServer && GetComponent<NetworkIdentity> () != null)
-            NetworkServer.Destroy(gameObject);
-	}
+        if (CurrentHealth <= 0 && MyAvatar.Instance != null && MyAvatar.Instance.isServer && GetComponent<NetworkIdentity>() != null)
+            KillObject();
+
+    }
 
     public void TakeDamage(float amount, Vector3 hitPoint, Vector3 directionFrom)
     {
@@ -60,6 +63,16 @@ public class StatBase : MonoBehaviour {
             var p = Camera.main.WorldToScreenPoint(transform.position + Vector3.up);
             //GUI.HorizontalScrollbar(new Rect(p.x,p.y, 30, 5), CurrentHealth / MaxHealth, 5, 0, 1);
             GUI.DrawTexture(new Rect(p.x, Screen.height - p.y, (CurrentHealth / MaxHealth) * 30, 5), hpTex);
+        }
+    }
+
+    public void KillObject()
+    {
+        if(MyAvatar.Instance.isServer)
+        {
+            TeamStats.Instance.AddCredits(CreditsOnKill);
+            NetworkServer.Destroy(gameObject);
+
         }
     }
 }

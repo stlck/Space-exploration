@@ -225,6 +225,8 @@ public class ShipSpawner : MonoBehaviour {
         GUILayout.EndScrollView();
         if (IsTesting && changed)
         {
+            foreach (Transform c in Target.transform)
+                Destroy(c.gameObject);
             ShipToMesh(Target.transform, Size.x, Size.y, tiles, Target.GetComponent<MeshRenderer>().material);
             showControls();
         }
@@ -318,11 +320,13 @@ public class ShipSpawner : MonoBehaviour {
 
     public static void ShipToMesh(Transform _target, int _sizex, int _sizey, int[,] _tiles, Material mat = null)
     {
+        Debug.Log("CREATING SHIP");
         var center = new Vector3((int)_sizex / 2, 0, (int)_sizey / 2);
         MeshDraft lowerDraft = new MeshDraft();
-        MeshDraft upperDraft = new MeshDraft();
+        //MeshDraft upperDraft = new MeshDraft();
         Mesh lower = new Mesh();
-        Mesh upper = new Mesh();
+        //Mesh upper = new Mesh();
+
         List<Vector3> nodeTiles = new List<Vector3>();
         for (int x = 0; x < _sizex-1; x++)
             for (int y = 0; y < _sizey-1; y++)
@@ -336,38 +340,39 @@ public class ShipSpawner : MonoBehaviour {
                 if (_tiles[x+1, y] > 0)
                     nodeTiles.Add(positionOf(x+1, y));
 
+                // floor and roof
                 if (nodeTiles.Count == 4)
                 {
                     lowerDraft.Add(MeshDraft.Quad(nodeTiles[3], nodeTiles[2], nodeTiles[1], nodeTiles[0]));
-                    upperDraft.Add(MeshDraft.Quad(nodeTiles[3] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
-                    //draft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[2], nodeTiles[3]));
+                    //upperDraft.Add(MeshDraft.Quad(nodeTiles[3] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
                     
                 }
+                // curved side
                 else if (nodeTiles.Count == 3)
                 {
                     lowerDraft.Add(MeshDraft.Triangle(nodeTiles[2], nodeTiles[1], nodeTiles[0]));
-                    upperDraft.Add(MeshDraft.Triangle(nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
-                    //Debug.Log(nodeTiles[0] + " x " + nodeTiles[1] + " x " + nodeTiles[2]);
+                    //upperDraft.Add(MeshDraft.Triangle(nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
+                    
                     if (nodeTiles[0].x != nodeTiles[1].x && nodeTiles[0].z != nodeTiles[1].z)
                     {
-                        upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[1]));
-                        upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
+                        //upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[1]));
+                        //upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
 
                         lowerDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] - Vector3.up * 2, nodeTiles[1] - Vector3.up * 2, nodeTiles[1]));
                         lowerDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] - Vector3.up * 2, nodeTiles[0] - Vector3.up * 2));
                     }
                     else if (nodeTiles[0].x != nodeTiles[2].x && nodeTiles[0].z != nodeTiles[2].z)
                     {
-                        upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[2]));
-                        upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[2], nodeTiles[2] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
+                        //upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[2]));
+                        //upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[2], nodeTiles[2] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
 
                         lowerDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] - Vector3.up * 2, nodeTiles[2] - Vector3.up, nodeTiles[2]));
                         lowerDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[2], nodeTiles[2] - Vector3.up * 2, nodeTiles[0] - Vector3.up * 2));
                     }
                     else if (nodeTiles[1].x != nodeTiles[2].x && nodeTiles[1].z != nodeTiles[2].z)
                     {
-                        upperDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[2]));
-                        upperDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[2], nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2));
+                        //upperDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[2]));
+                        //upperDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[2], nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2));
 
                         lowerDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[1] - Vector3.up * 2, nodeTiles[2] - Vector3.up * 2, nodeTiles[2]));
                         lowerDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[2], nodeTiles[2] - Vector3.up * 2, nodeTiles[1] - Vector3.up * 2));
@@ -375,10 +380,14 @@ public class ShipSpawner : MonoBehaviour {
                     
                     // add wall
                 }
+
+                // straight side
                 else if (nodeTiles.Count == 2)
                 {
-                    upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[1]));
-                    upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
+                    //var dir = nodeTiles[0].x - _sizex / 2;
+                    //dir = Mathf.Clamp(dir, -1, 1);
+                    //upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[1]));
+                    //upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
 
                     lowerDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] - Vector3.up * 2, nodeTiles[1] - Vector3.up * 2, nodeTiles[1]));
                     lowerDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] - Vector3.up * 2, nodeTiles[0] - Vector3.up * 2));
@@ -387,19 +396,145 @@ public class ShipSpawner : MonoBehaviour {
             }
 
         lowerDraft.Move(Vector3.left * center.x + Vector3.forward * center.z);
-        upperDraft.Move(Vector3.left * center.x + Vector3.forward * center.z);
+        //upperDraft.Move(Vector3.left * center.x + Vector3.forward * center.z);
         lower = lowerDraft.ToMesh();
-        upper = upperDraft.ToMesh();
+        //upper = upperDraft.ToMesh();
         //_target.mesh = lower;
 
         var lChild = new GameObject();
         lChild.transform.SetParent(_target);
-        lChild.transform.localPosition = Vector3.down * 2;
+        lChild.transform.localPosition = Vector3.zero;
         lChild.transform.localScale = Vector3.one;
-        lChild.AddComponent<MeshFilter>().mesh = upper;
+        lChild.AddComponent<MeshFilter>().mesh = lower;
         lChild.AddComponent<MeshRenderer>().material = mat;//_target.GetComponent<MeshRenderer>().material;
         lChild.gameObject.layer = LayerMask.NameToLayer("Ship");
-        lChild.AddComponent<MeshCollider>().sharedMesh = upper;
+        lChild.AddComponent<MeshCollider>().sharedMesh = lower;
+
+
+        Mesh upper = new Mesh();
+        MeshDraft upperDraft = new MeshDraft();
+        tileCode code = 0;
+        for (int x = 0; x < _sizex - 1; x++)
+            for (int y = 0; y < _sizey - 1; y++)
+            {
+                code = tileCode.none;
+                if (_tiles[x, y] > 0)
+                {
+                    nodeTiles.Add(positionOf(x, y));
+                    code |= tileCode.lowerLeft;
+                }
+                if (_tiles[x, y + 1] > 0)
+                {
+                    nodeTiles.Add(positionOf(x, y + 1));
+                    code |= tileCode.upperleft;
+                }
+                if (_tiles[x + 1, y + 1] > 0)
+                {
+                    nodeTiles.Add(positionOf(x + 1, y + 1));
+                    code |= tileCode.upperright;
+                }
+                if (_tiles[x + 1, y] > 0)
+                {
+                    nodeTiles.Add(positionOf(x + 1, y));
+                    code |= tileCode.lowerright;
+                }
+
+                // floor and roof
+                if (nodeTiles.Count == 4)
+                {
+                    upperDraft.Add(MeshDraft.Quad(nodeTiles[3] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
+
+                }
+                // curved side
+                else if (nodeTiles.Count == 3)
+                {
+                    upperDraft.Add(MeshDraft.Triangle(nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
+                    if ((code & tileCode.lowerLeft) != tileCode.lowerLeft)
+                    {
+                        upperDraft.Add(MeshDraft.Triangle(nodeTiles[0] + Vector3.up * 2, nodeTiles[0] + Vector3.forward, nodeTiles[2] + Vector3.up * 2));
+
+                    }
+                    else if ((code & tileCode.upperleft) != tileCode.upperleft)
+                    {
+                        upperDraft.Add(MeshDraft.Triangle(nodeTiles[0] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.back));
+                    }
+                    else if ((code & tileCode.lowerright) != tileCode.lowerright)
+                    {
+                        upperDraft.Add(MeshDraft.Triangle(nodeTiles[0] + Vector3.up * 2,  nodeTiles[0] + Vector3.right, nodeTiles[2] + Vector3.up * 2));
+
+                    }
+                    else if ((code & tileCode.upperright) != tileCode.upperright)
+                    {
+                        upperDraft.Add(MeshDraft.Triangle(nodeTiles[1] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.right));
+                    }
+                    /*
+                                        if (nodeTiles[0].x != nodeTiles[1].x && nodeTiles[0].z != nodeTiles[1].z)
+                                        {
+                                            upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[1]));
+                                            upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
+                                        }
+                                        else if (nodeTiles[0].x != nodeTiles[2].x && nodeTiles[0].z != nodeTiles[2].z)
+                                        {
+                                            upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[2]));
+                                            upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[2], nodeTiles[2] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
+                                        }
+                                        else if (nodeTiles[1].x != nodeTiles[2].x && nodeTiles[1].z != nodeTiles[2].z)
+                                        {
+                                            upperDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[2] + Vector3.up * 2, nodeTiles[2]));
+                                            upperDraft.Add(MeshDraft.Quad(nodeTiles[1], nodeTiles[2], nodeTiles[2] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2));
+                                        }*/
+
+                    // add wall
+                }
+
+                // straight side
+                else if (nodeTiles.Count == 2)
+                {
+                    if((code & tileCode.lowerLeft) == tileCode.lowerLeft && (code & tileCode.upperleft) == tileCode.upperleft)
+                    {
+                        upperDraft.Add(MeshDraft.Quad(nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2, nodeTiles[0] + Vector3.right, nodeTiles[1] + Vector3.right));
+                    }
+                    else if((code & tileCode.lowerright) == tileCode.lowerright && (code & tileCode.upperright) == tileCode.upperright)
+                    {
+                        upperDraft.Add(MeshDraft.Quad(nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2, nodeTiles[0] + Vector3.left, nodeTiles[1] + Vector3.left));
+
+                    }
+                    else if ((code & tileCode.lowerLeft) == tileCode.lowerLeft && (code & tileCode.lowerright) == tileCode.lowerright)
+                    {
+                        upperDraft.Add(MeshDraft.Quad( nodeTiles[1] + Vector3.back, nodeTiles[0] + Vector3.back, nodeTiles[0] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2));
+                    }
+                    else if ((code & tileCode.upperleft) == tileCode.upperleft && (code & tileCode.upperleft) == tileCode.upperleft)
+                    {
+                        upperDraft.Add(MeshDraft.Quad(nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2, nodeTiles[0] + Vector3.forward, nodeTiles[1] + Vector3.forward));
+                    }
+                    //upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[0] + Vector3.up * 2, nodeTiles[1] + Vector3.up * 2, nodeTiles[1]));
+                    //upperDraft.Add(MeshDraft.Quad(nodeTiles[0], nodeTiles[1], nodeTiles[1] + Vector3.up * 2, nodeTiles[0] + Vector3.up * 2));
+                }
+                else if(nodeTiles.Count == 1)
+                {
+                    switch(code)
+                    {
+                        case tileCode.lowerLeft:
+                            upperDraft.Add(MeshDraft.Triangle(nodeTiles[0] + Vector3.up * 2, nodeTiles[0] + Vector3.right, nodeTiles[0] + Vector3.back));
+                            break;
+                        case tileCode.upperleft:
+                            upperDraft.Add(MeshDraft.Triangle(nodeTiles[0] + Vector3.up * 2, nodeTiles[0] + Vector3.forward, nodeTiles[0] + Vector3.right));
+                            break;
+                        case tileCode.upperright:
+                            upperDraft.Add(MeshDraft.Triangle(nodeTiles[0] + Vector3.up * 2, nodeTiles[0] + Vector3.left, nodeTiles[0] + Vector3.forward));
+                            break;
+                        case tileCode.lowerright:
+                            upperDraft.Add(MeshDraft.Triangle(nodeTiles[0] + Vector3.up * 2, nodeTiles[0] + Vector3.back, nodeTiles[0] + Vector3.left));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                nodeTiles.Clear();
+            }
+
+        upperDraft.Move(Vector3.left * center.x + Vector3.forward * center.z);
+        upper = upperDraft.ToMesh();
 
         var uChild = new GameObject();
         uChild.transform.SetParent(_target);
@@ -414,5 +549,15 @@ public class ShipSpawner : MonoBehaviour {
     static Vector3 positionOf(int x, int y)
     {
         return Vector3.right * x + Vector3.back * (y);
+    }
+
+    [System.Flags]
+    enum tileCode
+    {
+        none = 0,
+        lowerLeft = 1,
+        lowerright = 2,
+        upperleft = 4,
+        upperright = 8
     }
 }

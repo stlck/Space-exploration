@@ -39,7 +39,7 @@ public class BaseAddForceObject : MonoBehaviour {
             }
         }
 
-        if (hit)
+        if (hit && rigidBody != null)
         {
             rigidBody.AddExplosionForce(force, origin, radius);
         }

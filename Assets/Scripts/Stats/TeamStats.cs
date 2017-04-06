@@ -16,6 +16,7 @@ public class TeamStats : NetworkBehaviour
 
     [SyncVar]
     public int Credits = 0;
+    public int StartCredits = 200;
     // weapons
     // storage
 
@@ -34,8 +35,7 @@ public class TeamStats : NetworkBehaviour
     public override void OnStartServer()
     {
         NetworkServer.Spawn(gameObject);
-
-        Credits = 100;
+        Credits = StartCredits;
     }
 
     public void AddCredits(int amount)
@@ -44,6 +44,5 @@ public class TeamStats : NetworkBehaviour
             Credits += amount;
         else
             MyAvatar.Instance.CmdAddCredits(amount);
-            //CmdAddCredits(amount);
     }
 }

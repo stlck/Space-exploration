@@ -22,13 +22,14 @@ public class Testing : MonoBehaviour {
     {
         if(MyAvatar.Instance.isServer)
         { 
-            if(GUILayout.Button("Spawn Enemy"))
+            foreach(var e in Enemies)
+            if(GUILayout.Button("Spawn " + e.name))
             {
                 if (Owner == null)
                     Owner = GameObject.FindObjectOfType<InstantiatedLocation>();
             
-                var e = Instantiate(Enemies[0], Owner.transform);
-                e.SpawnEnemy(Owner, Owner.FindOpenSpotInLocation());
+                var inst = Instantiate(e, Owner.transform);
+                inst.SpawnEnemy(Owner, Owner.FindOpenSpotInLocation());
 
             }
         }

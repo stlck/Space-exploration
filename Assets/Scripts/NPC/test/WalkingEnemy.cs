@@ -26,11 +26,8 @@ public class WalkingEnemy : NpcBase{
         }
     }
 
-
     public override void Update()
     {
-        //base.Update();
-        //currentTimer += Time.deltaTime;
         targetRefreshTimer += Time.deltaTime;
         if (targetRefreshTimer >= 1f)
         {
@@ -41,7 +38,6 @@ public class WalkingEnemy : NpcBase{
                 var tPos = ownerLocalPosition(CurrentTarget.position);
                 var lPos = ownerLocalPosition(transform.position);
                 Route = bfs.FindPath((int)transform.localPosition.x, (int)transform.localPosition.z, (int)CurrentTarget.localPosition.x, (int)CurrentTarget.localPosition.z, 1);
-                //Route = bfs.FindPath((int)transform.localPosition.x, (int)transform.localPosition.z, (int)CurrentTarget.localPosition.x, (int)CurrentTarget.localPosition.z, 1);
             }
             targetRefreshTimer = 0f;
         }
@@ -55,23 +51,18 @@ public class WalkingEnemy : NpcBase{
                 Weapon.FireWeapon();
         }
         // if can see && within attackrange - attack
-        //  else
         else if (Route.Any())
         {
             currentTimer += Time.deltaTime * WalkingSpeed;
             var tpos = Spawner.transform.TransformPoint(Route[0]);
             transform.position = Vector3.MoveTowards(transform.position, tpos, Time.deltaTime * WalkingSpeed);
             transform.LookAt(tpos);
-            //transform.position = Vector3.Lerp(prevPosition, tpos, currentTimer / currentTime);
 
             if ( Vector3.Distance( transform.position, tpos) < 1f)
-            //if (currentTimer >= currentTime)
             {
                 var tPos = ownerLocalPosition(CurrentTarget.position);
                 var lPos = ownerLocalPosition(transform.position);
 
-                //Route = bfs.FindPath((int)transform.localPosition.x, (int)transform.localPosition.z, (int)CurrentTarget.localPosition.x, (int)CurrentTarget.localPosition.z, 1);
-                //if (Route.Any())
                 Route.RemoveAt(0);
                 currentTimer = 0f;
             }
@@ -94,22 +85,4 @@ public class WalkingEnemy : NpcBase{
         return Spawner.transform.TransformVector(localPosition);
     }
 
-    public override void Attack(Transform target)
-    {
-        base.Attack(target);
-        if (Weapon != null && Weapon.CanFire())
-            Weapon.FireWeapon();
-    }
-
-    public override void UpdateAttack ()
-    {
-        base.UpdateAttack();
-    }
-
-    public override void SetAttackState (Transform target)
-    {
-        Ray r = new Ray(transform.position, transform.forward);
-        if(Physics.Raycast(r, AttackRange, LayerMask.NameToLayer("Player")))
-            base.SetAttackState(target);
-    }
 }
