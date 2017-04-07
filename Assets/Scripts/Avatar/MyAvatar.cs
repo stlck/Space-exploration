@@ -81,7 +81,8 @@ public class MyAvatar : NetworkBehaviour
     {
         // set parent on new collider
         RaycastHit hit;
-        if( Physics.Raycast(transform.position, transform.up * -1, out hit, 1, Movement.walkable))
+        Debug.DrawRay(transform.position, transform.up * -3);
+        if( Physics.Raycast(transform.position, transform.up * -1, out hit, 3, Movement.walkable))
         {
             if (hit.transform.root != transform.parent)
                 SetParent(hit.transform.root);
@@ -158,6 +159,10 @@ public class MyAvatar : NetworkBehaviour
         var mov = NetworkServer.FindLocalObject(id).GetComponent<MovementBase>();
         if(mov != CurrentMovementBase)
         {
+            if(CurrentMovementBase != null)
+                CurrentMovementBase.SetInput(0, 0);
+            Movement.SetInput(0, 0);
+
             CurrentMovementBase = NetworkServer.FindLocalObject(id).GetComponent<MovementBase>();
             ChangeState(States.OnShip);
             CurrentMovementBase.TakeControl();

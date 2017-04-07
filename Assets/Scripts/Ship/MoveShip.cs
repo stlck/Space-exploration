@@ -40,9 +40,10 @@ public class MoveShip : MovementBase
         {
             //owningShip.CurrentSpeed = Mathf.Lerp(owningShip.CurrentSpeed, MoveSpeed, Time.deltaTime);
             transform.Translate(Vector3.forward * vert * Time.deltaTime * MoveSpeed);// owningShip.CurrentSpeed);
-            transform.Rotate(Vector3.up, hor * Time.deltaTime * RotateSpeed);
             // check boundaries
         }
+
+        transform.Rotate(Vector3.up, hor * Time.deltaTime * RotateSpeed);
     }
 
     void FixedUpdate()
@@ -58,7 +59,7 @@ public class MoveShip : MovementBase
 
             rigidbody.AddForce(transform.forward * vert * MoveSpeed * PhysicsModifier * Time.fixedDeltaTime, ForceMode.Force);
 
-            rigidbody.AddTorque(Vector3.up * RotateSpeed * hor * Time.fixedDeltaTime * PhysicsModifier);
+            //rigidbody.AddTorque(Vector3.up * RotateSpeed * hor * Time.fixedDeltaTime * PhysicsModifier);
 
             if (rigidbody.velocity.magnitude > MoveSpeed)
                 rigidbody.velocity = rigidbody.velocity.normalized * MoveSpeed; 

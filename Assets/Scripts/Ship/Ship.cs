@@ -141,25 +141,6 @@ public class Ship : NetworkBehaviour {
                 Warping = false;
                 transform.position = WarpPosition;
             }
-           /* var sign = Vector3.Cross(transform.forward, WarpPosition - transform.position).z < 0 ? -1: 1;
-            transform.Rotate(Vector3.up, Mathf.Clamp(sign * Vector3.Angle(transform.forward, WarpPosition - transform.position),-ShipMovement.RotateSpeed,ShipMovement.RotateSpeed) * Time.deltaTime);
-            //transform.forward = Vector3.RotateTowards(transform.forward, transform.position - WarpPosition, 0, );
-            if(Vector3.Angle(transform.forward, WarpPosition - transform.position) < 10)
-            {
-                WarpSpeed = Mathf.SmoothStep(CurrentSpeed, WarpSpeed, 3);
-                var t= Vector3.MoveTowards(transform.position, WarpPosition, WarpSpeed * Time.deltaTime);
-                WarpPosition.y = 30;
-                t.y = 30;
-                transform.position = t;
-
-                if (Vector3.Distance(transform.position, WarpPosition) < 50)
-                {
-                    t.y = 0;
-                    transform.position = t;
-                    Warping = false;
-                    CurrentSpeed = 0;
-                }
-            }*/
         }
 
         else if(Docking)

@@ -24,13 +24,14 @@ public class ShipSpawner : MonoBehaviour {
     Vector3 center;
     Vector2 scrollPosition;
     Transform testControls;
-
+    Rect pos;
     // Use this for initialization
     public void Start()
     {
         reset();
 
         ControlList = Resources.LoadAll<GameObject>("ShipControls").ToList();
+        pos = new Rect(300, 100, 400, 500);
 
         if (ControlList.Any())
             currentControl = 1;
@@ -119,7 +120,6 @@ public class ShipSpawner : MonoBehaviour {
 
     void buildWindow(int id)
     {
-        scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true);
         changed = false;
 
         if (GUILayout.Button("RESET"))
@@ -146,83 +146,15 @@ public class ShipSpawner : MonoBehaviour {
         if (GUILayout.Button("test create ship2"))
             createShipTest();
 
-        doGround = GUILayout.Toggle(doGround, doGround ? "SHOW CONTROLS" : "SHOW HULL");
-
-        if (doGround)
-        {
-            for (int y = 1; y < Size.y - 1; y++)
-            {
-                GUILayout.BeginHorizontal();
-                for (int x = 1; x < Size.x - 1; x++)
-                {
-                    if (y == center.z && x == center.x)
-                        GUI.contentColor = Color.green;
-                    else if (tiles[x, y] > 0)
-                        GUI.contentColor = Color.white;
-                    else
-                        GUI.contentColor = Color.grey;
-
-                    if (GUILayout.Button(tiles[x, y].ToString(), GUILayout.Width(25)) && hasNeighbor(x, y) > 0)
-                    {
-                        tiles[x, y] = tiles[x, y] == 1 ? 0 : 1;
-                        if (tiles[x, y] == 0)
-                            controls[x, y] = -1;
-                        changed = true;
-                    }
-                }
-                GUILayout.EndHorizontal();
-            }
-        }
-        else
-        {
-            int index = 1;
-            foreach (var c in ControlList)
-            {
-                if (GUILayout.Button(index + ":\t" + c.name))
-                {
-                    currentControl = index;
-                }
-                index++;
-            }
-            for (int y = 1; y < Size.y - 1; y++)
-            {
-                GUILayout.BeginHorizontal();
-                for (int x = 1; x < Size.x - 1; x++)
-                {
-                    if (tiles[x, y] == 1)
-                    {
-                        //if(hasNeighbor(x,y) == 4)
-                        if (matchConfig(ControlList[currentControl-1], x, y))
-                        {
-                            if (controls[x, y] == -1)
-                                GUI.contentColor = Color.green;
-                            else
-                                GUI.contentColor = Color.white;
-
-                            if (controls[x, y] == -1 && GUILayout.Button("x", GUILayout.Width(25)))// && hasNeighbor(x, y) > 2)
-                            {
-                                controls[x, y] = currentControl;//ControlList.IndexOf(currentControl);
-                                changed = true;
-                            }
-                            else if (controls[x, y] >= 0 && GUILayout.Button(controls[x, y].ToString(), GUILayout.Width(25)))
-                            {
-                                controls[x, y] = -1;
-                                changed = true;
-                            }
-                        }
-                        else
-                        {
-                            GUI.contentColor = Color.red;
-                            GUILayout.Button(controls[x, y].ToString(), GUILayout.Width(25));
-                        }
-                    }
-                    else
-                        GUILayout.Space(30);
-                }
-                GUILayout.EndHorizontal();
-            }
-        }
-        GUILayout.EndScrollView();
+        GUILayout.BeginHorizontal();
+        GUILayout.BeginVertical();
+        showLayout();
+        GUILayout.EndVertical();
+        GUILayout.BeginVertical();
+        showCommandObjects();
+        GUILayout.EndVertical();
+        GUILayout.EndHorizontal();
+        
         if (IsTesting && changed)
         {
             foreach (Transform c in Target.transform)
@@ -230,13 +162,95 @@ public class ShipSpawner : MonoBehaviour {
             ShipToMesh(Target.transform, Size.x, Size.y, tiles, Target.GetComponent<MeshRenderer>().material);
             showControls();
         }
+
+        GUI.DragWindow();
+    }
+
+    void showLayout()
+    {
+        //GUILayout.BeginArea(new Rect(10, 10, pos.width / 2 - 20, 300));
+        for (int y = 1; y < Size.y - 1; y++)
+        {
+            GUILayout.BeginHorizontal();
+            for (int x = 1; x < Size.x - 1; x++)
+            {
+                if (y == center.z && x == center.x)
+                    GUI.contentColor = Color.green;
+                else if (tiles[x, y] > 0)
+                    GUI.contentColor = Color.white;
+                else
+                    GUI.contentColor = Color.grey;
+
+                if (GUILayout.Button(tiles[x, y].ToString(), GUILayout.Width(22)) && hasNeighbor(x, y) > 0)
+                {
+                    tiles[x, y] = tiles[x, y] == 1 ? 0 : 1;
+                    if (tiles[x, y] == 0)
+                        controls[x, y] = -1;
+                    changed = true;
+                }
+            }
+            GUILayout.EndHorizontal();
+        }
+        //GUILayout.EndArea();
+    }
+
+    void showCommandObjects()
+    {
+        //GUILayout.BeginArea(new Rect(10, pos.width / 2 + 10, pos.width / 2 - 20, 300));
+        int index = 1;
+        foreach (var c in ControlList)
+        {
+            if (GUILayout.Button(index + ":\t" + c.name))
+            {
+                currentControl = index;
+            }
+            index++;
+        }
+        for (int y = 1; y < Size.y - 1; y++)
+        {
+            GUILayout.BeginHorizontal();
+            for (int x = 1; x < Size.x - 1; x++)
+            {
+                if (tiles[x, y] == 1)
+                {
+                    //if(hasNeighbor(x,y) == 4)
+                    if (matchConfig(ControlList[currentControl - 1], x, y))
+                    {
+                        if (controls[x, y] == -1)
+                            GUI.contentColor = Color.green;
+                        else
+                            GUI.contentColor = Color.white;
+
+                        if (controls[x, y] == -1 && GUILayout.Button("x", GUILayout.Width(25)))// && hasNeighbor(x, y) > 2)
+                        {
+                            controls[x, y] = currentControl;//ControlList.IndexOf(currentControl);
+                            changed = true;
+                        }
+                        else if (controls[x, y] >= 0 && GUILayout.Button(controls[x, y].ToString(), GUILayout.Width(25)))
+                        {
+                            controls[x, y] = -1;
+                            changed = true;
+                        }
+                    }
+                    else
+                    {
+                        GUI.contentColor = Color.red;
+                        GUILayout.Button(controls[x, y].ToString(), GUILayout.Width(25));
+                    }
+                }
+                else
+                    GUILayout.Space(30);
+            }
+            GUILayout.EndHorizontal();
+        }
+        //GUILayout.EndArea();
     }
 
     public void OnGUI()
     {
         if (!Show) return;
 
-        GUILayout.Window(41, new Rect(300, 100, 400, 500), buildWindow, "SHIP");
+        pos = GUILayout.Window(41, pos, buildWindow, "SHIP");
     }
 
     bool matchConfig(GameObject go, int x, int y)
@@ -409,6 +423,7 @@ public class ShipSpawner : MonoBehaviour {
         lChild.AddComponent<MeshRenderer>().material = mat;//_target.GetComponent<MeshRenderer>().material;
         lChild.gameObject.layer = LayerMask.NameToLayer("Ship");
         lChild.AddComponent<MeshCollider>().sharedMesh = lower;
+        lChild.GetComponent<MeshCollider>().convex = true;
 
 
         Mesh upper = new Mesh();
@@ -544,6 +559,7 @@ public class ShipSpawner : MonoBehaviour {
         uChild.AddComponent<MeshRenderer>().material = mat;// _target.GetComponent<MeshRenderer>().material;
         uChild.gameObject.layer = LayerMask.NameToLayer("ShipTop");
         uChild.AddComponent<MeshCollider>().sharedMesh = upper;
+        uChild.GetComponent<MeshCollider>().convex = true;
     }
 
     static Vector3 positionOf(int x, int y)

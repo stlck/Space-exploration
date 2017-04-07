@@ -40,8 +40,8 @@ public class MoveAvator : MovementBase
         {
             if(isServer || isLocalPlayer && nTransform.lastSyncTime > Time.deltaTime)
             {
-                var forward = transform.forward * vert * ForwardSpeed;
-                var right = transform.right * hor * StrafeSpeed;
+                var forward = Vector3.forward * vert * ForwardSpeed;
+                var right = Vector3.right * hor * StrafeSpeed;
                 var grav = Vector3.zero;
 
                 if(Physics.Raycast(transform.position, Vector3.down, 2, walkable))
@@ -60,8 +60,8 @@ public class MoveAvator : MovementBase
         }
         else if(isServer || isLocalPlayer && nTransform.lastSyncTime > Time.deltaTime)
         {
-            var forward = transform.forward * vert * ForwardSpeed;
-            var right = transform.right * hor * StrafeSpeed;
+            var forward = Vector3.forward * vert * ForwardSpeed;
+            var right = Vector3.right * hor * StrafeSpeed;
 
             RaycastHit hit;
 
