@@ -37,6 +37,7 @@ public class Location : ScriptableObject {
 
         var go = new GameObject().AddComponent<InstantiatedLocation>();
         go.TargetLocation = this;
+        go.name = this.GetType() + " " + seed;
 
         return go;
     }
@@ -44,6 +45,18 @@ public class Location : ScriptableObject {
     public virtual Vector3 GetRandomSpotInLocation()
     {
         return new Vector3();
+    }
+
+    public virtual void ShowCreator()
+    {
+        if (GUILayout.Button("new Position : " + Position))
+            Position = UnityEngine.Random.Range(-1f,1f) * 500 * Vector3.right + UnityEngine.Random.Range(-1f, 1f) * 500 * Vector3.forward;
+
+        if (GUILayout.Button("new Seed : " + seed))
+            seed = UnityEngine.Random.Range(0, 20000);
+
+        Type = (LocationTypes)GUILayout.SelectionGrid((int)Type, System.Enum.GetNames(typeof(LocationTypes)), 3);
+        Standing = (LocationStandings)GUILayout.SelectionGrid((int)Standing, System.Enum.GetNames(typeof(LocationStandings)), 3);
     }
 }
 

@@ -37,3 +37,12 @@ public class PlayerStateUpdate : UnityEvent<States> { }
 
 [System.Serializable]
 public class BoolUpdate : UnityEvent<bool> { }
+
+[System.Serializable]
+public class IntUpdate : UnityEvent<int> { }
+
+[System.Serializable]
+public class FloatUpdate : UnityEvent<float> { }
+
+[System.Serializable]
+public class Vector3Update : UnityEvent<Vector3> { }

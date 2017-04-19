@@ -18,11 +18,15 @@ public class NetworkHelper : NetworkBehaviour
 
     public List<MyAvatar> AllPlayers = new List<MyAvatar>();
     public List<Location> MyLocations = new List<Location>();
+    public List<Mission> Missions = new List<Mission>();
+    public List<NpcBase> Enemies = new List<NpcBase>();
 
-    void Awake()
+    void Awake ()
     {
         instance = this;
-        MyLocations = Resources.LoadAll<Location>("").ToList();
+        
+        MyLocations.Add(Resources.LoadAll<Location>("")[0]);
+        Enemies = Resources.LoadAll<NpcBase>("Enemies").ToList();
     }
 
     // Use this for initialization
@@ -68,6 +72,12 @@ public class NetworkHelper : NetworkBehaviour
         return go;
     }
 
+    public void SpawnEnemy(NpcBase e, InstantiatedLocation Owner)
+    {
+        var inst = Instantiate(e, Owner.transform);
+        inst.SpawnEnemy(Owner, Owner.FindOpenSpotInLocation());
+    }
+
     [ClientRpc]
     void RpcParentSpawnObject(GameObject go, GameObject parent)
     {
@@ -81,12 +91,44 @@ public class NetworkHelper : NetworkBehaviour
         var c = MyLocations.First(m => m.Name == locationName);
         var go = new GameObject(c.name);
         var location = c.SpawnLocation(go.transform, seed);
-        go.transform.position = c.Position;
-
+        var pos = c.Position;
+        pos.y = 0;
+        go.transform.position = pos;
+        
         if (c.Standing == LocationStandings.Hostile)
         {
-            
+            // spawn enemies here?
+            // or instantiatedlocation or mission
         }
+    }
+
+    public void CreateMission(string name, int seed, int locType, int level)
+    {
+        if (isServer)
+            RpcCreateMission(name, seed, locType, level);
+        else
+            CmdCreateMission(name, seed, locType, level);
+    }
+
+    [ClientRpc]
+    void RpcCreateMission(string name, int seed, int locType, int level)
+    {
+        UnityEngine.Random.InitState(seed);
+
+        Mission m = new GameObject(name).AddComponent<Mission>();
+        m.Name = name;
+        m.Seed = seed;
+        m.LocationType = locType;
+        m.Level = level;
+        MyLocations.Add(m.InstantiateMission());
+
+        Missions.Add(m);
+    }
+
+    [Command]
+    void CmdCreateMission(string name, int seed, int locType, int level)
+    {
+        RpcCreateMission(name, seed, locType, level);
     }
 }
 

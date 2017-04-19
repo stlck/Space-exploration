@@ -8,12 +8,12 @@ public class CreateEnvironment : MonoBehaviour {
     public ProceduralBlocks BlockGenerator;
     public List<Transform> GroundTiles;
 
-    public List<Location> MyLocations = new List<Location>();
+    //public List<Location> MyLocations = new List<Location>();
     public List<Location> SpawnedLocations = new List<Location>();
 
     // Use this for initialization
     void Start () {
-        MyLocations = Resources.LoadAll<Location>("").ToList();
+        //MyLocations = Resources.LoadAll<Location>("").ToList();
     }
 
     void Update()
@@ -21,7 +21,7 @@ public class CreateEnvironment : MonoBehaviour {
         if (MyAvatar.Instance.isServer)
         {
             // spawn terrain in vicinity (local only)
-            var close = MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 200 && !SpawnedLocations.Contains(m));
+            var close = NetworkHelper.Instance.MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 200 && !SpawnedLocations.Contains(m));
             if (close.Any())
             {
                 var loc = close.First();

@@ -27,9 +27,10 @@ public class WarpShip : NetworkBehaviour, IShipSpawnObject {
         if (GUILayout.Button("close"))
             showMap = false;
         //GUILayout.Label("Host only");
-
+        
         //if (MyAvatar.Instance.Identity.isServer)
-        foreach(var l in MyAvatar.Instance.EnvironmentCreator.MyLocations)
+        //foreach(var l in MyAvatar.Instance.EnvironmentCreator.MyLocations)
+        foreach (var l in NetworkHelper.Instance.MyLocations)
         {
                 if (GUILayout.Button(l.Name))
                     owningShip.WarpTo(l.Position - Vector3.right * 20);

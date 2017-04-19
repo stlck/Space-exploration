@@ -8,6 +8,7 @@ public class SimplePlayerUI : MonoBehaviour {
     public Rect InventoryRect;
     private Vector2 scrollPos;
     bool showInventory = false;
+    bool showMissions = false;
 
     // Use this for initialization
     void Start () {
@@ -25,6 +26,8 @@ public class SimplePlayerUI : MonoBehaviour {
         GUILayout.Window(0, WindowRect, window, "");
         if (showInventory)
             GUILayout.Window(1, InventoryRect, doInventoryWindow, "Inventory");
+        if (showMissions)
+            GUILayout.Window(1, InventoryRect, doMissionWindow, "Mission");
     }
 
     void window(int id)
@@ -39,6 +42,14 @@ public class SimplePlayerUI : MonoBehaviour {
         {
             // weapons
             showInventory = !showInventory;
+            if (showInventory && showMissions)
+                showMissions = false;
+        }
+        if(GUILayout.Button("Missions"))
+        {
+            showMissions = !showMissions;
+            if (showMissions && showInventory)
+                showInventory = false;
         }
     }
 
@@ -52,5 +63,11 @@ public class SimplePlayerUI : MonoBehaviour {
             GUILayout.EndHorizontal();
         }
         GUILayout.EndScrollView();
+    }
+
+    void doMissionWindow(int id)
+    {
+        foreach (var m in NetworkHelper.Instance.Missions)
+            GUILayout.Label(m.Name + " at " + m.Location.Position);
     }
 }

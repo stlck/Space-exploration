@@ -52,5 +52,25 @@ public class LocationStation : Location
 
         return new Vector3(room.x, 1, room.y);
     }
+
+    public override void ShowCreator ()
+    {
+        base.ShowCreator();
+
+        GUILayout.Label("Size " + Size);
+        Size = (int) GUILayout.VerticalSlider(Size, 20, 100);
+
+        GUILayout.Label("TileSize " + TileSize);
+        TileSize = (int)GUILayout.VerticalSlider(TileSize, 1, 3);
+
+        GUILayout.Label("Splits " + Splits);
+        Splits = (int)GUILayout.VerticalSlider(Splits, 2, 8);
+
+        GUILayout.Label("HalfCorridorSize " + HalfCorridorSize);
+        HalfCorridorSize = (int) GUILayout.VerticalSlider(HalfCorridorSize, 1, 4);
+
+        GUILayout.Label("MinRoomSize " + MinRoomSize);
+        MinRoomSize = (int) GUILayout.VerticalSlider(MinRoomSize, 4, 20);
+    }
 }
 

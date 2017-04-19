@@ -50,6 +50,7 @@ public class MoveAvator : MovementBase
                 }
                 else
                 {
+                    grav = Vector3.down * (transform.position.y - .51f) * Time.deltaTime;
                     forward /= 3;
                     right /= 3;
                 }
