@@ -34,16 +34,6 @@ public class CreateEnvironment : MonoBehaviour {
 
     void checkAndAddEnvironment()
     {
-        // spawn terrain in vicinity (local only)
-        /*var close = NetworkHelper.Instance.MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 200 && !SpawnedLocations.Contains(m));
-        if (close.Any())
-        {
-            var loc = close.First();
-            var seed = loc.seed == -1 ? Random.Range(0, 32000) : loc.seed;
-            NetworkHelper.Instance.RpcSpawnLocation(loc.Name, seed);
-            SpawnedLocations.Add(loc);
-        }*/
-
         var nearbyMissions = NetworkHelper.Instance.Missions.Where(m => Vector3.Distance(transform.position, m.Location.Position) < 200 && !NetworkHelper.Instance.SpawnedLocations.Contains(m.Location));
         if(nearbyMissions.Any())
         {
@@ -51,6 +41,17 @@ public class CreateEnvironment : MonoBehaviour {
             NetworkHelper.Instance.RpcSpawnMission(mission.Name);
             SpawnedLocations.Add(mission.Location);
         }
+
+        // spawn terrain in vicinity (local only)
+        var close = NetworkHelper.Instance.MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 200 && !SpawnedLocations.Contains(m));
+        if (close.Any())
+        {
+            var loc = close.First();
+            var seed = loc.seed == -1 ? Random.Range(0, 32000) : loc.seed;
+            NetworkHelper.Instance.RpcSpawnLocation(loc.Name, seed);
+            SpawnedLocations.Add(loc);
+        }
+
     }
 
     public void DestroyLevel()

@@ -28,7 +28,7 @@ public class Mission : MonoBehaviour {
         Location.seed = Seed;
         Location.Position = Vector3.right * Random.Range(-1000, 1000) + Vector3.forward * Random.Range(-1000, 1000);
         Location.Name = Name;
-
+        Testing.AddDebug("Added Mission " + Name + " at " + Location.Position);
         return Location;
     }
 }

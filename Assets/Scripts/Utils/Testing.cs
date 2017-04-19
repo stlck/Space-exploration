@@ -9,27 +9,55 @@ public class Testing : MonoBehaviour {
     public InstantiatedLocation Owner;
     bool show = false;
     Rect windowRect;
-
+    public Rect DebugRect;
     public int MissionLevel = 0;
+    List<deb> Output = new List<deb>();
+    static Testing instance;
 
     // Use this for initialization
     void Start () {
         //Enemies = Resources.LoadAll<NpcBase>("Enemies").ToList();
+        instance = this;
         windowRect = new Rect(Screen.width - 310, 10, 300, 400);
+        DebugRect = new Rect(Screen.width - 200, 0, 190, Screen.height);
     }
 	
 	// Update is called once per frame
 	void Update () {
         if (Input.GetKeyDown(KeyCode.F2))
             show = !show;
-	}
+
+        Output.ForEach((m) => {
+            m.TTL -= Time.deltaTime;
+        });
+        Output.RemoveAll(m => m.TTL < 0f);
+    }
 
     void OnGUI()
     {
         if(show && MyAvatar.Instance.isServer)
         {
             windowRect = GUI.Window(10, windowRect, TestWindow, "test");
+
+            GUILayout.BeginArea(DebugRect);
+            
+            foreach (var o in Output)
+                GUILayout.Label(o.Content);
+            if (GUILayout.Button("clear"))
+                Output.Clear();
+            GUILayout.EndArea();
         }
+    }
+
+    public static void AddDebug(string content)
+    {
+        instance.Output.Add(new deb() { Content = content });
+    }
+
+    class deb
+    {
+        public string Content;
+        public float TTL = 10f;
     }
 
     void TestWindow(int id)

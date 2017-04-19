@@ -40,6 +40,7 @@ public class MenuLocationSpawner : MonoBehaviour {
 
         parent = new GameObject();
         StationSpawner spawner = new StationSpawner();
+        _tileset = (TileSet)Random.Range(0, 4);
         spawner.Generate(parent.transform, seed, size, iterations, minRoomSize, halfCorridorSize, _tileset);
     }
 
