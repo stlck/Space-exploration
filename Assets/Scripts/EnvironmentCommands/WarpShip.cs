@@ -26,15 +26,15 @@ public class WarpShip : NetworkBehaviour, IShipSpawnObject {
     {
         if (GUILayout.Button("close"))
             showMap = false;
-        //GUILayout.Label("Host only");
-        
-        //if (MyAvatar.Instance.Identity.isServer)
-        //foreach(var l in MyAvatar.Instance.EnvironmentCreator.MyLocations)
-        foreach (var l in NetworkHelper.Instance.MyLocations)
+
+        foreach (var l in NetworkHelper.Instance.Missions)
         {
-                if (GUILayout.Button(l.Name))
-                    owningShip.WarpTo(l.Position - Vector3.right * 20);
-                //MyAvatar.Instance.CmdWarpShip(owningShip, l.Position);
+            if (GUILayout.Button(l.Location.Name))
+            {
+                NetworkHelper.Instance.RpcSpawnLocation(l.name, l.Seed);
+                owningShip.WarpTo(l.Location.Position - Vector3.right * 10);
+            }
+            //MyAvatar.Instance.CmdWarpShip(owningShip, l.Position);
         }
     }
 

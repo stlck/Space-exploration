@@ -14,24 +14,45 @@ public class CreateEnvironment : MonoBehaviour {
     // Use this for initialization
     void Start () {
         //MyLocations = Resources.LoadAll<Location>("").ToList();
+        if (MyAvatar.Instance.isServer)
+            StartCoroutine(spawnNearbyLocations());
     }
 
-    void Update()
+    IEnumerator spawnNearbyLocations()
     {
-        if (MyAvatar.Instance.isServer)
+        while(true)
         {
-            // spawn terrain in vicinity (local only)
-            var close = NetworkHelper.Instance.MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 200 && !SpawnedLocations.Contains(m));
-            if (close.Any())
-            {
-                var loc = close.First();
-                var seed = loc.seed == -1 ? Random.Range(0, 32000) : loc.seed;
-                NetworkHelper.Instance.RpcSpawnLocation(loc.Name, seed);
-                SpawnedLocations.Add(loc);
-            }
+            yield return new WaitForSeconds(.2f);
+            checkAndAddEnvironment();
         }
     }
     
+    public void ForceUpdateEnvironment()
+    {
+        checkAndAddEnvironment();
+    }
+
+    void checkAndAddEnvironment()
+    {
+        // spawn terrain in vicinity (local only)
+        /*var close = NetworkHelper.Instance.MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 200 && !SpawnedLocations.Contains(m));
+        if (close.Any())
+        {
+            var loc = close.First();
+            var seed = loc.seed == -1 ? Random.Range(0, 32000) : loc.seed;
+            NetworkHelper.Instance.RpcSpawnLocation(loc.Name, seed);
+            SpawnedLocations.Add(loc);
+        }*/
+
+        var nearbyMissions = NetworkHelper.Instance.Missions.Where(m => Vector3.Distance(transform.position, m.Location.Position) < 200 && !NetworkHelper.Instance.SpawnedLocations.Contains(m.Location));
+        if(nearbyMissions.Any())
+        {
+            var mission = nearbyMissions.First();
+            NetworkHelper.Instance.RpcSpawnMission(mission.Name);
+            SpawnedLocations.Add(mission.Location);
+        }
+    }
+
     public void DestroyLevel()
     {
         Destroy(gameObject);

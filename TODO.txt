@@ -5,7 +5,7 @@ ERRORS:
 - Ship collision
 
 TODO:
-
+- Weapon shooting modes (need bursts)
 - Add hostile ships
 - Make loot system
 - Pickups (weapons, creds etc)
@@ -39,7 +39,8 @@ Content
 
 - lots of guns
   - generated?
-- missions
+|- missions
   - generated stations/asteroids/ships
+- Locations need content
 - Progress
   - Character advancement

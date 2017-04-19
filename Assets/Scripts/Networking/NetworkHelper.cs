@@ -18,6 +18,7 @@ public class NetworkHelper : NetworkBehaviour
 
     public List<MyAvatar> AllPlayers = new List<MyAvatar>();
     public List<Location> MyLocations = new List<Location>();
+    public List<Location> SpawnedLocations = new List<Location>();
     public List<Mission> Missions = new List<Mission>();
     public List<NpcBase> Enemies = new List<NpcBase>();
 
@@ -83,19 +84,29 @@ public class NetworkHelper : NetworkBehaviour
     {
         go.transform.SetParent(parent.transform, true);
     }
-
     
     [ClientRpc]
     public void RpcSpawnLocation(string locationName, int seed)
     {
-        var c = MyLocations.First(m => m.Name == locationName);
-        var go = new GameObject(c.name);
-        var location = c.SpawnLocation(go.transform, seed);
-        var pos = c.Position;
+        spawnLocation(MyLocations.First(m => m.Name == locationName), seed);
+    }
+
+    void spawnLocation(Location loc, int seed)
+    {
+        //var c = MyLocations.First(m => m.Name == locationName);
+        var go = new GameObject(loc.name);
+        var location = loc.SpawnLocation(go.transform, seed);
+        var pos = loc.Position;
         pos.y = 0;
         go.transform.position = pos;
-        
-        if (c.Standing == LocationStandings.Hostile)
+    }
+
+    public void RpcSpawnMission(string name)
+    {
+        var mission = Missions.First(m => m.Name == name);
+        spawnLocation(mission.Location, mission.Seed);
+
+        if (mission.Location.Standing == LocationStandings.Hostile)
         {
             // spawn enemies here?
             // or instantiatedlocation or mission
