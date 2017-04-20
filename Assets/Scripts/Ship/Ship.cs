@@ -34,8 +34,8 @@ public class Ship : NetworkBehaviour {
     public float ShipScale = 2;
     void Awake()
     {
+        //Debug.Log("Ship AWEAKE");
         transform.localScale = Vector3.one * ShipScale;
-
     }
 
 	// Use this for initialization

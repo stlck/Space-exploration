@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class StationSpawner
 {
@@ -60,11 +61,12 @@ public class StationSpawner
         toTileMap();
         if(meshit)
             tileMeshIt();
+        //manualTileBuild();
 
         //if (meshit)
         // use map
             //meshIt();
-        Debug.Log("SPAWN TIME : " + (Time.realtimeSinceStartup - timer));
+        Testing.AddDebug("LocGen time: " + (Time.realtimeSinceStartup - timer));
     }
 
     void toTileMap()
@@ -119,7 +121,7 @@ public class StationSpawner
                     CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.OuterWall], Vector3.right * i + Vector3.forward * j + Vector3.down, Quaternion.identity, parent.transform);
                     // roof
                     CoroutineSpawner.Instance.Enqueue(set.GroundTiles[LocationTileSet.InnerWall], Vector3.right * i + Vector3.forward * j + Vector3.up * 5, Quaternion.identity, parent.transform, 9);
-
+                    
                 }
                 // inside walls
                 else if(tn.TileValue == 2)
@@ -136,7 +138,118 @@ public class StationSpawner
 
     }
 
-    void meshIt()
+    #region testtilebuild
+    void manualTileBuild()
+    {
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+            {
+                
+                //var tileMap[i, j] = tileMap[i, j];
+                tileMap[i, j].neighbors = 0;
+                tileMap[i, j].neighborcount = 0;
+                //if (tileMap[i, j].TileValue == 2)
+                {
+                    if (i > 0 && tileMap[i - 1, j].TileValue == 2)
+                    {
+                        tileMap[i, j].neighbors |= NeighborEnum.left;
+                        tileMap[i, j].neighborcount++;
+                    }
+
+                    if (j > 0 && tileMap[i, j - 1].TileValue == 2)
+                    {
+                        tileMap[i, j].neighbors |= NeighborEnum.back;
+                        tileMap[i, j].neighborcount++;
+                    }
+
+                    if (i < size - 1 && tileMap[i + 1, j].TileValue == 2)
+                    {
+                        tileMap[i, j].neighbors |= NeighborEnum.right;
+                        tileMap[i, j].neighborcount++;
+                    }
+
+                    if (j < size - 1 && tileMap[i, j + 1].TileValue == 2)
+                    {
+                        tileMap[i, j].neighbors |= NeighborEnum.forward;
+                        tileMap[i, j].neighborcount++;
+                    }
+
+                }
+            }
+        
+        ProceduralToolkit.MeshDraft draft = new ProceduralToolkit.MeshDraft(parent.GetComponent<MeshFilter>().mesh);
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+            {
+                var tn = tileMap[i, j];
+                switch(tn.TileValue)
+                {
+                    case 0:
+                        //draft.Add(ProceduralToolkit.MeshDraft.Quad(Vector3.right * i + Vector3.forward * j + Vector3.down, Vector3.one, Vector3.one));
+                       
+                        break;
+                    case 1:
+                        if (tn.neighborcount == 2)
+                        {
+                            var p = Vector3.right * i + Vector3.forward * j;// + Vector3.right/2 + Vector3.forward/2;
+                            if ((tn.neighbors & NeighborEnum.left) == NeighborEnum.left && (tn.neighbors & NeighborEnum.back) == NeighborEnum.back)
+                            {
+                                draft.Add(ProceduralToolkit.MeshDraft.Triangle(p + Vector3.right, p, p + Vector3.forward));
+                            }
+                            else if ((tn.neighbors & NeighborEnum.left) == NeighborEnum.left && (tn.neighbors & NeighborEnum.forward) == NeighborEnum.forward)
+                            {
+                                draft.Add(ProceduralToolkit.MeshDraft.Triangle(p, p + Vector3.forward, p + Vector3.forward + Vector3.right));
+                            }
+                            else if ((tn.neighbors & NeighborEnum.right) == NeighborEnum.right && (tn.neighbors & NeighborEnum.back) == NeighborEnum.back)
+                            {
+                                draft.Add(ProceduralToolkit.MeshDraft.Triangle(p + Vector3.right, p, p + Vector3.forward + Vector3.right));
+                            }
+                            else if ((tn.neighbors & NeighborEnum.right) == NeighborEnum.right && (tn.neighbors & NeighborEnum.forward) == NeighborEnum.forward)
+                            {
+                                draft.Add(ProceduralToolkit.MeshDraft.Triangle(p + Vector3.right + Vector3.forward, p + Vector3.right, p + Vector3.forward));
+                            }
+                            else
+                                draft.Add(ProceduralToolkit.MeshDraft.Quad(Vector3.right * i + Vector3.forward * j, Vector3.right, Vector3.forward));
+                        }
+                        //draft.Add(ProceduralToolkit.MeshDraft.Quad(Vector3.right * i + Vector3.forward * j, Vector3.one, Vector3.one));
+                        break;
+                    case 2:
+                        if(tn.neighborcount == 2)
+                        {
+                            var p = Vector3.right * i + Vector3.forward * j;// + Vector3.right/2 + Vector3.forward/2;
+                            if ((tn.neighbors & NeighborEnum.left) == NeighborEnum.left && (tn.neighbors & NeighborEnum.back) == NeighborEnum.back)
+                            {
+                                draft.Add(ProceduralToolkit.MeshDraft.Triangle(p + Vector3.right, p, p + Vector3.forward));
+                            }
+                            else if ((tn.neighbors & NeighborEnum.left) == NeighborEnum.left && (tn.neighbors & NeighborEnum.forward) == NeighborEnum.forward)
+                            {
+                                draft.Add(ProceduralToolkit.MeshDraft.Triangle(p, p + Vector3.forward, p + Vector3.forward + Vector3.right));
+                            }
+                            else if ((tn.neighbors & NeighborEnum.right) == NeighborEnum.right && (tn.neighbors & NeighborEnum.back) == NeighborEnum.back)
+                            {
+                                draft.Add(ProceduralToolkit.MeshDraft.Triangle(p + Vector3.right, p, p + Vector3.forward + Vector3.right));
+                            }
+                            else if ((tn.neighbors & NeighborEnum.right) == NeighborEnum.right && (tn.neighbors & NeighborEnum.forward) == NeighborEnum.forward)
+                            {
+                                draft.Add(ProceduralToolkit.MeshDraft.Triangle(p + Vector3.right + Vector3.forward, p + Vector3.right, p + Vector3.forward));
+                            }
+                            else
+                                draft.Add(ProceduralToolkit.MeshDraft.Quad(Vector3.right * i + Vector3.forward * j, Vector3.right, Vector3.forward));
+                        }
+                        else
+                            draft.Add(ProceduralToolkit.MeshDraft.Quad(Vector3.right * i + Vector3.forward * j, Vector3.right, Vector3.forward));
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        parent.GetComponent<MeshFilter>().mesh = draft.ToMesh();
+    }
+    #endregion
+
+    #region old method
+    void meshIt ()
     {
         var timer = Time.realtimeSinceStartup;
         Debug.Log("t7.0 : " + (Time.realtimeSinceStartup - timer));
@@ -192,6 +305,7 @@ public class StationSpawner
                 }
             }
     }
+    #endregion
 
     void entrance()
     {
@@ -349,6 +463,17 @@ public class StationSpawner
         public int TileValue;
         public bool neighbor1;
         public bool neighbor2;
+        public NeighborEnum neighbors;
+        public int neighborcount;
+    }
+
+    [System.Flags]
+    public enum NeighborEnum
+    {
+        forward = 1,
+        right = 2,
+        left = 4,
+        back = 8
     }
 }
 

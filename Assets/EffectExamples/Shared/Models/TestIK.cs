@@ -11,12 +11,14 @@ public class TestIK : MonoBehaviour {
 
     //public Avatar avatar;
     CharacterController avatar;
+    MyAvatar myAvatar;
     bool running = false;
 	// Use this for initialization
 	void Start () {
         avatar = GetComponentInParent<CharacterController>();
+        myAvatar = GetComponentInParent<MyAvatar>();
 
-	}
+    }
 
     void Update()
     {
@@ -28,15 +30,17 @@ public class TestIK : MonoBehaviour {
 
     void OnAnimatorIK (int layerIndex)
     {
-        Animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1f);
-        Animator.SetIKPosition(AvatarIKGoal.RightHand, right.position);
+        if(myAvatar.AvatarWeaponHandler.EquippedWeapon != null)
+        { 
+            Animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1f);
+            Animator.SetIKPosition(AvatarIKGoal.RightHand, right.position);
 
-        Animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1f);
-        Animator.SetIKRotation(AvatarIKGoal.RightHand, right.rotation);
+            Animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1f);
+            Animator.SetIKRotation(AvatarIKGoal.RightHand, right.rotation);
 
-        Animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1f);
-        Animator.SetIKPosition(AvatarIKGoal.LeftHand, left.position);
-        
+            Animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1f);
+            Animator.SetIKPosition(AvatarIKGoal.LeftHand, left.position);
+        }
 
     }
 

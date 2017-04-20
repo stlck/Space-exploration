@@ -56,7 +56,8 @@ public class NetworkHelper : NetworkBehaviour
     [Server]
     public GameObject NetworkSpawnObject(NetworkSpawnObject so)
     {
-        var go = Instantiate(so.SpawnTarget, so.Parent.transform);
+        var go = Instantiate(so.SpawnTarget);
+        go.transform.SetParent(so.Parent.transform);
         if (so.PositionIsLocal)
             go.transform.localPosition = so.Position;
         else
@@ -67,8 +68,11 @@ public class NetworkHelper : NetworkBehaviour
         else
             go.transform.eulerAngles = so.Eulers;
 
+        
         NetworkServer.Spawn(go);
         RpcParentSpawnObject(go, so.Parent);
+
+        Testing.AddDebug("Spawned NetworkObject: " + go.name);
 
         return go;
     }
@@ -76,7 +80,10 @@ public class NetworkHelper : NetworkBehaviour
     public void SpawnEnemy(NpcBase e, InstantiatedLocation Owner)
     {
         var inst = Instantiate(e, Owner.transform);
-        inst.SpawnEnemy(Owner, Owner.FindOpenSpotInLocation());
+        var pos = Owner.FindOpenSpotInLocation();
+        inst.SpawnEnemy(Owner, pos);
+
+        Testing.AddDebug("Spawned Enemy: " + e.name + " at " + pos);
     }
 
     [ClientRpc]
@@ -96,14 +103,18 @@ public class NetworkHelper : NetworkBehaviour
         //var c = MyLocations.First(m => m.Name == locationName);
         var go = new GameObject(loc.name);
         var location = loc.SpawnLocation(go.transform, seed);
+        location.name = loc.name;
         var pos = loc.Position;
-        pos.y = 0;
+        //pos.y = -.5f;
         go.transform.position = pos;
+
+        Testing.AddDebug("Spawned location: " + loc.name + " at " + pos);
+        SpawnedLocations.Add(loc);
     }
 
-    public void RpcSpawnMission(string name)
+    public void RpcSpawnMission(string Name)
     {
-        var mission = Missions.First(m => m.Name == name);
+        var mission = Missions.First(m => m.Name == Name);
         spawnLocation(mission.Location, mission.Seed);
 
         if (mission.Location.Standing == LocationStandings.Hostile)
@@ -111,6 +122,8 @@ public class NetworkHelper : NetworkBehaviour
             // spawn enemies here?
             // or instantiatedlocation or mission
         }
+        Testing.AddDebug("Mission spawned: " + Name);
+
     }
 
     public void CreateMission(string name, int seed, int locType, int level)
@@ -122,18 +135,20 @@ public class NetworkHelper : NetworkBehaviour
     }
 
     [ClientRpc]
-    void RpcCreateMission(string name, int seed, int locType, int level)
+    void RpcCreateMission(string Name, int seed, int locType, int level)
     {
         UnityEngine.Random.InitState(seed);
 
-        Mission m = new GameObject(name).AddComponent<Mission>();
-        m.Name = name;
+        Mission m = new GameObject(Name).AddComponent<Mission>();
+        m.Name = Name;
         m.Seed = seed;
         m.LocationType = locType;
         m.Level = level;
-        MyLocations.Add(m.InstantiateMission());
+        var loc = m.InstantiateMission();
+        MyLocations.Add(loc);
 
         Missions.Add(m);
+        Testing.AddDebug("Added Mission " + Name);
     }
 
     [Command]

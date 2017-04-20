@@ -19,7 +19,7 @@ public class Testing : MonoBehaviour {
         //Enemies = Resources.LoadAll<NpcBase>("Enemies").ToList();
         instance = this;
         windowRect = new Rect(Screen.width - 310, 10, 300, 400);
-        DebugRect = new Rect(Screen.width - 200, 0, 190, Screen.height);
+        DebugRect = new Rect(Screen.width - 300, 0, 290, Screen.height);
     }
 	
 	// Update is called once per frame
@@ -38,15 +38,15 @@ public class Testing : MonoBehaviour {
         if(show && MyAvatar.Instance.isServer)
         {
             windowRect = GUI.Window(10, windowRect, TestWindow, "test");
-
-            GUILayout.BeginArea(DebugRect);
-            
-            foreach (var o in Output)
-                GUILayout.Label(o.Content);
-            if (GUILayout.Button("clear"))
-                Output.Clear();
-            GUILayout.EndArea();
         }
+
+        GUILayout.BeginArea(DebugRect);
+        GUILayout.FlexibleSpace();
+        foreach (var o in Output)
+            GUILayout.Label(o.Content);
+        if (Output.Count > 0 && GUILayout.Button("clear"))
+            Output.Clear();
+        GUILayout.EndArea();
     }
 
     public static void AddDebug(string content)

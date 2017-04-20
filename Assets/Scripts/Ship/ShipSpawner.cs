@@ -92,6 +92,7 @@ public class ShipSpawner : MonoBehaviour {
     {
         var baseShip = Resources.Load<Ship>("BaseShip");
         var s = Instantiate(baseShip, Vector3.zero, Quaternion.identity);//Target.gameObject.AddComponent<Ship>();
+        
         NetworkServer.Spawn(s.gameObject);
         var center = new Vector3(sizex / 2, 0, sizey / 2);
 

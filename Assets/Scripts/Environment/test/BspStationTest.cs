@@ -76,7 +76,7 @@ public class BspStationTest : MonoBehaviour {
             Destroy(parent);
 
         InstantiateCount = 0;
-        parent = new GameObject();
+        parent = GameObject.CreatePrimitive(PrimitiveType.Cube);
         StationSpawner spawner = new StationSpawner();
         spawner.Tester = this;
         spawner.Generate(parent.transform, seed, size, iterations, minRoomSize, halfCorridorSize, _tileset);

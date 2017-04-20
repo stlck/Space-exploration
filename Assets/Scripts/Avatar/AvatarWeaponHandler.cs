@@ -79,14 +79,18 @@ public class AvatarWeaponHandler : NetworkBehaviour
     [Command]
     void CmdUnequipWeapon(int id)
     {
-        NetworkServer.Destroy(EquippedWeapon.gameObject);
+        //NetworkServer.Destroy(EquippedWeapon.gameObject);
         RpcUnequipweapon(id);
+        if(EquippedWeapon.gameObject != null)
+            Destroy(EquippedWeapon.gameObject);
         EquippedWeapon = null;
     }
 
     [ClientRpc]
     void RpcUnequipweapon(int id)
     {
+        if(EquippedWeapon.gameObject != null)
+            Destroy(EquippedWeapon.gameObject);
         EquippedWeapon = null;
     }
 

@@ -34,22 +34,22 @@ public class CreateEnvironment : MonoBehaviour {
 
     void checkAndAddEnvironment()
     {
-        var nearbyMissions = NetworkHelper.Instance.Missions.Where(m => Vector3.Distance(transform.position, m.Location.Position) < 200 && !NetworkHelper.Instance.SpawnedLocations.Contains(m.Location));
+        var nearbyMissions = NetworkHelper.Instance.Missions.Where(m => Vector3.Distance(transform.position, m.Location.Position) < 200 && !NetworkHelper.Instance.SpawnedLocations.Any(loc => loc.Name == m.Location.Name));
         if(nearbyMissions.Any())
         {
             var mission = nearbyMissions.First();
             NetworkHelper.Instance.RpcSpawnMission(mission.Name);
-            SpawnedLocations.Add(mission.Location);
+            //SpawnedLocations.Add(mission.Location);
         }
 
         // spawn terrain in vicinity (local only)
-        var close = NetworkHelper.Instance.MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 200 && !SpawnedLocations.Contains(m));
+        var close = NetworkHelper.Instance.MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 200 && !NetworkHelper.Instance.SpawnedLocations.Any(loc => loc.Name == m.Name));
         if (close.Any())
         {
             var loc = close.First();
             var seed = loc.seed == -1 ? Random.Range(0, 32000) : loc.seed;
             NetworkHelper.Instance.RpcSpawnLocation(loc.Name, seed);
-            SpawnedLocations.Add(loc);
+            //SpawnedLocations.Add(loc);
         }
 
     }
