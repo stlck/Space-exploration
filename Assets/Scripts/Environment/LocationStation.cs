@@ -15,6 +15,7 @@ public class LocationStation : Location
 
     public int[,] Tiles;
     public List<BspCell> Rooms;
+    public bool HasLights = false;
 
     public override InstantiatedLocation SpawnLocation (Transform owner, int _seed/*, int Size = 50, int TileSize = 1*/)
     {
@@ -43,7 +44,15 @@ public class LocationStation : Location
                     BestFirstSearch.AddObstacle(i,j);
             }
 
+        if (HasLights)
+            addLighting();
+
         return ret;
+    }
+
+    void addLighting()
+    {
+
     }
 
     public override Vector3 GetRandomSpotInLocation ()
