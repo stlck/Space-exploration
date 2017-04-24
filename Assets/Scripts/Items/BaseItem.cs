@@ -13,7 +13,7 @@ public class BaseItem : MonoBehaviour {
 
     public virtual void BuyItem()
     {
-        MyAvatar.Instance.CmdAddCredits(-Price);
+        MyAvatar.Instance.MyCommands.CmdAddCredits(-Price);
         MyAvatar.Instance.InventoryItems.Add(this);
     }
 
