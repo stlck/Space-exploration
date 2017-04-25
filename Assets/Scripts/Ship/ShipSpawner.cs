@@ -140,7 +140,7 @@ public class ShipSpawner : MonoBehaviour {
                         shipString += tiles[row, col];
                     }
 
-                MyAvatar.Instance.CmdSpawnShip(shipString, ctrlString, Size.x, Size.y, TargetDock.DockAlign.position, TargetDock.DockAlign.rotation);
+                MyAvatar.Instance.MyCommands.CmdSpawnShip(shipString, ctrlString, Size.x, Size.y, TargetDock.DockAlign.position, TargetDock.DockAlign.rotation);
             }
         }
 

@@ -19,14 +19,13 @@ public class MyAvatar : NetworkBehaviour
     public NetworkIdentity Identity;
     public ReadInput MyInput;
     public MoveAvator Movement;
+    public AvatarCommands MyCommands;
     public MovementBase CurrentMovementBase;
     public ServerCommandObject ServerCommands;
     public AvatarWeaponHandler AvatarWeaponHandler;
     public StatBase MyStats;
     public List<BaseItem> InventoryItems = new List<BaseItem>();
     
-    public CreateEnvironment EnvironmentCreator;
-
     [SyncVar]
     public int PlayerId;
 
@@ -39,9 +38,6 @@ public class MyAvatar : NetworkBehaviour
     [SyncEvent]
     public event StateChange EventPlayerStateChanged;
     public delegate void StateChange(States newState);
-
-    [SyncVar]
-    public string test = "not set";
 
     public UnityEvent IsLocal;
 
@@ -100,7 +96,6 @@ public class MyAvatar : NetworkBehaviour
             if (transform.position.y < 0f)
                 transform.position += Vector3.up * Mathf.Abs(transform.position.y);
 
-            //Debug.Log("Is server, handling movement");
             if(CurrentMovementBase != null)
             { 
                 CurrentMovementBase.SetMouseDown(MyInput.isMouseDown);
@@ -176,7 +171,7 @@ public class MyAvatar : NetworkBehaviour
         CurrentState = newState;
         EventPlayerStateChanged(newState);
     }
-
+    /*
     [Command]
     public void CmdAddCredits(int amount)
     {
@@ -195,7 +190,7 @@ public class MyAvatar : NetworkBehaviour
         var s = NetworkServer.FindLocalObject(targetShip);
         if (s != null)
             s.GetComponent<Ship>().ServerWarp(target);
-    }
+    }*/
 }
 
 public enum States

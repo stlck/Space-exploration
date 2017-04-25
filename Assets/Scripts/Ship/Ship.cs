@@ -106,7 +106,7 @@ public class Ship : NetworkBehaviour {
             ServerWarp(Position);
         }
         else
-            MyAvatar.Instance.CmdWarpShip(netId, Position);
+            MyAvatar.Instance.MyCommands.CmdWarpShip(netId, Position);
     }
 
     [Server]
