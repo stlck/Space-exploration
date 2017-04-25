@@ -128,7 +128,28 @@ public class ShipSpawner : MonoBehaviour {
 
         if (GUILayout.Button("Cmd! Create Ship")) { 
             if(MyAvatar.Instance.isServer)
+            {
+                var ctrlString = "";
+                for (int row = 0; row < Size.x; row++)
+                    for (int col = 0; col < Size.y; col++)
+                    {
+                        if (controls[row, col] >= 0)
+                            ctrlString += controls[row, col];
+                        else
+                            ctrlString += "-";
+                    }
+                Debug.Log(ctrlString);
+                int[] c = new int[ctrlString.Length];
+                string output = "";
+                for (int i = 0; i < ctrlString.Length; i++)
+                {
+                    c[i] = (int)char.GetNumericValue(ctrlString[i]);
+                    output += c[i] + "";
+                }
+                Debug.Log(output);
+
                 SrvCreateShip(tiles, controls, Size.x, Size.y, TargetDock.transform.position, TargetDock.DockAlign.rotation);//createShip();
+            }
             else
             {
                 var shipString = "";
@@ -136,7 +157,10 @@ public class ShipSpawner : MonoBehaviour {
                 for(int row =0; row < Size.x;row++)
                     for(int col = 0; col < Size.y; col++)
                     {
-                        ctrlString += controls[row, col];
+                        if (controls[row, col] >= 0)
+                            ctrlString += controls[row, col];
+                        else
+                            ctrlString += "-";
                         shipString += tiles[row, col];
                     }
 

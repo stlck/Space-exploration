@@ -20,6 +20,18 @@ public class DockShip : NetworkBehaviour, CmdObj, IShipSpawnObject
 
     void Awake()
     {
+    }
+
+    // Use this for initialization
+    void Start()
+    {
+        checkParent();
+
+        setAlignToTarget();
+    }
+
+    void checkParent()
+    {
         ship = GetComponentInParent<Ship>();
         if (AlignTo == null)
         {
@@ -27,12 +39,6 @@ public class DockShip : NetworkBehaviour, CmdObj, IShipSpawnObject
             AlignTo.transform.SetParent(transform);
             AlignTo.transform.localPosition = Vector3.zero;
         }
-    }
-
-    // Use this for initialization
-    void Start()
-    {
-        setAlignToTarget();
     }
 
     public bool canExecuteCommand()
@@ -47,6 +53,8 @@ public class DockShip : NetworkBehaviour, CmdObj, IShipSpawnObject
     {
         if (DockingPoint.DockingPoints.Any(m => Vector3.Distance(transform.position, m.transform.position) < 10))
         {
+            checkParent();
+
             var dockingTarget = DockingPoint.DockingPoints.First(m => Vector3.Distance(transform.position, m.transform.position) < 10);
             
             // Use alignposition if a bridge is required!

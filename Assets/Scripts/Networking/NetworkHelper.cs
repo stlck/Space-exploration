@@ -103,7 +103,7 @@ public class NetworkHelper : NetworkBehaviour
         SpawnLocation(MyLocations.First(m => m.Name == locName), seed);
     }
 
-    public void SpawnLocation(Location loc, int seed)
+    public InstantiatedLocation SpawnLocation(Location loc, int seed)
     {
         //var c = MyLocations.First(m => m.Name == locationName);
         var go = new GameObject(loc.name);
@@ -115,20 +115,33 @@ public class NetworkHelper : NetworkBehaviour
 
         Testing.AddDebug("Spawned location: " + loc.name + " at " + pos);
         SpawnedLocations.Add(loc);
+        return location;
     }
 
     public void SpawnMission(string Name)
     {
         var mission = Missions.First(m => m.Name == Name);
-        SpawnLocation(mission.Location, mission.Seed);
+        var location = SpawnLocation(mission.Location, mission.Seed);
 
-        if (mission.Location.Standing == LocationStandings.Hostile)
+        if (isServer && mission.Location.Standing == LocationStandings.Hostile)
         {
+            SpawnEnemies(mission, location);
             // spawn enemies here?
             // or instantiatedlocation or mission
         }
         Testing.AddDebug("Mission spawned: " + Name);
+    }
 
+    public void SpawnEnemies(Mission target, InstantiatedLocation owner)
+    {
+        var amountToSpawn = 10 + (target.Level + 1) * UnityEngine.Random.Range(8,16);
+        var spawned = 0;
+        while(spawned <= amountToSpawn)
+        {
+            var e = Enemies.GetRandom();
+            SpawnEnemy(e, owner);
+            spawned += e.GetComponent<StatBase>().CreditsOnKill;
+        }
     }
 
     public void CreateMission(string name, int seed, int locType, int level)
@@ -172,4 +185,12 @@ public class NetworkSpawnObject
     public bool PositionIsLocal = true;
     public Vector3 Eulers;
     public bool EulersIsLocal = true;
+}
+
+public static class StaticExtentions
+{
+    public static T GetRandom<T>(this List<T> list)
+    {
+        return list[UnityEngine.Random.Range(0, list.Count)];
+    }
 }

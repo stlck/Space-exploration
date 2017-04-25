@@ -128,25 +128,44 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
                 right = false;
         }
 
-        if (top)
+        if (top && right)
+        {
+            LocalYMin -= 30;
+            LocalYMax += 30;
+            transform.eulerAngles = Vector3.up * -135;
+        }
+        else if (top && left)
+        {
+            LocalYMin -= 30;
+            LocalYMax += 30;
+            transform.eulerAngles = Vector3.up * 135;
+        }
+        else if (bottom && right)
+        {
+            LocalYMin -= 30;
+            LocalYMax += 30;
+            transform.eulerAngles = Vector3.up * -45;
+        }
+        else if( bottom && left)
+        {
+            LocalYMin -= 30;
+            LocalYMax += 30;
+            transform.eulerAngles = Vector3.up * 45;
+        }
+        else if (top)
         {
             transform.eulerAngles = Vector3.up * 180;
-            //transform.LookAt(transform.TransformPoint(Vector3.right + Vector3.forward));
+        }
+        else if (bottom)
+        {
         }
         else if (right)
         {
             transform.eulerAngles = Vector3.up * -90;
-            //transform.LookAt(transform.TransformPoint(Vector3.right));
         }
         else if (left)
         {
             transform.eulerAngles = Vector3.up * 90;
-            //transform.LookAt(transform.TransformPoint(Vector3.left));
-
-        }
-        else if (bottom)
-        {
-            //transform.LookAt(transform.TransformPoint(Vector3.back));
         }
     }
 

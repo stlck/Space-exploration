@@ -28,50 +28,53 @@ public class WalkingEnemy : NpcBase{
 
     public override void Update()
     {
-        targetRefreshTimer += Time.deltaTime;
-        if (targetRefreshTimer >= 1f)
-        {
-            // it timer - find target
-            if (NetworkHelper.Instance.AllPlayers.Any(m => Vector3.Distance(m.transform.position, transform.position) < ChaseRange))
+        if(MyAvatar.Instance.isServer)
+        { 
+            targetRefreshTimer += Time.deltaTime;
+            if (targetRefreshTimer >= .5f)
             {
-                CurrentTarget = NetworkHelper.Instance.AllPlayers.First(m => Vector3.Distance(m.transform.position, transform.position) < ChaseRange).transform;
-                var tPos = ownerLocalPosition(CurrentTarget.position);
-                var lPos = ownerLocalPosition(transform.position);
-                Route = bfs.FindPath((int)transform.localPosition.x, (int)transform.localPosition.z, (int)CurrentTarget.localPosition.x, (int)CurrentTarget.localPosition.z, 1);
+                // it timer - find target
+                if (NetworkHelper.Instance.AllPlayers.Any(m => Vector3.Distance(m.transform.position, transform.position) < ChaseRange))
+                {
+                    CurrentTarget = NetworkHelper.Instance.AllPlayers.First(m => Vector3.Distance(m.transform.position, transform.position) < ChaseRange).transform;
+                    var tPos = ownerLocalPosition(CurrentTarget.position);
+                    var lPos = ownerLocalPosition(transform.position);
+                    Route = bfs.FindPath((int)transform.localPosition.x, (int)transform.localPosition.z, (int)CurrentTarget.localPosition.x, (int)CurrentTarget.localPosition.z, 1);
+                }
+                targetRefreshTimer = 0f;
             }
-            targetRefreshTimer = 0f;
-        }
-        RaycastHit hit;
-        if(CurrentTarget != null && Physics.Raycast(transform.position + transform.forward, CurrentTarget.position - transform.position, out hit, AttackRange) && hit.transform == CurrentTarget)
-        {
-            var lookAtPosition = CurrentTarget.position;
-            lookAtPosition.y = transform.position.y;
-            transform.LookAt(CurrentTarget);
-            if (Weapon != null && Weapon.CanFire())
-                Weapon.FireWeapon();
-        }
-        // if can see && within attackrange - attack
-        else if (Route.Any())
-        {
-            currentTimer += Time.deltaTime * WalkingSpeed;
-            var tpos = Spawner.transform.TransformPoint(Route[0]);
-            transform.position = Vector3.MoveTowards(transform.position, tpos, Time.deltaTime * WalkingSpeed);
-            transform.LookAt(tpos);
-
-            if ( Vector3.Distance( transform.position, tpos) < 1f)
+            RaycastHit hit;
+            if(CurrentTarget != null && Physics.Raycast(transform.position + transform.forward, CurrentTarget.position - transform.position, out hit, AttackRange) && hit.transform == CurrentTarget)
             {
-                var tPos = ownerLocalPosition(CurrentTarget.position);
-                var lPos = ownerLocalPosition(transform.position);
-
-                Route.RemoveAt(0);
-                currentTimer = 0f;
+                var lookAtPosition = CurrentTarget.position;
+                lookAtPosition.y = transform.position.y;
+                transform.LookAt(CurrentTarget);
+                if (Weapon != null && Weapon.CanFire())
+                    Weapon.FireWeapon();
             }
-        }
+            // if can see && within attackrange - attack
+            else if (Route.Any())
+            {
+                currentTimer += Time.deltaTime * WalkingSpeed;
+                var tpos = Spawner.transform.TransformPoint(Route[0]);
+                transform.position = Vector3.MoveTowards(transform.position, tpos, Time.deltaTime * WalkingSpeed);
+                transform.LookAt(tpos);
 
-        if(CurrentTarget != null && Vector3.Distance(CurrentTarget.position, transform.position) > ChaseRange)
-        {
-            Route.Clear();
-            CurrentTarget = null;
+                if ( Vector3.Distance( transform.position, tpos) < 1f)
+                {
+                    var tPos = ownerLocalPosition(CurrentTarget.position);
+                    var lPos = ownerLocalPosition(transform.position);
+
+                    Route.RemoveAt(0);
+                    currentTimer = 0f;
+                }
+            }
+
+            if(CurrentTarget != null && Vector3.Distance(CurrentTarget.position, transform.position) > ChaseRange)
+            {
+                Route.Clear();
+                CurrentTarget = null;
+            }
         }
     }
 
@@ -84,5 +87,4 @@ public class WalkingEnemy : NpcBase{
     {
         return Spawner.transform.TransformVector(localPosition);
     }
-
 }

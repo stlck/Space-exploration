@@ -31,7 +31,8 @@ public class WarpShip : NetworkBehaviour, IShipSpawnObject {
         {
             if (GUILayout.Button(l.Location.Name))
             {
-                NetworkHelper.Instance.RpcSpawnLocation(l.name, l.Seed);
+                //NetworkHelper.Instance.RpcSpawnLocation(l.name, l.Seed);
+                NetworkHelper.Instance.SpawnMission(l.Name);
                 owningShip.WarpTo(l.Location.Position - Vector3.right * 10);
             }
             //MyAvatar.Instance.CmdWarpShip(owningShip, l.Position);
