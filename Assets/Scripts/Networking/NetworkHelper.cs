@@ -95,10 +95,15 @@ public class NetworkHelper : NetworkBehaviour
     [ClientRpc]
     public void RpcSpawnLocation(string locationName, int seed)
     {
-        spawnLocation(MyLocations.First(m => m.Name == locationName), seed);
+        SpawnLocation(MyLocations.First(m => m.Name == locationName), seed);
     }
 
-    void spawnLocation(Location loc, int seed)
+    public void SpawnLocation(string locName, int seed)
+    {
+        SpawnLocation(MyLocations.First(m => m.Name == locName), seed);
+    }
+
+    public void SpawnLocation(Location loc, int seed)
     {
         //var c = MyLocations.First(m => m.Name == locationName);
         var go = new GameObject(loc.name);
@@ -112,10 +117,10 @@ public class NetworkHelper : NetworkBehaviour
         SpawnedLocations.Add(loc);
     }
 
-    public void RpcSpawnMission(string Name)
+    public void SpawnMission(string Name)
     {
         var mission = Missions.First(m => m.Name == Name);
-        spawnLocation(mission.Location, mission.Seed);
+        SpawnLocation(mission.Location, mission.Seed);
 
         if (mission.Location.Standing == LocationStandings.Hostile)
         {

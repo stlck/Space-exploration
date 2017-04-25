@@ -9,31 +9,22 @@ public class TestVoronoi : MonoBehaviour {
     public RawImage target;
     public int size = 512;
     public int Points = 30;
-    public int distanceStart = 30;
-    public int distanceEnd = 50;
+    public float distanceStart = 30;
+    public float distanceEnd = 50;
+    public Gradient grad;
 
 	// Use this for initialization
 	void Start () {
-        
+        generate();
 	}
-	
-	void generate()
+
+    void Update()
     {
-        var tex = new Texture2D(size, size);
-        var points = new List<Vector2>();
-        for (int i = 0; i < Points; i++)
-        {
-            points.Add(new Vector2(Random.Range(1, size), Random.Range(1, size)));
-        }
+        if (Input.GetKeyDown(KeyCode.Space))
+            generate();
+    }
 
-        Color c = ProceduralToolkit.RandomE.color;
-
-        for(int i = 0; i < size; i++)
-            for(int j = 0; j < size; j++)
-            {
-                var coor = new Vector2(i, j);
-                var nearest = points.OrderBy(m => Vector2.Distance(m, coor)).First();
-                //tex.SetPixel(i,j, )
-            }
+    void generate ()
+    {
     }
 }

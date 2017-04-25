@@ -14,7 +14,7 @@ public class CreateEnvironment : MonoBehaviour {
     // Use this for initialization
     void Start () {
         //MyLocations = Resources.LoadAll<Location>("").ToList();
-        if (MyAvatar.Instance.isServer)
+        //if (MyAvatar.Instance.isServer)
             StartCoroutine(spawnNearbyLocations());
     }
 
@@ -38,7 +38,7 @@ public class CreateEnvironment : MonoBehaviour {
         if(nearbyMissions.Any())
         {
             var mission = nearbyMissions.First();
-            NetworkHelper.Instance.RpcSpawnMission(mission.Name);
+            NetworkHelper.Instance.SpawnMission(mission.Name);
             //SpawnedLocations.Add(mission.Location);
         }
 
@@ -48,7 +48,7 @@ public class CreateEnvironment : MonoBehaviour {
         {
             var loc = close.First();
             var seed = loc.seed == -1 ? Random.Range(0, 32000) : loc.seed;
-            NetworkHelper.Instance.RpcSpawnLocation(loc.Name, seed);
+            NetworkHelper.Instance.SpawnLocation(loc.Name, seed);
             //SpawnedLocations.Add(loc);
         }
 

@@ -20,6 +20,7 @@ public class Testing : MonoBehaviour {
         instance = this;
         windowRect = new Rect(Screen.width - 310, 10, 300, 400);
         DebugRect = new Rect(Screen.width - 300, 0, 290, Screen.height);
+        Output = new List<deb>();
     }
 	
 	// Update is called once per frame
@@ -51,6 +52,7 @@ public class Testing : MonoBehaviour {
 
     public static void AddDebug(string content)
     {
+        if (instance != null)
         instance.Output.Add(new deb() { Content = content });
     }
 
