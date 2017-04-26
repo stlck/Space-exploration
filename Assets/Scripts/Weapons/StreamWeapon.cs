@@ -39,4 +39,12 @@ public class StreamWeapon : BaseWeapon {
                 IsOn .Invoke( false);
         }
     }
+
+    public override void ShopGUI ()
+    {
+        base.ShopGUI();
+
+        GUILayout.Label("Stream");
+
+    }
 }

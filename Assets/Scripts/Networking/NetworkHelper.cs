@@ -134,7 +134,7 @@ public class NetworkHelper : NetworkBehaviour
 
     public void SpawnEnemies(Mission target, InstantiatedLocation owner)
     {
-        var amountToSpawn = 10 + (target.Level + 1) * UnityEngine.Random.Range(8,16);
+        var amountToSpawn = 10 + (target.Level + 1) * UnityEngine.Random.Range(20,40);
         var spawned = 0;
         while(spawned <= amountToSpawn)
         {

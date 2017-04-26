@@ -14,5 +14,10 @@ public class ProjectileWeapon : BaseWeapon {
         //Debug.Log("bullet at " + t.transform.position);  
         t.Owner = this;
     }
+    public override void ShopGUI ()
+    {
+        base.ShopGUI();
 
+        GUILayout.Label("Projectile");
+    }
 }

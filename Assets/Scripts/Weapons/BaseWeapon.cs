@@ -48,7 +48,7 @@ public class BaseWeapon : BaseItem
     {
         base.ShopGUI();
 
-        GUILayout.TextField("d" + DamagePerHit + "/" + Cooldown, GUILayout.Width(60));
+        GUILayout.TextField("dps " + (DamagePerHit / Cooldown), GUILayout.Width(60));
     }
 
     public override void InventoryGUI()
