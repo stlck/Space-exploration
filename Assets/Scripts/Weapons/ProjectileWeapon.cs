@@ -6,6 +6,8 @@ public class ProjectileWeapon : BaseWeapon {
 
     public BaseProjectile Projectile;
 
+    //public ProjectileWeaponValues ProjectileValues;
+
     public override void FireWeapon()
     {
         base.FireWeapon();
@@ -20,4 +22,11 @@ public class ProjectileWeapon : BaseWeapon {
 
         GUILayout.Label("Projectile");
     }
+
+   /* [System.Serializable]
+    public struct ProjectileWeaponValues
+    {
+        //public float Range;
+        //public float Width;
+    }*/
 }

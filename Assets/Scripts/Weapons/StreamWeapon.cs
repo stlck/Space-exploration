@@ -11,6 +11,8 @@ public class StreamWeapon : BaseWeapon {
     float ttl = 0f;
     public float LightUpTime = .25f;
 
+    //public StreamWeaponValues StreamValues;
+
     public override void FireWeapon()
     {
         base.FireWeapon();
@@ -47,4 +49,10 @@ public class StreamWeapon : BaseWeapon {
         GUILayout.Label("Stream");
 
     }
+
+   /* [System.Serializable]
+    public struct StreamWeaponValues
+    {
+        public float Width;
+    }*/
 }

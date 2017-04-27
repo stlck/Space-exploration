@@ -11,10 +11,14 @@ public class EnergiWeapon : BaseWeapon {
 
     public Transform HitEffectObject;
 
+    //public EnergyWeaponValues EnergyValues;
+
     float ttl = 0f;
 
-    void Start()
+    public override void Start ()
     {
+        base.Start();
+
         IsOn.Invoke(false);
     }
 
@@ -22,14 +26,11 @@ public class EnergiWeapon : BaseWeapon {
     {
         base.FireWeapon();
 
-        //VisualEffects.Play();
-
         IsOn.Invoke(true);
         ttl = LightUpTime;
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward , out hit, Range))
         {
-            //CurrentRange.Invoke(hit.distance);
             LaserEffectObjects.ForEach(m => m.MaxLength = hit.distance);
             var s = hit.  transform.GetComponent<StatBase>();
             if (s != null)
@@ -67,4 +68,10 @@ public class EnergiWeapon : BaseWeapon {
         GUILayout.Label("Stream");
 
     }
+
+   /* [System.Serializable]
+    public struct EnergyWeaponValues
+    {
+
+    }*/
 }

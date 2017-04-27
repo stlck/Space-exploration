@@ -11,6 +11,9 @@ public class BaseWeapon : BaseItem
 
     public float Cooldown = .2f;
     public float CurrentCooldown = 0f;
+    public Color WeaponColor = Color.green;
+
+    public BaseWeaponValues WeaponValues;
 
     // Use this for initialization
     public virtual void Start () {
@@ -59,5 +62,20 @@ public class BaseWeapon : BaseItem
             MyAvatar.Instance.AvatarWeaponHandler.EquipWeapon(this.Id);
         else if (GUILayout.Button("Unequip"))
             MyAvatar.Instance.AvatarWeaponHandler.UnEquipWeapon(this.Id);
+    }
+
+    [System.Serializable]
+    public struct BaseWeaponValues
+    {
+        public int Seed;
+        public float Damage;
+        public float Cooldown;
+        public Color WeaponColor;
+        public float Range;
+
+        public override string ToString ()
+        {
+            return Seed + ".) dam:" + Damage + "| CD:" + Cooldown + "|Range:" + Range;
+        }
     }
 }
