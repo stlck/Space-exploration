@@ -1,15 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class WeaponGenerator : MonoBehaviour {
 
-    public List<WeaponRecipee> WeaponRecipees;
+    public static List<WeaponRecipeeObject> WeaponRecipees;
     public BaseWeapon.BaseWeaponValues test;
-    public WeaponRecipee testrecipee;
+    public WeaponRecipeeObject testrecipee;
 
     // Use this for initialization
     void Start () {
+        WeaponRecipees = Resources.LoadAll<WeaponRecipeeObject>("WeaponRecipees").ToList();
         testrecipee = GetRecipee(Random.Range(0, 10000));
         test = getBaseWeaponValues(testrecipee);
 	}
@@ -30,15 +32,19 @@ public class WeaponGenerator : MonoBehaviour {
         GUILayout.TextField("Range : " + test.Range);
     }
 
-    public WeaponRecipee GetRecipee(int seed)
+    public static WeaponRecipeeObject GetRecipee(int seed)
     {
+        if (WeaponRecipees == null)
+            WeaponRecipees = Resources.LoadAll<WeaponRecipeeObject>("WeaponRecipees").ToList();
+
         Random.InitState(seed);
+       
         var ret = WeaponRecipees.GetRandom();
         ret.Seed = seed;
         return ret;
     }
 
-    public BaseWeapon.BaseWeaponValues getBaseWeaponValues( WeaponRecipee recipee)
+    public static BaseWeapon.BaseWeaponValues getBaseWeaponValues(WeaponRecipeeObject recipee)
     {
         Random.InitState(recipee.Seed);
 
@@ -56,12 +62,12 @@ public class WeaponGenerator : MonoBehaviour {
 
 }
 
-[System.Serializable]
+/*[System.Serializable]
 public class WeaponRecipee
 {
     public int Seed;
     public BaseWeapon OrgWeapon;
-    public Gradient WeaponColors;
+    //public Gradient WeaponColors;
 
     public float MinCooldown;
     public float MaxCooldown;
@@ -76,7 +82,7 @@ public class WeaponRecipee
     {
         return Seed + ": " + OrgWeapon.name; ;
     }
-}
+}*/
 
 
 /*

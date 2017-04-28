@@ -22,18 +22,46 @@ public class NetworkHelper : NetworkBehaviour
     public List<Mission> Missions = new List<Mission>();
     public List<NpcBase> Enemies = new List<NpcBase>();
 
+    //[SyncVar]
+    public SyncListInt WeaponSeeds = new SyncListInt();
+    //public int[] WeaponSeeds ;
+
     void Awake ()
     {
         instance = this;
         
         MyLocations.Add(Resources.LoadAll<Location>("")[0]);
         Enemies = Resources.LoadAll<NpcBase>("Enemies").ToList();
+
     }
 
     // Use this for initialization
     void Start()
     {
         NetworkManager.singleton.runInBackground = true;
+
+    }
+
+    void WeaponSeedsChanged (SyncList<int>.Operation op, int itemIndex)
+    {
+        Debug.Log("weaponSeeds updated");
+    }
+
+    public override void OnStartServer ()
+    {
+        base.OnStartServer();
+
+        //WeaponSeeds = new SyncListInt();
+        WeaponSeeds.Callback = WeaponSeedsChanged;
+        //WeaponSeeds = new int[8];
+        for (int i = 0; i < 8; i++)
+            WeaponSeeds.Add(UnityEngine.Random.Range(0, 40000));
+    }
+
+    public override void OnStartClient ()
+    {
+        base.OnStartClient();
+
     }
 
     public void SpawnSpaceEncounter(Location t)
