@@ -38,7 +38,7 @@ public class WeaponGenerator : MonoBehaviour {
             WeaponRecipees = Resources.LoadAll<WeaponRecipeeObject>("WeaponRecipees").ToList();
 
         Random.InitState(seed);
-       
+        
         var ret = WeaponRecipees.GetRandom();
         ret.Seed = seed;
         return ret;
@@ -56,6 +56,8 @@ public class WeaponGenerator : MonoBehaviour {
         //ret.WeaponColor = recipee.WeaponColors.Evaluate(Random.value);
         ret.Damage = Random.Range(recipee.MinDamage, recipee.MaxDamage);
         ret.Range = Random.Range(recipee.MinRange, recipee.MaxRange);
+
+        Debug.Log("recipee seed " + ret.Seed + ". CD: " + ret.Cooldown);
 
         return ret;
     }

@@ -6,14 +6,14 @@ public class ProjectileWeapon : BaseWeapon {
 
     public BaseProjectile Projectile;
 
-    //public ProjectileWeaponValues ProjectileValues;
-
     public override void FireWeapon()
     {
         base.FireWeapon();
 
         var t = Instantiate(Projectile, transform.position + transform.forward, transform.rotation);
-        //Debug.Log("bullet at " + t.transform.position);  
+        if (!t.gameObject.activeInHierarchy)
+            t.gameObject.SetActive(true);
+        t.WeaponColor.Invoke(WeaponValues.WeaponColor);
         t.Owner = this;
     }
     public override void ShopGUI ()
@@ -23,10 +23,4 @@ public class ProjectileWeapon : BaseWeapon {
         GUILayout.Label("Projectile");
     }
 
-   /* [System.Serializable]
-    public struct ProjectileWeaponValues
-    {
-        //public float Range;
-        //public float Width;
-    }*/
 }

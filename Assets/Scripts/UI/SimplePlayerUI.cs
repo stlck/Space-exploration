@@ -56,10 +56,16 @@ public class SimplePlayerUI : MonoBehaviour {
     void doInventoryWindow(int id)
     {
         scrollPos = GUILayout.BeginScrollView(scrollPos, false, true);
-        foreach(var i in MyAvatar.Instance.InventoryItems)
+        /*foreach(var i in MyAvatar.Instance.InventoryItems)
         {
             GUILayout.BeginHorizontal();
             i.InventoryGUI();
+            GUILayout.EndHorizontal();
+        }*/
+        foreach(var e in MyAvatar.Instance.AvatarWeaponHandler.InstantiatedWeapons)
+        {
+            GUILayout.BeginHorizontal();
+            e.Weapon.InventoryGUI();
             GUILayout.EndHorizontal();
         }
         GUILayout.EndScrollView();

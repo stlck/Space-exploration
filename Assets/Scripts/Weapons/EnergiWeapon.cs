@@ -6,12 +6,10 @@ public class EnergiWeapon : BaseWeapon {
 
     public BoolUpdate IsOn;
     public List<LaserEffectObject> LaserEffectObjects;
-    public float Range = 15;
+    //public float Range = 15;
     public float LightUpTime = .25f;
 
     public Transform HitEffectObject;
-
-    //public EnergyWeaponValues EnergyValues;
 
     float ttl = 0f;
 
@@ -29,12 +27,12 @@ public class EnergiWeapon : BaseWeapon {
         IsOn.Invoke(true);
         ttl = LightUpTime;
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward , out hit, Range))
+        if (Physics.Raycast(transform.position, transform.forward , out hit, WeaponValues.Range))
         {
             LaserEffectObjects.ForEach(m => m.MaxLength = hit.distance);
             var s = hit.  transform.GetComponent<StatBase>();
             if (s != null)
-                s.TakeDamage(DamagePerHit, hit.point, transform.forward);
+                s.TakeDamage(WeaponValues.Damage, hit.point, transform.forward);
 
             if(HitEffectObject != null)
             {
@@ -44,7 +42,7 @@ public class EnergiWeapon : BaseWeapon {
         }
         else
         {
-            LaserEffectObjects.ForEach(m => m.MaxLength = Range);
+            LaserEffectObjects.ForEach(m => m.MaxLength = WeaponValues.Range);
             if (HitEffectObject != null)
                 HitEffectObject.gameObject.SetActive(false);
         }

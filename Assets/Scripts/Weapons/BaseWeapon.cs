@@ -6,18 +6,21 @@ using UnityEngine;
 
 public class BaseWeapon : BaseItem
 {
-    public float DamagePerHit = 1;
     public int Id = -1;
-
-    public float Cooldown = .2f;
     public float CurrentCooldown = 0f;
-    public Color WeaponColor = Color.green;
-
+    public ColorUpdate WeaponColor;
     public BaseWeaponValues WeaponValues;
+    public List<ParticleSystem> ParticleSystems;
 
     // Use this for initialization
     public virtual void Start () {
-		
+        ParticleSystems.ForEach(m =>
+        {
+            var main = m.main;
+            main.startColor = WeaponValues.WeaponColor;
+        });
+
+        WeaponColor.Invoke(WeaponValues.WeaponColor);
 	}
 
     // Update is called once per frame
@@ -27,7 +30,7 @@ public class BaseWeapon : BaseItem
 
     public virtual bool CanFire()
     {
-        return CurrentCooldown >= Cooldown;
+        return CurrentCooldown >= WeaponValues.Cooldown;
     }
 
     public virtual void FireWeapon()
@@ -47,11 +50,18 @@ public class BaseWeapon : BaseItem
         MyAvatar.Instance.AvatarWeaponHandler.EquipWeapon(this.Id);
     }
 
+    public void BuyWeapon(int seed)
+    {
+        base.BuyItem();
+        
+        MyAvatar.Instance.AvatarWeaponHandler.EquipWeaponSeed(seed);   
+    }
+
     public override void ShopGUI()
     {
         base.ShopGUI();
 
-        GUILayout.TextField("dps " + (DamagePerHit / Cooldown), GUILayout.Width(60));
+        GUILayout.TextField("dps " + (WeaponValues.Damage / WeaponValues.Cooldown), GUILayout.Width(60));
     }
 
     public override void InventoryGUI()
@@ -59,14 +69,15 @@ public class BaseWeapon : BaseItem
         base.InventoryGUI();
 
         if (MyAvatar.Instance.AvatarWeaponHandler != this && GUILayout.Button("Equip"))
-            MyAvatar.Instance.AvatarWeaponHandler.EquipWeapon(this.Id);
+            MyAvatar.Instance.AvatarWeaponHandler.EquipWeaponSeed(this.WeaponValues.Seed);
         else if (GUILayout.Button("Unequip"))
-            MyAvatar.Instance.AvatarWeaponHandler.UnEquipWeapon(this.Id);
+            MyAvatar.Instance.AvatarWeaponHandler.UnEquipWeapon(this.WeaponValues.Seed);
     }
 
     [System.Serializable]
     public struct BaseWeaponValues
     {
+        //public bool IsSetup;
         public int Seed;
         public float Damage;
         public float Cooldown;

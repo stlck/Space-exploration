@@ -12,6 +12,8 @@ public class BaseProjectile : MonoBehaviour
     Rigidbody rb;
     bool hasHit = false;
 
+    public ColorUpdate WeaponColor;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -25,29 +27,19 @@ public class BaseProjectile : MonoBehaviour
     {
         if( rb.velocity != transform.forward * MoveSpeed)
             rb.AddForce(transform.forward * MoveSpeed, ForceMode.VelocityChange);
-        //rb.MovePosition(transform.forward * MoveSpeed);
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        if (hasHit) return;
+        if (hasHit)
+            return;
+
         hasHit = true;
 
-        /*if ( MyAvatar.Instance.GetComponent<Collider>() == collision.collider)
+        var tStats = collision.transform.GetComponent<StatBase>();
+        if (tStats != null)
         {
-            Physics.IgnoreCollision(collision.collider, this.GetComponent<Collider>(), true);
-            return;
-        }*/
-
-        //Debug.Log("Collision " + collision.gameObject.name, collision.gameObject);
-        //if(MyAvatar.Instance.isServer)
-        { 
-            //Debug.Log("Collision on server");
-            var tStats = collision.transform.GetComponent<StatBase>();
-            if (tStats != null)
-            {
-                tStats.TakeDamage(Owner.DamagePerHit, collision.contacts[0].point, transform.forward);
-            }
+            tStats.TakeDamage(Owner.WeaponValues.Damage, collision.contacts[0].point, transform.forward);
         }
 
         var point = collision.contacts[0].point;

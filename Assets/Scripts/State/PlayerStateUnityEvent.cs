@@ -46,3 +46,6 @@ public class FloatUpdate : UnityEvent<float> { }
 
 [System.Serializable]
 public class Vector3Update : UnityEvent<Vector3> { }
+
+[System.Serializable]
+public class ColorUpdate : UnityEvent<Color> { }

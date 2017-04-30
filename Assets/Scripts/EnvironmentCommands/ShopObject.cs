@@ -48,26 +48,28 @@ public class ShopObject : MonoBehaviour {
             Show = false;
 
         scrollPos = GUILayout.BeginScrollView(scrollPos, false, true);
-        GUILayout.Label("old weapons");
+        /*GUILayout.Label("old weapons");
         foreach (var w in ForSale)
         {
             GUILayout.BeginHorizontal();
             w.ShopGUI();
 
             GUILayout.EndHorizontal();
-        }
+        }*/
         GUILayout.Label("new weapons");
-
         //foreach (var item in WeaponValues)
-        foreach(var recipee in recipeObjects)
+        //foreach(var recipee in recipeObjects)
+        for(int i = 0; i < recipeObjects.Count; i++)
         {
-            var item = WeaponValues.First(m => m.Seed == recipee.Seed);
+            //var item = WeaponValues.First(m => m.Seed == recipeObjects[i].Seed);
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label(recipee.name);
-            GUILayout.Label(item.Damage + "");
-            GUILayout.Label(item.Cooldown + "");
-            GUILayout.Label(item.Range + "");
+            if (GUILayout.Button("$" + recipeObjects[i].OrgWeapon.Price) && recipeObjects[i].OrgWeapon.CanBuy())
+                recipeObjects[i].OrgWeapon.BuyWeapon(recipeObjects[i].Seed);
+            GUILayout.Label(recipeObjects[i].name);
+            GUILayout.Label(WeaponValues[i].Damage + "");
+            GUILayout.Label(WeaponValues[i].Cooldown + "");
+            GUILayout.Label(WeaponValues[i].Range + "");
             GUILayout.EndHorizontal();
         }
         GUILayout.EndScrollView();
@@ -88,11 +90,14 @@ public class ShopObject : MonoBehaviour {
                 recipeObjects = new List<WeaponRecipeeObject>();
                 WeaponValues = new List<BaseWeapon.BaseWeaponValues>();
 
-                foreach (var seed in NetworkHelper.Instance.WeaponSeeds)
+                //foreach (var seed in NetworkHelper.Instance.WeaponSeeds)
+                for(int i = 0; i < NetworkHelper.Instance.WeaponSeeds.Count; i++)
                 {
-                    var recipee = WeaponGenerator.GetRecipee(seed);
+                    var recipee = WeaponGenerator.GetRecipee(NetworkHelper.Instance.WeaponSeeds[i]);
                     recipeObjects.Add(recipee);
-                    WeaponValues.Add(WeaponGenerator.getBaseWeaponValues(recipee));
+                    var values = WeaponGenerator.getBaseWeaponValues(recipee);
+                    WeaponValues.Add(values);
+                    Debug.Log("2 recipee seed " + recipee.Seed + ". CD: " + values.Cooldown);
                 }
 
                 Show = true;

@@ -39,7 +39,6 @@ public class NetworkHelper : NetworkBehaviour
     void Start()
     {
         NetworkManager.singleton.runInBackground = true;
-
     }
 
     void WeaponSeedsChanged (SyncList<int>.Operation op, int itemIndex)
