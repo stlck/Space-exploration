@@ -10,6 +10,7 @@ public class EnergiWeapon : BaseWeapon {
     public float LightUpTime = .25f;
 
     public Transform HitEffectObject;
+    public ParticleSystem HitParticles;
 
     float ttl = 0f;
 
@@ -34,7 +35,7 @@ public class EnergiWeapon : BaseWeapon {
             if (s != null)
                 s.TakeDamage(WeaponValues.Damage, hit.point, transform.forward);
 
-            if(HitEffectObject != null)
+            if (HitEffectObject != null)
             {
                 HitEffectObject.position = hit.point;
                 HitEffectObject.gameObject.SetActive(true);
@@ -43,6 +44,9 @@ public class EnergiWeapon : BaseWeapon {
         else
         {
             LaserEffectObjects.ForEach(m => m.MaxLength = WeaponValues.Range);
+            //if(HitParticles != null)
+            //    HitParticles.Pause();
+
             if (HitEffectObject != null)
                 HitEffectObject.gameObject.SetActive(false);
         }
@@ -55,7 +59,24 @@ public class EnergiWeapon : BaseWeapon {
         {
             ttl -= Time.deltaTime;
             if (ttl <= 0f)
+            { 
                 IsOn.Invoke(false);
+            }
+            else
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(transform.position, transform.forward, out hit, WeaponValues.Range))
+                {
+                    LaserEffectObjects.ForEach(m => m.MaxLength = hit.distance);
+                    if (HitParticles != null)
+                    {
+                        HitParticles.transform.position = hit.point;
+                        HitParticles.Emit(1);
+                    }
+
+                }
+            }
+
         }
     }
 

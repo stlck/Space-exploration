@@ -13,6 +13,7 @@ public class BaseProjectile : MonoBehaviour
     bool hasHit = false;
 
     public ColorUpdate WeaponColor;
+    public List<ParticleSystem> ParticleSystems;
 
     void Awake()
     {
@@ -58,7 +59,11 @@ public class BaseProjectile : MonoBehaviour
 
         if (HitEffect != null)
         {
-            Destroy(Instantiate(HitEffect, collision.contacts[0].point, HitEffect.transform.rotation), 10f);
+            //var hit = Instantiate(HitEffect, collision.contacts[0].point, HitEffect.transform.rotation);
+            HitEffect.SetActive(true);
+            HitEffect.transform.SetParent(null);
+            HitEffect.transform.position= collision.contacts[0].point;
+            Destroy(HitEffect, 10f);
         }
 
         rb.isKinematic = true;

@@ -14,6 +14,13 @@ public class ProjectileWeapon : BaseWeapon {
         if (!t.gameObject.activeInHierarchy)
             t.gameObject.SetActive(true);
         t.WeaponColor.Invoke(WeaponValues.WeaponColor);
+
+        t.ParticleSystems.ForEach(m =>
+        {
+            var main = m.main;
+            main.startColor = WeaponValues.WeaponColor;
+        });
+
         t.Owner = this;
     }
     public override void ShopGUI ()
