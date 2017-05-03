@@ -137,7 +137,6 @@ public class NetworkHelper : NetworkBehaviour
         var location = loc.SpawnLocation(go.transform, seed);
         location.name = loc.name;
         var pos = loc.Position;
-        //pos.y = -.5f;
         go.transform.position = pos;
 
         Testing.AddDebug("Spawned location: " + loc.name + " at " + pos);
@@ -152,7 +151,10 @@ public class NetworkHelper : NetworkBehaviour
 
         if (isServer && mission.Location.Standing == LocationStandings.Hostile)
         {
-            SpawnEnemies(mission, location);
+            if (mission.Location.Standing == LocationStandings.Hostile)
+                SpawnEnemies(mission, location);
+            else if (mission.Location.Standing == LocationStandings.Friendly)
+                ;
             // spawn enemies here?
             // or instantiatedlocation or mission
         }
@@ -163,11 +165,19 @@ public class NetworkHelper : NetworkBehaviour
     {
         var amountToSpawn = 10 + (target.Level + 1) * UnityEngine.Random.Range(20,40);
         var spawned = 0;
-        while(spawned <= amountToSpawn)
+        
+        if(target.Location.Type == LocationTypes.SpaceStation || target.Location.Type == LocationTypes.Asteroid)
         {
-            var e = Enemies.GetRandom();
-            SpawnEnemy(e, owner);
-            spawned += e.GetComponent<StatBase>().CreditsOnKill;
+            while(spawned <= amountToSpawn)
+            {
+                var e = Enemies.GetRandom();
+                SpawnEnemy(e, owner);
+                spawned += e.GetComponent<StatBase>().CreditsOnKill;
+            }
+        }
+        else if(target.Location.Type == LocationTypes.SpaceEncounter)
+        {
+            // spawn ships
         }
     }
 

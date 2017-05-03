@@ -91,7 +91,7 @@ public class ShipSpawner : MonoBehaviour {
     public static void SrvCreateShip(int[,] t, int[,] c, int sizex, int sizey, Vector3 position, Quaternion rotation)
     {
         var baseShip = Resources.Load<Ship>("BaseShip");
-        var s = Instantiate(baseShip, Vector3.zero, Quaternion.identity);//Target.gameObject.AddComponent<Ship>();
+        var s = Instantiate(baseShip, Vector3.left * 10f, Quaternion.identity);//Target.gameObject.AddComponent<Ship>();
         
         NetworkServer.Spawn(s.gameObject);
         var center = new Vector3(sizex / 2, 0, sizey / 2);
@@ -435,20 +435,21 @@ public class ShipSpawner : MonoBehaviour {
             }
 
         lowerDraft.Move(Vector3.left * center.x + Vector3.forward * center.z);
-        //upperDraft.Move(Vector3.left * center.x + Vector3.forward * center.z);
         lower = lowerDraft.ToMesh();
-        //upper = upperDraft.ToMesh();
-        //_target.mesh = lower;
 
-        var lChild = new GameObject();
-        lChild.transform.SetParent(_target);
-        lChild.transform.localPosition = Vector3.zero;
-        lChild.transform.localScale = Vector3.one;
-        lChild.AddComponent<MeshFilter>().mesh = lower;
-        lChild.AddComponent<MeshRenderer>().material = mat;//_target.GetComponent<MeshRenderer>().material;
-        lChild.gameObject.layer = LayerMask.NameToLayer("Ship");
-        lChild.AddComponent<MeshCollider>().sharedMesh = lower;
-        lChild.GetComponent<MeshCollider>().convex = true;
+
+        var lChild = _target.FindChild("Bottom").gameObject;
+        //lChild.transform.SetParent(_target);
+        //lChild.transform.localPosition = Vector3.zero;
+        //lChild.transform.localScale = Vector3.one;
+        lChild.GetComponent<MeshFilter>().mesh = lower;
+        lChild.GetComponent<MeshRenderer>().material = mat;//_target.GetComponent<MeshRenderer>().material;
+        //lChild.gameObject.layer = LayerMask.NameToLayer("Ship");
+        var coll = lChild.gameObject.AddComponent<MeshCollider>();
+        coll.sharedMesh = lower;
+        coll.GetComponent<MeshCollider>().convex = true;
+        //lChild.GetComponent<MeshCollider>().sharedMesh = lower;
+        //lChild.GetComponent<MeshCollider>().convex = true;
 
 
         Mesh upper = new Mesh();
@@ -576,15 +577,18 @@ public class ShipSpawner : MonoBehaviour {
         upperDraft.Move(Vector3.left * center.x + Vector3.forward * center.z);
         upper = upperDraft.ToMesh();
 
-        var uChild = new GameObject();
-        uChild.transform.SetParent(_target);
-        uChild.transform.localPosition = Vector3.zero;
-        uChild.transform.localScale = Vector3.one;
-        uChild.AddComponent<MeshFilter>().mesh = upper;
-        uChild.AddComponent<MeshRenderer>().material = mat;// _target.GetComponent<MeshRenderer>().material;
+        var uChild = _target.FindChild("Top").gameObject;
+        //uChild.transform.SetParent(_target);
+        //uChild.transform.localPosition = Vector3.zero;
+        //uChild.transform.localScale = Vector3.one;
+        uChild.GetComponent<MeshFilter>().mesh = upper;
+        uChild.GetComponent<MeshRenderer>().material = mat;// _target.GetComponent<MeshRenderer>().material;
         uChild.gameObject.layer = LayerMask.NameToLayer("ShipTop");
-        uChild.AddComponent<MeshCollider>().sharedMesh = upper;
-        uChild.GetComponent<MeshCollider>().convex = true;
+        var coll2 = uChild.gameObject.AddComponent<MeshCollider>();
+        coll2.sharedMesh = upper;
+        coll2.GetComponent<MeshCollider>().convex = true;
+        //uChild.GetComponent<MeshCollider>().sharedMesh = upper;
+        //uChild.GetComponent<MeshCollider>().convex = true;
     }
 
     static Vector3 positionOf(int x, int y)

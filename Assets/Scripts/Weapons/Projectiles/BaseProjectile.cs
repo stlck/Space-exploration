@@ -46,23 +46,24 @@ public class BaseProjectile : MonoBehaviour
         var point = collision.contacts[0].point;
         var duplicates = Physics.OverlapSphere(point, HitRadius);
         //Debug.Log("Found " + duplicates.Length);
-        if(collision.gameObject.GetComponent<BaseAddForceObject>() != null)
+        if(duplicates.Length == 0 && collision.gameObject.GetComponent<BaseAddForceObject>() != null)
             collision.gameObject.GetComponent<BaseAddForceObject>().ApplyForce(point, ExplosionForce, HitRadius);
-
-        foreach (var d in duplicates)
-        {
-            if (d.gameObject != collision.gameObject && d.GetComponent<BaseAddForceObject>() != null)
+        else
+            foreach (var d in duplicates)
             {
-                d.GetComponent<BaseAddForceObject>().ApplyForce(point, ExplosionForce, HitRadius);
+                if (d.gameObject != collision.gameObject && d.GetComponent<BaseAddForceObject>() != null)
+                {
+                    d.GetComponent<BaseAddForceObject>().ApplyForce(point, ExplosionForce, HitRadius);
+                }
             }
-        }
 
         if (HitEffect != null)
         {
             //var hit = Instantiate(HitEffect, collision.contacts[0].point, HitEffect.transform.rotation);
-            HitEffect.SetActive(true);
             HitEffect.transform.SetParent(null);
-            HitEffect.transform.position= collision.contacts[0].point;
+            HitEffect.transform.localScale = Vector3.one;
+            HitEffect.transform.position = collision.contacts[0].point;
+            HitEffect.SetActive(true);
             Destroy(HitEffect, 10f);
         }
 

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
+using System.Linq;
 
 public class MoveShip : MovementBase
 {
@@ -11,6 +12,8 @@ public class MoveShip : MovementBase
 
     public bool TryPhysics = true;
     public float PhysicsModifier = 200;
+
+    public ShipCollisions CurrentCollisions;
 
     void Awake()
     {
@@ -39,8 +42,15 @@ public class MoveShip : MovementBase
         if (!TryPhysics && !owningShip.Warping && isServer)
         {
             //owningShip.CurrentSpeed = Mathf.Lerp(owningShip.CurrentSpeed, MoveSpeed, Time.deltaTime);
-            transform.Translate(Vector3.forward * vert * Time.deltaTime * MoveSpeed);// owningShip.CurrentSpeed);
-            // check boundaries
+            if (CurrentCollisions.CurrentCollisionNormal.Any())
+            {
+                var target = CurrentCollisions.CurrentCollisionNormal.First() * -1;
+                target.y = 0f;
+                transform.Translate( target * MoveSpeed * Time.deltaTime);
+                // add collision damage & effects
+            }
+            else
+                transform.Translate(Vector3.forward * vert * Time.deltaTime * MoveSpeed);// owningShip.CurrentSpeed);
         }
 
         transform.Rotate(Vector3.up, hor * Time.deltaTime * RotateSpeed);
@@ -57,7 +67,7 @@ public class MoveShip : MovementBase
                 rigidbody.mass = 40;
             }
 
-            rigidbody.AddForce(transform.forward * vert * MoveSpeed * PhysicsModifier * Time.fixedDeltaTime, ForceMode.Force);
+            rigidbody.AddForce(transform.forward * vert * MoveSpeed * PhysicsModifier * Time.fixedDeltaTime, ForceMode.VelocityChange);
 
             //rigidbody.AddTorque(Vector3.up * RotateSpeed * hor * Time.fixedDeltaTime * PhysicsModifier);
 

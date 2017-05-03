@@ -47,7 +47,7 @@ public class Duplicate : BaseAddForceObject
             if (!NewCollision)
                 doCollision(origin, force);
             else
-                newCollisionTest(origin, force * Vector3.Distance(transform.position, origin) / radius);
+                newCollisionTest(origin, force * ( 1f - Vector3.Distance(transform.position, origin) / radius));
         }
     }
 

@@ -7,14 +7,17 @@ public class ShipCollisions : MonoBehaviour {
 
     public Ship Owner;
     public List<Vector3> CurrentCollisionNormal;
+    public List<Vector3> TriggerBoundsToched;
 
     void OnCollisionStay (Collision collisionInfo)
     {
-        CurrentCollisionNormal = collisionInfo.contacts.Select(m => m.normal * -1).ToList();
+        CurrentCollisionNormal = collisionInfo.contacts.Where(m => m.otherCollider.transform.root != Owner.transform).Select(m => m.normal * -1).ToList();
     }
 
     void OnTriggerStay (Collider other)
     {
+        
+        //other.ClosestPointOnBounds
         //CurrentCollisionNormal = collisionInfo.contacts.Select(m => m.normal * -1).ToList();
     }
 
@@ -26,5 +29,13 @@ public class ShipCollisions : MonoBehaviour {
     void OnCollisionExit (Collision collisionInfo)
     {
 
+    }
+
+    void OnDrawGizmos()
+    {
+        foreach(var c in CurrentCollisionNormal)
+        {
+            Gizmos.DrawLine(transform.position + Vector3.up * 5, transform.position + Vector3.up * 5 + c * 5);
+        }
     }
 }
