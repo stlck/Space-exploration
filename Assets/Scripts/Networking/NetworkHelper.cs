@@ -19,6 +19,7 @@ public class NetworkHelper : NetworkBehaviour
     public List<MyAvatar> AllPlayers = new List<MyAvatar>();
     public List<Location> MyLocations = new List<Location>();
     public List<Location> SpawnedLocations = new List<Location>();
+    public List<InstantiatedLocation> SpawnedInstantiatedLocations = new List<InstantiatedLocation>();
     public List<Mission> Missions = new List<Mission>();
     public List<NpcBase> Enemies = new List<NpcBase>();
 
@@ -132,33 +133,37 @@ public class NetworkHelper : NetworkBehaviour
 
     public InstantiatedLocation SpawnLocation(Location loc, int seed)
     {
-        //var c = MyLocations.First(m => m.Name == locationName);
-        var go = new GameObject(loc.name);
+        var go = new GameObject(loc.Name);
         var location = loc.SpawnLocation(go.transform, seed);
-        location.name = loc.name;
+        location.name = loc.Name;
         var pos = loc.Position;
         go.transform.position = pos;
 
-        Testing.AddDebug("Spawned location: " + loc.name + " at " + pos);
-        SpawnedLocations.Add(loc);
+        Testing.AddDebug("Spawned location: " + loc.Name + " at " + pos);
+        //SpawnedLocations.Add(loc);
+        SpawnedInstantiatedLocations.Add(location);
         return location;
     }
 
     public void SpawnMission(string Name)
     {
-        var mission = Missions.First(m => m.Name == Name);
-        var location = SpawnLocation(mission.Location, mission.Seed);
-
-        if (isServer && mission.Location.Standing == LocationStandings.Hostile)
+        if(SpawnedInstantiatedLocations.Any(m => m.name == Name))
         {
-            if (mission.Location.Standing == LocationStandings.Hostile)
-                SpawnEnemies(mission, location);
-            else if (mission.Location.Standing == LocationStandings.Friendly)
-                ;
-            // spawn enemies here?
-            // or instantiatedlocation or mission
+            var mission = Missions.First(m => m.Name == Name);
+            var location = SpawnLocation(mission.Location, mission.Seed);
+
+            if (isServer && mission.Location.Standing == LocationStandings.Hostile)
+            {
+                if (mission.Location.Standing == LocationStandings.Hostile)
+                    SpawnEnemies(mission, location);
+                else if (mission.Location.Standing == LocationStandings.Friendly)
+                    ;
+                // spawn enemies here?
+                // or instantiatedlocation 
+                // or mission
+            }
+            Testing.AddDebug("Mission spawned: " + Name);
         }
-        Testing.AddDebug("Mission spawned: " + Name);
     }
 
     public void SpawnEnemies(Mission target, InstantiatedLocation owner)
@@ -178,6 +183,20 @@ public class NetworkHelper : NetworkBehaviour
         else if(target.Location.Type == LocationTypes.SpaceEncounter)
         {
             // spawn ships
+        }
+    }
+
+    public void RemoveInstantiatedLocation(string name)
+    {
+        RpcRemoveInstantiatedLocation(name);
+    }
+
+    [ClientRpc]
+    void RpcRemoveInstantiatedLocation (string name)
+    {
+        if(SpawnedInstantiatedLocations.Any( m => m.name == name))
+        {
+            Destroy(SpawnedInstantiatedLocations.First(m => m.name == name));
         }
     }
 
@@ -211,6 +230,7 @@ public class NetworkHelper : NetworkBehaviour
     {
         RpcCreateMission(name, seed, locType, level);
     }
+
 }
 
 [Serializable]

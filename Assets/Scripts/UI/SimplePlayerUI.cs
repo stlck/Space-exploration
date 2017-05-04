@@ -68,6 +68,12 @@ public class SimplePlayerUI : MonoBehaviour {
             e.Weapon.InventoryGUI();
             GUILayout.EndHorizontal();
         }
+        foreach (var e in MyAvatar.Instance.InventoryItems)
+        {
+            GUILayout.BeginHorizontal();
+            e.InventoryGUI();
+            GUILayout.EndHorizontal();
+        }
         GUILayout.EndScrollView();
     }
 

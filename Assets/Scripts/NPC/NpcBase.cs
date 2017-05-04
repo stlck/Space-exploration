@@ -17,6 +17,8 @@ public class NpcBase : BaseAddForceObject {
     public float currentTime = 0f;
 
     public InstantiatedLocation Spawner;
+    public BaseWeapon Weapon;
+    public Transform WeaponPoint;
 
     public virtual void SpawnEnemy(InstantiatedLocation owner, Vector3 position)
     {
@@ -24,6 +26,7 @@ public class NpcBase : BaseAddForceObject {
 
         Spawner = owner;
         transform.position = position;
+        
     }
 
     // Use this for initialization
@@ -35,10 +38,9 @@ public class NpcBase : BaseAddForceObject {
     public virtual void Update()
     {
         currentTimer += Time.deltaTime;
-
     }
 
-
+    // removed states for the time being
     public virtual void Chase(Vector3 position)
     {
 
@@ -53,7 +55,7 @@ public class NpcBase : BaseAddForceObject {
     {
 
     }
-    
+
 }
 
 public enum NPCStates

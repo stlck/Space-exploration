@@ -6,6 +6,7 @@ using UnityEngine;
 public class WeaponGenerator : MonoBehaviour {
 
     public static List<WeaponRecipeeObject> WeaponRecipees;
+    public static List<BaseWeapon> LoadedWeapons = new List<BaseWeapon>();
     public BaseWeapon.BaseWeaponValues test;
     public WeaponRecipeeObject testrecipee;
 
@@ -62,6 +63,41 @@ public class WeaponGenerator : MonoBehaviour {
         return ret;
     }
 
+    public static BaseWeapon InstantiateWeapon (int id, Transform parent)
+    {
+        if(LoadedWeapons == null || LoadedWeapons.Count == 0)
+            LoadedWeapons = Resources.LoadAll<BaseWeapon>("Weapons").ToList();
+
+        BaseWeapon w = Instantiate(LoadedWeapons.First(m => m.Id == id));
+
+        w.transform.parent = parent;
+        w.transform.localPosition = w.transform.position;
+        w.transform.localEulerAngles = Vector3.zero;
+        
+        return w;
+    }
+    public static BaseWeapon InstantiateWeapon (BaseWeapon weapon, Transform parent)
+    {
+        //if (LoadedWeapons == null || LoadedWeapons.Count == 0)
+        //    LoadedWeapons = Resources.LoadAll<BaseWeapon>("Weapons").ToList();
+
+        BaseWeapon w = Instantiate(weapon);
+
+        w.transform.parent = parent;
+        w.transform.localPosition = w.transform.position;
+        w.transform.localEulerAngles = Vector3.zero;
+
+        return w;
+    }
+
+    [System.Serializable]
+    public struct InstantiatedWeapon
+    {
+        public int Id;
+        public int Seed;
+        public BaseWeapon Weapon;
+        public GameObject GameObject;
+    }
 }
 
 /*[System.Serializable]

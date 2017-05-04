@@ -35,7 +35,6 @@ public class WarpShip : NetworkBehaviour, IShipSpawnObject {
                 NetworkHelper.Instance.SpawnMission(l.Name);
                 owningShip.WarpTo(l.Location.Position - Vector3.right * 10);
             }
-            //MyAvatar.Instance.CmdWarpShip(owningShip, l.Position);
         }
     }
 

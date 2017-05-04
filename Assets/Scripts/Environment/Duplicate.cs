@@ -75,9 +75,8 @@ public class Duplicate : BaseAddForceObject
         }
     }
 
-    bool newCollisionTest(Vector3 originPoint, float damage)
+    public void ApplyDamage(Vector3 originPoint, float damage)
     {
-        var pos = transform.position;
         Health -= damage;
 
         if (Health <= 0)
@@ -92,7 +91,15 @@ public class Duplicate : BaseAddForceObject
             }
             Destroy(gameObject);
         }
-        else if(EffectOnHit != null)
+    }
+
+    bool newCollisionTest(Vector3 originPoint, float damage)
+    {
+        var pos = transform.position;
+
+        ApplyDamage(originPoint, damage);
+
+        if (EffectOnHit != null)
         {
             var e = Instantiate(EffectOnHit, originPoint, EffectOnHit.transform.rotation);
             e.SetMaterial(mat);

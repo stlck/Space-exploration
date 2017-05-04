@@ -34,7 +34,8 @@ public class CreateEnvironment : MonoBehaviour {
 
     void checkAndAddEnvironment()
     {
-        var nearbyMissions = NetworkHelper.Instance.Missions.Where(m => Vector3.Distance(transform.position, m.Location.Position) < 200 && !NetworkHelper.Instance.SpawnedLocations.Any(loc => loc.Name == m.Location.Name));
+        var nearbyMissions = NetworkHelper.Instance.Missions.Where
+            (m => Vector3.Distance(transform.position, m.Location.Position) < 200 && !NetworkHelper.Instance.SpawnedInstantiatedLocations.Any(loc => loc.name == m.Location.Name));
         if(nearbyMissions.Any())
         {
             var mission = nearbyMissions.First();
@@ -43,7 +44,8 @@ public class CreateEnvironment : MonoBehaviour {
         }
 
         // spawn terrain in vicinity (local only)
-        var close = NetworkHelper.Instance.MyLocations.Where(m => Vector3.Distance(transform.position, m.Position) < 200 && !NetworkHelper.Instance.SpawnedLocations.Any(loc => loc.Name == m.Name));
+        var close = NetworkHelper.Instance.MyLocations.Where
+            (m => Vector3.Distance(transform.position, m.Position) < 200 && !NetworkHelper.Instance.SpawnedInstantiatedLocations.Any(loc => loc.name == m.Name));
         if (close.Any())
         {
             var loc = close.First();

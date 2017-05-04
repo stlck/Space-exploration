@@ -5,7 +5,6 @@ using System.Linq;
 
 public class WalkingEnemy : NpcBase{
 
-    public BaseWeapon Weapon;
     public List<Vector3> Route;
     Vector3 currentRouteTarget;
     Vector3 prevPosition;

@@ -7,13 +7,11 @@ using UnityEngine.Networking;
 public class AvatarWeaponHandler : NetworkBehaviour
 {
     public BaseWeapon EquippedWeapon;
-    public List<InstantiatedWeapon> InstantiatedWeapons = new List<InstantiatedWeapon>();
-    public static List<BaseWeapon> LoadedWeapons = new List<BaseWeapon>();
+    public List<WeaponGenerator.InstantiatedWeapon> InstantiatedWeapons = new List<WeaponGenerator.InstantiatedWeapon>();
     public Transform WeaponPoint;
 
     void Awake()
     {
-        LoadedWeapons = Resources.LoadAll<BaseWeapon>("Weapons").ToList();
     }
 
     public override void OnStartLocalPlayer()
@@ -56,8 +54,9 @@ public class AvatarWeaponHandler : NetworkBehaviour
         if(!InstantiatedWeapons.Any(m => m.Seed == seed))
         { 
             var recipee = WeaponGenerator.GetRecipee(seed);
-            EquippedWeapon = instantiateWeapon(recipee.OrgWeapon.Id, seed);
+            EquippedWeapon = WeaponGenerator.InstantiateWeapon(recipee.OrgWeapon, WeaponPoint);
             EquippedWeapon.WeaponValues = WeaponGenerator.getBaseWeaponValues(recipee);
+            InstantiatedWeapons.Add(new WeaponGenerator.InstantiatedWeapon() { GameObject = EquippedWeapon.gameObject, Id = EquippedWeapon.Id, Seed = seed, Weapon = EquippedWeapon });
         }
         else
         {
@@ -98,23 +97,23 @@ public class AvatarWeaponHandler : NetworkBehaviour
         turnOffEquippedWeapon();
         //Destroy(EquippedWeapon.gameObject);
 
-        var w = instantiateWeapon(id, id);
+        var w = WeaponGenerator.InstantiateWeapon(id, WeaponPoint);
         
         EquippedWeapon = w;
     }
 
-    BaseWeapon instantiateWeapon (int id, int seed)
+   /* public BaseWeapon InstantiateWeapon (int id, int seed, Transform parent)
     {
         BaseWeapon w = Instantiate(LoadedWeapons.First(m => m.Id == id));
 
-        w.transform.parent = WeaponPoint;
+        w.transform.parent = parent;
         w.transform.localPosition = w.transform.position;
         w.transform.localEulerAngles = Vector3.zero;
 
         InstantiatedWeapons.Add(new InstantiatedWeapon() { GameObject = w.gameObject, Id = id, Seed = seed, Weapon = w });
 
         return w;
-    }
+    }*/
 
     [Command]
     void CmdUnequipWeapon(int seed)
@@ -163,13 +162,5 @@ public class AvatarWeaponHandler : NetworkBehaviour
         EquippedWeapon.FireWeapon();
     }
 
-    [System.Serializable]
-    public struct InstantiatedWeapon
-    {
-        public int Id;
-        public int Seed;
-        public BaseWeapon Weapon;
-        public GameObject GameObject;
-    }
 }
 

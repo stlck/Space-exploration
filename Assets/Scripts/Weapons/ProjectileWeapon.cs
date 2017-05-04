@@ -5,23 +5,29 @@ using UnityEngine;
 public class ProjectileWeapon : BaseWeapon {
 
     public BaseProjectile Projectile;
+    public int BurstCount = 1;
+    public float BurstDelay = .1f;
 
-    public override void FireWeapon()
+    private void Start ()
     {
-        base.FireWeapon();
-
-        var t = Instantiate(Projectile, transform.position + transform.forward, transform.rotation);
-        if (!t.gameObject.activeInHierarchy)
-            t.gameObject.SetActive(true);
-        t.WeaponColor.Invoke(WeaponValues.WeaponColor);
-
-        t.ParticleSystems.ForEach(m =>
+        Projectile.WeaponColor.Invoke(WeaponValues.WeaponColor);
+        Projectile.ParticleSystems.ForEach(m =>
         {
             var main = m.main;
             main.startColor = WeaponValues.WeaponColor;
         });
 
-        t.Owner = this;
+        Projectile.Owner = this;
+    }
+
+    public override void FireWeapon()
+    {
+        base.FireWeapon();
+
+        if (BurstCount == 1)
+            launchProjectile();
+        else
+            StartCoroutine(shootBurst());
     }
     public override void ShopGUI ()
     {
@@ -30,4 +36,30 @@ public class ProjectileWeapon : BaseWeapon {
         GUILayout.Label("Projectile");
     }
 
+    IEnumerator shootBurst()
+    {
+        int shots = 0;
+        while(shots < BurstCount)
+        {
+            launchProjectile();
+            shots++;
+            yield return new WaitForSeconds(BurstDelay);
+        }
+    }
+
+    void launchProjectile()
+    {
+        var t = Instantiate(Projectile, transform.position + transform.forward, transform.rotation);
+        if (!t.gameObject.activeInHierarchy)
+            t.gameObject.SetActive(true);
+        //t.WeaponColor.Invoke(WeaponValues.WeaponColor);
+
+        //t.ParticleSystems.ForEach(m =>
+        //{
+        //    var main = m.main;
+        //    main.startColor = WeaponValues.WeaponColor;
+        //});
+
+        //t.Owner = this;
+    }
 }

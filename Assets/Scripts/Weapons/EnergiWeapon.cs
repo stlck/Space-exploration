@@ -31,9 +31,15 @@ public class EnergiWeapon : BaseWeapon {
         if (Physics.Raycast(transform.position, transform.forward , out hit, WeaponValues.Range))
         {
             LaserEffectObjects.ForEach(m => m.MaxLength = hit.distance);
-            var s = hit.  transform.GetComponent<StatBase>();
+            var s = hit.transform.GetComponent<StatBase>();
             if (s != null)
                 s.TakeDamage(WeaponValues.Damage, hit.point, transform.forward);
+            else
+            {
+                var block = hit.transform.GetComponent<Duplicate>();
+                if (block != null)
+                    block.ApplyDamage(hit.point, WeaponValues.Damage);
+            }
 
             if (HitEffectObject != null)
             {
