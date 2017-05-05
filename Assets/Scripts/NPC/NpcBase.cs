@@ -19,14 +19,15 @@ public class NpcBase : BaseAddForceObject {
     public InstantiatedLocation Spawner;
     public BaseWeapon Weapon;
     public Transform WeaponPoint;
+    public int Level;
 
-    public virtual void SpawnEnemy(InstantiatedLocation owner, Vector3 position)
+    public virtual void SpawnEnemy(InstantiatedLocation owner, Vector3 position, int level = 1)
     {
         NetworkServer.Spawn(gameObject);
 
         Spawner = owner;
         transform.position = position;
-        
+        Level = level;
     }
 
     // Use this for initialization
@@ -48,7 +49,12 @@ public class NpcBase : BaseAddForceObject {
 
     public virtual void Attack(Transform target)
     {
+        var lookAtPosition = target.position;
+        lookAtPosition.y = transform.position.y;
+        transform.LookAt(CurrentTarget);
 
+        if (Weapon != null && Weapon.CanFire())
+            Weapon.FireWeapon();
     }
 
     public virtual void Idle()

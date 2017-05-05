@@ -52,11 +52,12 @@ public class AvatarWeaponHandler : NetworkBehaviour
         turnOffEquippedWeapon();
         //Destroy(EquippedWeapon.gameObject);
         if(!InstantiatedWeapons.Any(m => m.Seed == seed))
-        { 
+        {
             var recipee = WeaponGenerator.GetRecipee(seed);
             EquippedWeapon = WeaponGenerator.InstantiateWeapon(recipee.OrgWeapon, WeaponPoint);
             EquippedWeapon.WeaponValues = WeaponGenerator.getBaseWeaponValues(recipee);
             InstantiatedWeapons.Add(new WeaponGenerator.InstantiatedWeapon() { GameObject = EquippedWeapon.gameObject, Id = EquippedWeapon.Id, Seed = seed, Weapon = EquippedWeapon });
+            Testing.AddDebug("Instantiating " + recipee.OrgWeapon.name + "  with seed : " + seed);
         }
         else
         {

@@ -147,7 +147,8 @@ public class NetworkHelper : NetworkBehaviour
 
     public void SpawnMission(string Name)
     {
-        if(SpawnedInstantiatedLocations.Any(m => m.name == Name))
+        Testing.AddDebug("Testing to spawn Mission: " + Name);
+        if(!SpawnedInstantiatedLocations.Any(m => m.name == Name))
         {
             var mission = Missions.First(m => m.Name == Name);
             var location = SpawnLocation(mission.Location, mission.Seed);

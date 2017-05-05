@@ -171,6 +171,13 @@ public class MyAvatar : NetworkBehaviour
         CurrentState = newState;
         EventPlayerStateChanged(newState);
     }
+
+    [ClientRpc]
+    public void RpcSetDead()
+    {
+        ChangeState(States.Dead);
+        gameObject.SetActive(false);
+    }
 }
 
 public enum States

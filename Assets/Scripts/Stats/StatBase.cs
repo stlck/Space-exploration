@@ -71,8 +71,10 @@ public class StatBase : MonoBehaviour {
         if(MyAvatar.Instance.isServer)
         {
             TeamStats.Instance.AddCredits(CreditsOnKill);
-            NetworkServer.Destroy(gameObject);
-
+            if (gameObject.GetComponent<MyAvatar>() == null)
+                NetworkServer.Destroy(gameObject);
+            else
+                gameObject.GetComponent<MyAvatar>().RpcSetDead();
         }
     }
 }

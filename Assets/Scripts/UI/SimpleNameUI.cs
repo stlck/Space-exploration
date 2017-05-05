@@ -14,6 +14,8 @@ public class SimpleNameUI : MonoBehaviour {
 
     void Awake()
     {
+        this.enabled = false; return;
+
         IsOn = true;
     }
 

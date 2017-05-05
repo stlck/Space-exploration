@@ -22,6 +22,8 @@ public class NpcEquipWeapon : NetworkBehaviour {
 		if(isServer && WeaponTarget != null && WeaponTarget.Weapon == null)
         {
             RpcNpcEquipRandomWeapon();
+
+            WeaponTarget.Weapon.WeaponValues.Damage *= .33f * (WeaponTarget.Level);
         }
 	}
 

@@ -33,7 +33,7 @@ public class WalkingEnemy : NpcBase{
             if (targetRefreshTimer >= .5f)
             {
                 // it timer - find target
-                if (NetworkHelper.Instance.AllPlayers.Any(m => Vector3.Distance(m.transform.position, transform.position) < ChaseRange))
+                if (NetworkHelper.Instance.AllPlayers.Any(m => Vector3.Distance(m.transform.position, transform.position) < ChaseRange && m.CurrentState != States.Dead))
                 {
                     CurrentTarget = NetworkHelper.Instance.AllPlayers.First(m => Vector3.Distance(m.transform.position, transform.position) < ChaseRange).transform;
                     var tPos = ownerLocalPosition(CurrentTarget.position);
@@ -43,7 +43,7 @@ public class WalkingEnemy : NpcBase{
                 targetRefreshTimer = 0f;
             }
             RaycastHit hit;
-            if(CurrentTarget != null && Physics.Raycast(transform.position + transform.forward, CurrentTarget.position - transform.position, out hit, AttackRange) && hit.transform == CurrentTarget)
+            if(CurrentTarget != null && CurrentTarget.gameObject.activeInHierarchy && Physics.Raycast(transform.position + transform.forward, CurrentTarget.position - transform.position, out hit, AttackRange) && hit.transform == CurrentTarget)
             {
                 var lookAtPosition = CurrentTarget.position;
                 lookAtPosition.y = transform.position.y;
@@ -69,12 +69,18 @@ public class WalkingEnemy : NpcBase{
                 }
             }
 
-            if(CurrentTarget != null && Vector3.Distance(CurrentTarget.position, transform.position) > ChaseRange)
+            if(CurrentTarget != null && (Vector3.Distance(CurrentTarget.position, transform.position) > ChaseRange || !CurrentTarget.gameObject.activeInHierarchy))
             {
                 Route.Clear();
                 CurrentTarget = null;
             }
         }
+    }
+
+    public override void Attack (Transform target)
+    {
+        base.Attack(target);
+
     }
 
     Vector3 ownerLocalPosition(Vector3 position)
