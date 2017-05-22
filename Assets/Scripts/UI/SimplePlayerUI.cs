@@ -32,8 +32,8 @@ public class SimplePlayerUI : MonoBehaviour {
 
     void window(int id)
     {
-        GUILayout.Label("Health");
-        GUILayout.HorizontalSlider(MyAvatar.Instance.MyStats.CurrentHealth / MyAvatar.Instance.MyStats.MaxHealth, 0f , 1f);
+        //GUILayout.Label("Health");
+        //GUILayout.HorizontalSlider(MyAvatar.Instance.MyStats.CurrentHealth / MyAvatar.Instance.MyStats.MaxHealth, 0f , 1f);
 
         GUILayout.Label("CREDITS");
         GUILayout.TextField("$: " + TeamStats.Instance.Credits);

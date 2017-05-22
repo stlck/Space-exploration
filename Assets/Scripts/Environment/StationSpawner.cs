@@ -32,6 +32,30 @@ public class StationSpawner
         return map;
     }
 
+    public int[,] GenerateIndirect(int _size, int _splits = 5, int _minRoomSize = 8, int _halfCorridorSize = 1)
+    {
+        size = _size;
+        map = new int[size, size];
+
+        iterations = _splits;
+        minRoomSize = _minRoomSize;
+        halfCorridorSize = _halfCorridorSize;
+
+        root = new BspCell(size / 2, size / 2, size, size);
+        Rooms = new List<BspCell>();
+        var cite = iterations;
+
+        split(root, cite);
+        offset(root);
+        toMap(root);
+        connectCells(root.child1, root.child2);
+        peelOuterLayer();
+        entrance();
+        toTileMap();
+
+        return map;
+    }
+
     void doAll(bool meshit)
     {
         var timer = Time.realtimeSinceStartup;
@@ -98,6 +122,8 @@ public class StationSpawner
 
     void tileMeshIt()
     {
+        var time = Time.realtimeSinceStartup;
+        Debug.Log("TIme start");
         var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
@@ -136,6 +162,7 @@ public class StationSpawner
                 }
             }
 
+        Debug.Log("TIme stop at " + (Time.realtimeSinceStartup - time));
     }
 
     #region testtilebuild

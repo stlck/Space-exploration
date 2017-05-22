@@ -10,7 +10,7 @@ public class StatBase : MonoBehaviour {
     public float CurrentHealth = 10;
     public int CreditsOnKill = 0;
 
-    Texture2D hpTex;
+    //Texture2D hpTex;
 
     public Transform EffectOnDeath;
     public Transform EffectOnSpawn;
@@ -18,9 +18,9 @@ public class StatBase : MonoBehaviour {
 
     void Awake()
     {
-        hpTex = new Texture2D(1,1);
-        hpTex.SetPixel(0, 0, Color.red);
-        hpTex.Apply();
+        //hpTex = new Texture2D(1,1);
+        //hpTex.SetPixel(0, 0, Color.red);
+        //hpTex.Apply();
     }
 
     void Start()
@@ -56,7 +56,7 @@ public class StatBase : MonoBehaviour {
         }
     }
 
-    void OnGUI()
+   /* void OnGUI()
     {
         if(CurrentHealth < MaxHealth && CurrentHealth > 0)
         {
@@ -64,7 +64,7 @@ public class StatBase : MonoBehaviour {
             //GUI.HorizontalScrollbar(new Rect(p.x,p.y, 30, 5), CurrentHealth / MaxHealth, 5, 0, 1);
             GUI.DrawTexture(new Rect(p.x, Screen.height - p.y, (CurrentHealth / MaxHealth) * 30, 5), hpTex);
         }
-    }
+    }*/
 
     public void KillObject()
     {

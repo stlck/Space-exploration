@@ -66,7 +66,7 @@ public class AvatarWeaponHandler : NetworkBehaviour
         }
     }
 
-    void OnGUI()
+   /* void OnGUI()
     {
         if(isLocalPlayer)
         {
@@ -78,7 +78,7 @@ public class AvatarWeaponHandler : NetworkBehaviour
             }
             GUILayout.EndArea();
         }
-    }
+    }*/
 
     [Command]
     void CmdEquipWeapon(int id)

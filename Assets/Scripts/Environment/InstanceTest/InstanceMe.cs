@@ -11,6 +11,11 @@ public class InstanceMe : MonoBehaviour {
     
     public Material Material;
 
+    // for DrawIndirect
+    public int X;
+    public int Y;
+    public int Z;
+
     void OnDisable()
     {
         DrawInstanced.Instance.RemoveFromDraw(transform, collection, Material);
