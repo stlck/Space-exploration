@@ -438,7 +438,7 @@ public class ShipSpawner : MonoBehaviour {
         lower = lowerDraft.ToMesh();
 
 
-        var lChild = _target.FindChild("Bottom").gameObject;
+        var lChild = _target.Find("Bottom").gameObject;
         //lChild.transform.SetParent(_target);
         //lChild.transform.localPosition = Vector3.zero;
         //lChild.transform.localScale = Vector3.one;
@@ -577,7 +577,7 @@ public class ShipSpawner : MonoBehaviour {
         upperDraft.Move(Vector3.left * center.x + Vector3.forward * center.z);
         upper = upperDraft.ToMesh();
 
-        var uChild = _target.FindChild("Top").gameObject;
+        var uChild = _target.Find("Top").gameObject;
         //uChild.transform.SetParent(_target);
         //uChild.transform.localPosition = Vector3.zero;
         //uChild.transform.localScale = Vector3.one;

@@ -247,8 +247,26 @@ public class NetworkSpawnObject
 
 public static class StaticExtentions
 {
-    public static T GetRandom<T>(this List<T> list)
+    public static T GetRandom<T>(this IList<T> list)
     {
         return list[UnityEngine.Random.Range(0, list.Count)];
+    }
+
+    public static T GetRandom<T>(this IEnumerable<T> list)
+    {
+        return list.ElementAt(UnityEngine.Random.Range(0, list.Count()));
+    }
+
+    public static void Shuffle<T>(this IList<T> ts)
+    {
+        var count = ts.Count;
+        var last = count - 1;
+        for (var i = 0; i < last; ++i)
+        {
+            var r = UnityEngine.Random.Range(i, count);
+            var tmp = ts[i];
+            ts[i] = ts[r];
+            ts[r] = tmp;
+        }
     }
 }

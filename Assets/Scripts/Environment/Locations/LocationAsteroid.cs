@@ -20,24 +20,14 @@ public class LocationAsteroid : Location
         if (ret == null)
             ret = owner.gameObject.AddComponent<InstantiatedLocation>();
         ret.TargetLocation = this;
-        //var ret = base.SpawnLocation(owner, _seed);
         spawn(owner);
         return ret;
     }
 
     void spawn(Transform Owner)
     {
-        var spawner = new AsteroidSpawner();
-        //Debug.Log("SPAWNING WITH Percentage: " + spawner.GeneratePercentage + ". neighbors: " + spawner.neighborsMin);
+        var spawner = new AsteroidSpawnerNonCubed();
 
-        spawner.DoAll(SizeArray, TileSize, Owner, seed, TileSet);
-        
-        /*var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
-        foreach(var r in Owner.GetComponentsInChildren<MeshRenderer>())
-            r.material = set.GroundTiles[0].GetComponent<MeshRenderer>().sharedMaterial;*/
-
+        var map = spawner.GetVoxelMap(SizeArray, TileSize, Owner, seed);
     }
-
-
-
 }

@@ -175,9 +175,7 @@ public class AsteroidSpawner {
         var z = (int)UpperRegion.Average(m => m.z);
         var lower = new GameObject();
         var upper = new GameObject();
-        //var p = Vector3.up * y + Vector3.forward * z + Vector3.right * x;
-        //var xMin = UpperRegion.Min(m => m.x);
-        //var xTo =  xMin - 4;
+
         var xEntrance = 0;
 
         lower.transform.SetParent(owner);

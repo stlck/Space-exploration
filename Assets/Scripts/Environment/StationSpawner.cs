@@ -32,6 +32,54 @@ public class StationSpawner
         return map;
     }
 
+    public int[,,] ToVoxelMap(int height = 10)
+    {
+        int[,,] voxelMap = new int[size+2, height, size+2];
+        for (int x = 1; x < size+1; x++)
+            for (int z = 1; z < size+1; z++)
+                for (int y = 1; y < height; y++)
+                {
+                    //if (x == 0 || z == 0 || y == 0)
+                    //    voxelMap[x,y,z] = 0;
+                    //else if (tileMap[x-1, z - 1].TileValue == 0 || tileMap[x - 1, z - 1].TileValue == 1 && y >= 2 || tileMap[x - 1, z - 1].TileValue == 2 && y > 5)
+                    //    voxelMap[x, y, z] = 0;
+                    //else if (tileMap[x - 1, z - 1].TileValue == 1 )
+                    //    voxelMap[x, y, z] = 1;
+                    //else if(tileMap[x - 1, z - 1].TileValue == 2)
+                    //    voxelMap[x, y, z] = 2;
+                    //else
+                    //    voxelMap[x, y, z] = 0;
+
+                    var tn = tileMap[x - 1, z - 1];
+                    if (tn.TileValue == 0 && tn.neighbor2 && y <= 5)
+                    {
+                        // outside walls
+                            voxelMap[x, y, z] = 3;
+                    }
+                    // inside with floor
+                    else if (tn.TileValue == 1 && y == 2)
+                    {
+                        voxelMap[x, y, z] = 1;
+                        // ground
+                        // layer beneath ground
+                        // roof
+                    }
+                    // inside walls
+                    else if (tn.TileValue == 2 && y >= 2 && y <= 5)
+                    {
+                        // layer beneath ground
+                        // roof
+                        // inside wall
+                        //for (int y = 0; y < 5; y++)
+                        voxelMap[x, y, z] = 2;
+                    }
+                    else
+                        voxelMap[x, y, z] = 0;
+                }
+
+        return voxelMap;
+    }
+
     public int[,] GenerateIndirect(int _size, int _splits = 5, int _minRoomSize = 8, int _halfCorridorSize = 1)
     {
         size = _size;
@@ -85,11 +133,7 @@ public class StationSpawner
         toTileMap();
         if(meshit)
             tileMeshIt();
-        //manualTileBuild();
 
-        //if (meshit)
-        // use map
-            //meshIt();
         Testing.AddDebug("LocGen time: " + (Time.realtimeSinceStartup - timer));
     }
 
@@ -100,7 +144,8 @@ public class StationSpawner
             for (int j = 0; j < size; j++)
             {
                 tileMap[i, j] = new TileNode();
-
+                tileMap[i, j].x = i;
+                tileMap[i, j].y = j;
                 tileMap[i, j].TileValue = map[i, j];
                 tileMap[i, j].neighbor1 = hasNeighbor(i, j, 1);
             }
@@ -118,6 +163,13 @@ public class StationSpawner
         for (int i = 0; i < size; i++)
             for (int j = 0; j < size; j++)
                 tileMap[i, j].neighbor2 = hasNeighbor(i, j, 2);
+
+        foreach(var r in Rooms)
+        {
+            r.TileNodes = new List<TileNode>();
+            foreach (var tile in r.CellTiles)
+                r.TileNodes.Add(tileMap[tile.x, tile.y]);
+        }
     }
 
     void tileMeshIt()
@@ -399,14 +451,27 @@ public class StationSpawner
         }
         else
         {
-            for (int i = cell.x - (cell.w) / 2; i < cell.x + (cell.w) / 2; i++)
-                for (int j = cell.y - (cell.h) / 2; j < cell.y + (cell.h) / 2; j++)
+            int cellStartX = cell.x - (cell.w) / 2;
+            int cellEndX = cell.x + (cell.w) / 2;
+            int cellStartY = cell.y - (cell.h) / 2;
+            int cellEndY = cell.y + (cell.h) / 2;
+            var cellCount = 0;
+            cell.CellTiles = new List<Vector2Int>();
+            //List<Vector2Int> RoomTiles = new List<Vector2Int>();
+
+            for (int i = cellStartX; i < cellEndX; i++)
+                for (int j = cellStartY; j < cellEndY; j++)
                 {
                     if (i > 0 && j > 0 && i < size && j < size)
+                    {
                         map[i, j] = 1;
+                        cellCount++;
+                        cell.CellTiles.Add(new Vector2Int(i, j));
+                    }
                 }
-
+            
             Rooms.Add(cell);
+
         }
     }
 
@@ -476,32 +541,25 @@ public class StationSpawner
 
     bool hasNeighbor(int i, int j, int val = 1)
     {
-        for (int x = i - 1; x <= i + 1; x++)
-            for (int y = j - 1; y <= j + 1; y++)
-                if (x > 0 && y > 0 && x < size && y < size && map[x, y] == val)
-                    return true;
+        //for (int x = i - 1; x <= i + 1; x++)
+        //    for (int y = j - 1; y <= j + 1; y++)
+        //        if (x > 0 && y > 0 && x < size && y < size && map[x, y] == val)
+        //            return true;
+
+        if (i > 0 && map[i - 1, j] == val)
+            return true;
+        else if (i < size - 1 && map[i + 1, j] == val)
+            return true;
+        else if (j > 0 && map[i, j - 1] == val)
+            return true;
+        else if (j < size - 1 && map[i, j + 1] == val)
+            return true;
 
         return false;
     }
 
-    TileNode[,] tileMap;
-    public struct TileNode
-    {
-        public int TileValue;
-        public bool neighbor1;
-        public bool neighbor2;
-        public NeighborEnum neighbors;
-        public int neighborcount;
-    }
-
-    [System.Flags]
-    public enum NeighborEnum
-    {
-        forward = 1,
-        right = 2,
-        left = 4,
-        back = 8
-    }
+    public TileNode[,] tileMap;
+   
 }
 
 public class BspCell
@@ -521,4 +579,32 @@ public class BspCell
         w = _w;
         h = _h;
     }
+
+    public List<Vector2Int> CellTiles;
+    public List<TileNode> TileNodes;
+}
+public struct TileNode
+{
+    public int x;
+    public int y;
+    /// <summary>
+    /// 0 = nothing
+    /// 1 = floor
+    /// 2 = walls
+    /// 3 = floor with extra stuff on
+    /// </summary>
+    public int TileValue;
+    public bool neighbor1;
+    public bool neighbor2;
+    public NeighborEnum neighbors;
+    public int neighborcount;
+}
+
+[System.Flags]
+public enum NeighborEnum
+{
+    forward = 1,
+    right = 2,
+    left = 4,
+    back = 8
 }

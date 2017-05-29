@@ -29,10 +29,11 @@ public class LocationStation : Location
 
         ret.TargetLocation = this;
 
-        //var splits = Splits + Random.Range
-
         var spawner = new StationSpawner();
-        Tiles = spawner.Generate(owner, seed, Size, Splits, MinRoomSize, HalfCorridorSize, TileSet);
+        Tiles = spawner.Generate(owner, seed, Size, Splits, MinRoomSize, HalfCorridorSize, TileSet, false);
+        //ret.TileMap = spawner.tileMap;
+        //ret.TileSet = TileSet;
+        //ret.Size = Size;
         Rooms = spawner.Rooms;
 
         BestFirstSearch = new BestFirstSearch(Size, Size);
@@ -44,22 +45,7 @@ public class LocationStation : Location
                     BestFirstSearch.AddObstacle(i,j);
             }
 
-        if (HasLights)
-            addLighting();
-
         return ret;
-    }
-
-    void addLighting()
-    {
-
-    }
-
-    public override Vector3 GetRandomSpotInLocation ()
-    {
-        var room = Rooms[Random.Range(0, Rooms.Count)];
-
-        return new Vector3(room.x, 1, room.y);
     }
 
     public override void ShowCreator ()

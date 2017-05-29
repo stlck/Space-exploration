@@ -86,7 +86,8 @@ public class Duplicate : BaseAddForceObject
             if (EffectOnDeath != null)
             {
                 var e = Instantiate(EffectOnDeath, originPoint, EffectOnDeath.transform.rotation);
-                e.SetMaterial(mat);
+                if(mat != null)
+                    e.SetMaterial(mat);
                 //t = fragment.transform;
             }
             Destroy(gameObject);
@@ -102,7 +103,8 @@ public class Duplicate : BaseAddForceObject
         if (EffectOnHit != null)
         {
             var e = Instantiate(EffectOnHit, originPoint, EffectOnHit.transform.rotation);
-            e.SetMaterial(mat);
+            if(mat != null)
+                e.SetMaterial(mat);
         }
 
         return true;

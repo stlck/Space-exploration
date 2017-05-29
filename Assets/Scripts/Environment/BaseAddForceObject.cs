@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BaseAddForceObject : MonoBehaviour {
 
-    public float minForce;
+    public float minForce = 40;
 
     public Rigidbody rigidBody;
     public bool hit = false;

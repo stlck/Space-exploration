@@ -13,20 +13,21 @@ public class BspStationTest : MonoBehaviour {
     public int size = 70;
     public int minRoomSize = 8;
     public int halfCorridorSize = 1;
-    public TileSet _tileset;
+    public LocationTileSet _tileset;
     public int seed = -1;
     List<int> sizes;
     public bool doStations = true;
+    public Material AsteroidMaterial;
+    public float Target = .5f;
 
     void Awake()
     {
-        sizes = new List<int>() { 15, 20, 24 };
-        StartCoroutine(SpawnRoutine());
+        sizes = new List<int>() { 14, 18 };
     }
 	
 	// Update is called once per frame
 	void Update () {
-        if(SpawnQueue.Count == 0)
+
         timer += Time.deltaTime;
         if( Input.GetKeyDown(KeyCode.Space) || autoCreate && timer > .5f)
         {
@@ -36,6 +37,7 @@ public class BspStationTest : MonoBehaviour {
             else
                 generateAsteroid();
         }
+
 	}
 
     void OnGUI()
@@ -45,11 +47,6 @@ public class BspStationTest : MonoBehaviour {
 
         GUILayout.Label("Size : " + size);
         size = (int)GUILayout.HorizontalSlider((float)size, 0f, 100f);
-
-        //GUILayout.Label("TileSet : " + _tileset);
-        //foreach (var t in System.Enum.GetValues(typeof(TileSet)))
-        //    if (GUILayout.Button(t.ToString()))
-        //        _tileset = t;
 
         if (doStations)
         {
@@ -69,63 +66,74 @@ public class BspStationTest : MonoBehaviour {
                 sizes[i] = (int) GUILayout.HorizontalSlider((float)sizes[i], (float)(i == 0 ? 10 : sizes[i - 1]), (float)(i == sizes.Count - 1 ? 30 : sizes[i + 1]));
         }
     }
-
+    public IsosurfaceMesh isosurface;
     void generateStation()
     {
         if (parent != null)
             Destroy(parent);
 
-        InstantiateCount = 0;
         parent = GameObject.CreatePrimitive(PrimitiveType.Cube);
         StationSpawner spawner = new StationSpawner();
         spawner.Tester = this;
-        spawner.Generate(parent.transform, seed, size, iterations, minRoomSize, halfCorridorSize, _tileset);
+
+        var map = spawner.Generate(parent.transform, seed, size, iterations, minRoomSize, halfCorridorSize, TileSet.BlueStation, false);
+        var height = 10;
+        var voxelMap = spawner.ToVoxelMap(height);
+
+        for (int x = 0; x < voxelMap.GetLength(0); x++)
+            for (int y = 0; y < voxelMap.GetLength(1); y++)
+                for (int z = 0; z < voxelMap.GetLength(2); z++)
+                    if(voxelMap[x,y,z] > 0)
+                        CoroutineSpawner.Instance.Enqueue(_tileset.GroundTiles[voxelMap[x,y,z]-1], Vector3.right * x + Vector3.forward * z + Vector3.up * y, Quaternion.identity, parent.transform);
+
+        //isosurface.isosurface.Size = new Mathx.Vector3Int(size+2, height, size + 2);
+        //isosurface.isosurface.Data = voxelMap;
+        //isosurface.isosurface.BuildData(ref isosurface.runtimeMesh);
     }
 
     void generateAsteroid()
     {
-        if (parent != null)
-            Destroy(parent);
+        //if (parent != null)
+        //    Destroy(parent);
 
-        parent = new GameObject();
-        AsteroidSpawner spawner = new AsteroidSpawner();
-        
-        spawner.DoAll(sizes, 1, parent.transform, seed, _tileset);
-    }
-
-    public Queue<SpawnCase> SpawnQueue = new Queue<SpawnCase>();
-    public float BlockSize = 1f;
-    public float SpawnFrameLimit = .2f;
-    public int InstantiateCount = 0;
-    public void Enqueue(Transform transform, Vector3 position, Quaternion q, Transform p)
-    {
-        SpawnQueue.Enqueue(new SpawnCase() { t = transform, position = position, Parent = p });
-    }
-
-    IEnumerator SpawnRoutine()
-    {
-        float timer = 0f;
-        float real = 0f;
-        while(true)
+        if (parent == null)
         {
-            real = Time.realtimeSinceStartup;
-            while (SpawnQueue.Count > 0 && timer < SpawnFrameLimit)
-            {
-                timer = (Time.realtimeSinceStartup - real);
-                var c = SpawnQueue.Dequeue();
-                var t = Instantiate(c.t, c.position * BlockSize, Quaternion.identity, c.Parent);
-                t.localScale = Vector3.one * BlockSize;
-                InstantiateCount++;
-            }
-            yield return new WaitForEndOfFrame();
-            timer = 0f;
+            parent = new GameObject();
+            parent.AddComponent<MeshFilter>();
+            parent.AddComponent<MeshRenderer>().sharedMaterial = AsteroidMaterial;
         }
+        foreach (Transform c in parent.transform)
+            Destroy(c.gameObject);
+        AsteroidSpawnerNonCubed spawner = new AsteroidSpawnerNonCubed();
+
+        currentMap = spawner.GetVoxelMap(sizes, 1, parent.transform, seed);
+        var voxelMap = new float[sizes[sizes.Count - 1], sizes[sizes.Count - 1], sizes[sizes.Count - 1]];
+        for (int i = 0; i < sizes[sizes.Count-1]; i++)
+            for (int j = 0; j < sizes[sizes.Count - 1]; j++)
+                for (int k = 0; k < sizes[sizes.Count - 1]; k++)
+                {
+                    voxelMap[i, j, k] = currentMap[i, j, k];
+                    if (currentMap[i,j,k] == 1)
+                    {
+                        var coll = Instantiate(CubeCollider, parent.transform);
+                        coll.transform.localPosition = new Vector3(i, j, k);
+                        coll.VoxelX = i;
+                        coll.VoxelY = j;
+                        coll.VoxelZ = k;
+                    }
+                }
+        //mapToMesh(parent.transform, currentMap, sizes[sizes.Count - 1], sizes[sizes.Count - 1], sizes[sizes.Count - 1]);
+        isosurface.isosurface.Size = new Mathx.Vector3Int(sizes[sizes.Count - 1], sizes[sizes.Count - 1], sizes[sizes.Count - 1]);
+        isosurface.isosurface.Data = voxelMap;
+        isosurface.isosurface.BuildData(ref isosurface.runtimeMesh);
     }
-    public struct SpawnCase
+
+    public VoxelCollider CubeCollider;
+    int[,,] currentMap;
+    public void ColliderHit(int VoxelX, int VoxelY, int VoxelZ)
     {
-        public Transform t;
-        public Vector3 position;
-        public Transform Parent;
-        public Vector3 Size;
+        isosurface.isosurface.Data[VoxelX, VoxelY, VoxelZ] = 0;
+        isosurface.isosurface.BuildData(ref isosurface.runtimeMesh);
     }
+
 }

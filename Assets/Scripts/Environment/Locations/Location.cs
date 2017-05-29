@@ -16,6 +16,9 @@ public class Location : ScriptableObject {
 
     public BestFirstSearch BestFirstSearch;
 
+    /// <summary>
+    /// Test only
+    /// </summary>
     public void TestSpawnLocation()
     {
         var t = GameObject.Find(name);
@@ -27,9 +30,14 @@ public class Location : ScriptableObject {
 
     }
 
+    /// <summary>
+    /// creates the mesh or tile map
+    /// </summary>
+    /// <param name="owner"></param>
+    /// <param name="_seed"></param>
+    /// <returns></returns>
     public virtual InstantiatedLocation SpawnLocation (Transform owner, int _seed = -1)
     {
-        Debug.Log("Location base spawn");
         seed = _seed;
 
         if (seed >= 0)
@@ -42,11 +50,9 @@ public class Location : ScriptableObject {
         return go;
     }
 
-    public virtual Vector3 GetRandomSpotInLocation()
-    {
-        return new Vector3();
-    }
-
+    /// <summary>
+    /// Test only
+    /// </summary>
     public virtual void ShowCreator()
     {
         if (GUILayout.Button("new Position : " + Position))
