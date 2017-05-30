@@ -85,16 +85,12 @@ public class BspStationTest : MonoBehaviour {
                 for (int z = 0; z < voxelMap.GetLength(2); z++)
                     if(voxelMap[x,y,z] > 0)
                         CoroutineSpawner.Instance.Enqueue(_tileset.GroundTiles[voxelMap[x,y,z]-1], Vector3.right * x + Vector3.forward * z + Vector3.up * y, Quaternion.identity, parent.transform);
-
-        //isosurface.isosurface.Size = new Mathx.Vector3Int(size+2, height, size + 2);
-        //isosurface.isosurface.Data = voxelMap;
-        //isosurface.isosurface.BuildData(ref isosurface.runtimeMesh);
     }
 
     void generateAsteroid()
     {
-        //if (parent != null)
-        //    Destroy(parent);
+        if (parent != null)
+            Destroy(parent);
 
         if (parent == null)
         {
@@ -102,8 +98,7 @@ public class BspStationTest : MonoBehaviour {
             parent.AddComponent<MeshFilter>();
             parent.AddComponent<MeshRenderer>().sharedMaterial = AsteroidMaterial;
         }
-        foreach (Transform c in parent.transform)
-            Destroy(c.gameObject);
+
         AsteroidSpawnerNonCubed spawner = new AsteroidSpawnerNonCubed();
 
         currentMap = spawner.GetVoxelMap(sizes, 1, parent.transform, seed);

@@ -15,9 +15,9 @@ public class LocationStation : Location
 
     public int[,] Tiles;
     public List<BspCell> Rooms;
-    public bool HasLights = false;
+    StationSpawner spawner;
 
-    public override InstantiatedLocation SpawnLocation (Transform owner, int _seed/*, int Size = 50, int TileSize = 1*/)
+    public override InstantiatedLocation SpawnLocation (Transform owner, int _seed)
     {
         seed = _seed;
         if (seed >= 0)
@@ -29,12 +29,10 @@ public class LocationStation : Location
 
         ret.TargetLocation = this;
 
-        var spawner = new StationSpawner();
+        spawner = new StationSpawner();
         Tiles = spawner.Generate(owner, seed, Size, Splits, MinRoomSize, HalfCorridorSize, TileSet, false);
-        //ret.TileMap = spawner.tileMap;
-        //ret.TileSet = TileSet;
-        //ret.Size = Size;
         Rooms = spawner.Rooms;
+        createBlocks(owner);
 
         BestFirstSearch = new BestFirstSearch(Size, Size);
 
@@ -46,6 +44,21 @@ public class LocationStation : Location
             }
 
         return ret;
+    }
+
+    void createBlocks(Transform parent)
+    {
+        var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
+        var height = 10;
+        var voxelMap = spawner.ToVoxelMap(height);
+
+        for (int x = 0; x < voxelMap.GetLength(0); x++)
+            for (int y = 0; y < voxelMap.GetLength(1); y++)
+                for (int z = 0; z < voxelMap.GetLength(2); z++)
+                    if (voxelMap[x, y, z] > 0)
+                    { 
+                        CoroutineSpawner.Instance.Enqueue(set.GroundTiles[voxelMap[x, y, z] - 1], Vector3.right * x + Vector3.forward * z + Vector3.up * (y-2), Quaternion.identity, parent.transform);
+                    }
     }
 
     public override void ShowCreator ()

@@ -36,7 +36,7 @@ public class CoroutineSpawner : MonoBehaviour {
     {
         SpawnQueue.Enqueue(new SpawnCase( transform, position, p, BlockSize * Vector3.one, layer));
     }
-
+    
     IEnumerator SpawnRoutine ()
     {
         float timer = 0f;

@@ -39,17 +39,6 @@ public class StationSpawner
             for (int z = 1; z < size+1; z++)
                 for (int y = 1; y < height; y++)
                 {
-                    //if (x == 0 || z == 0 || y == 0)
-                    //    voxelMap[x,y,z] = 0;
-                    //else if (tileMap[x-1, z - 1].TileValue == 0 || tileMap[x - 1, z - 1].TileValue == 1 && y >= 2 || tileMap[x - 1, z - 1].TileValue == 2 && y > 5)
-                    //    voxelMap[x, y, z] = 0;
-                    //else if (tileMap[x - 1, z - 1].TileValue == 1 )
-                    //    voxelMap[x, y, z] = 1;
-                    //else if(tileMap[x - 1, z - 1].TileValue == 2)
-                    //    voxelMap[x, y, z] = 2;
-                    //else
-                    //    voxelMap[x, y, z] = 0;
-
                     var tn = tileMap[x - 1, z - 1];
                     if (tn.TileValue == 0 && tn.neighbor2 && y <= 5)
                     {
