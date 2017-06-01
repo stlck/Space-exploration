@@ -8,11 +8,12 @@ public class VoxelCollider : MonoBehaviour {
     public int VoxelY { get; set; }
     public int VoxelZ { get; set; }
 
-    public BspStationTest owner;
+    public InstantiatedLocation owner;
 
-    private void OnMouseDown()
+    private void OnDestroy()
     {
-        owner.ColliderHit(VoxelX,VoxelY, VoxelZ);
-        Destroy(gameObject);
+        if(Application.isPlaying)
+            owner.BlockHit(VoxelX,VoxelY, VoxelZ);
+        //Destroy(gameObject);
     }
 }

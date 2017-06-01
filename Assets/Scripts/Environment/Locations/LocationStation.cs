@@ -22,17 +22,19 @@ public class LocationStation : Location
         seed = _seed;
         if (seed >= 0)
             UnityEngine.Random.InitState(seed);
-
-        var ret = owner.GetComponent<InstantiatedLocation>();
-        if (ret == null)
-            ret = owner.gameObject.AddComponent<InstantiatedLocation>();
+        Debug.Log("Spawning " + name);
+        var ret = owner.gameObject.AddComponent<InstantiatedStation>();
 
         ret.TargetLocation = this;
+        ret.transform.position = Position - Vector3.up * 2;
 
         spawner = new StationSpawner();
         Tiles = spawner.Generate(owner, seed, Size, Splits, MinRoomSize, HalfCorridorSize, TileSet, false);
         Rooms = spawner.Rooms;
-        createBlocks(owner);
+        //createBlocks(owner);
+        var height = 10;
+        var voxelMap = spawner.ToVoxelMap(height);
+        ret.Spawn(voxelMap);
 
         BestFirstSearch = new BestFirstSearch(Size, Size);
 
@@ -44,21 +46,6 @@ public class LocationStation : Location
             }
 
         return ret;
-    }
-
-    void createBlocks(Transform parent)
-    {
-        var set = Resources.LoadAll<LocationTileSet>("TileSets/" + TileSet.ToString())[0];
-        var height = 10;
-        var voxelMap = spawner.ToVoxelMap(height);
-
-        for (int x = 0; x < voxelMap.GetLength(0); x++)
-            for (int y = 0; y < voxelMap.GetLength(1); y++)
-                for (int z = 0; z < voxelMap.GetLength(2); z++)
-                    if (voxelMap[x, y, z] > 0)
-                    { 
-                        CoroutineSpawner.Instance.Enqueue(set.GroundTiles[voxelMap[x, y, z] - 1], Vector3.right * x + Vector3.forward * z + Vector3.up * (y-2), Quaternion.identity, parent.transform);
-                    }
     }
 
     public override void ShowCreator ()

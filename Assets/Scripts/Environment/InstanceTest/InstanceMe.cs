@@ -10,24 +10,22 @@ public class InstanceMe : MonoBehaviour
     Rigidbody rb;
 
     public Material Material;
-
-    // for DrawIndirect
-    public int X;
-    public int Y;
-    public int Z;
-
+    
     void OnDisable()
     {
-        DrawInstanced.Instance.RemoveFromDraw(transform, collection, Material);
+        //if(Application.isPlaying)
+        //    DrawInstanced.Instance.RemoveFromDraw(transform, collection, Material);
     }
 
     // Use this for initialization
     void Start()
     {
-        collection = DrawInstanced.Instance.AddToDraw(transform, Material);
-        //rb = GetComponent<Rigidbody>();
+        //collection = DrawInstanced.Instance.AddToDraw(transform, Material);
     }
 
+
+    /// Was used to move the whole block with physics.
+    /// 
     //void UpdateTransformMatrix()
     //{
     //    moved = true;

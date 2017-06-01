@@ -17,5 +17,5 @@ public class LocationTileSet : ScriptableObject {
     
     [Header("ground 0, innerwall, outerwall, room")]
     public List<Transform> GroundTiles;
-
+    public List<Material> Materials;
 }

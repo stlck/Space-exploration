@@ -5,8 +5,6 @@ using UnityEngine;
 [CreateAssetMenu()]
 public class LocationAsteroid : Location
 {
-    public TileSet TileSet;
-
     public int TileSize = 1;
     public List<int> SizeArray = new List<int>();
 
@@ -16,18 +14,16 @@ public class LocationAsteroid : Location
         if (seed >= 0)
             UnityEngine.Random.InitState(seed);
 
-        var ret = owner.GetComponent<InstantiatedLocation>();
-        if (ret == null)
-            ret = owner.gameObject.AddComponent<InstantiatedLocation>();
+        var ret = owner.gameObject.AddComponent<InstantiatedAsteroid>();
         ret.TargetLocation = this;
-        spawn(owner);
+        ret.transform.position = Position;
+
+        var spawner = new AsteroidSpawnerNonCubed();
+        var map = spawner.GetVoxelMap(SizeArray, TileSize, owner, seed);
+        ret.Spawn(map, SizeArray);
+
         return ret;
     }
 
-    void spawn(Transform Owner)
-    {
-        var spawner = new AsteroidSpawnerNonCubed();
-
-        var map = spawner.GetVoxelMap(SizeArray, TileSize, Owner, seed);
-    }
+   
 }

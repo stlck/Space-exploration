@@ -3,17 +3,21 @@ using System.Collections;
 
 public class Duplicate : BaseAddForceObject
 {
+    float timer = 0f;
+    Material mat;
+
     //public float minForce;
     public float Health = 150;
     public DuplicateFragment SpawnOnHit;
-    
-    float timer = 0f;
-    Material mat;
-    public bool CanSplit = true;
 
-    public bool NewCollision = false;
     public DuplicateFragment EffectOnDeath;
     public DuplicateFragment EffectOnHit;
+
+    public int X;
+    public int Y;
+    public int Z;
+
+    public InstantiatedLocation Owner;
 
     // Use this for initialization
     void Awake()
@@ -26,6 +30,23 @@ public class Duplicate : BaseAddForceObject
     public override void Start ()
     {
         
+    }
+
+    void OnDeath(Vector3 point)
+    {
+        if(Owner != null)
+        {
+            Owner.BlockHit(X, Y, Z);
+        }
+
+        if (EffectOnDeath != null)
+        {
+            var e = Instantiate(EffectOnDeath, point, EffectOnDeath.transform.rotation);
+            if (mat != null)
+                e.SetMaterial(mat);
+        }
+
+        Destroy(gameObject);
     }
 
     public override void ApplyForce(Vector3 origin, float force, float radius)
@@ -49,16 +70,8 @@ public class Duplicate : BaseAddForceObject
 
         if (Health <= 0)
         {
-            //hit = true;
-            //rigidBody.isKinematic = false;
-            if (EffectOnDeath != null)
-            {
-                var e = Instantiate(EffectOnDeath, originPoint, EffectOnDeath.transform.rotation);
-                if(mat != null)
-                    e.SetMaterial(mat);
-                //t = fragment.transform;
-            }
-            Destroy(gameObject);
+            OnDeath(originPoint);
+            //Destroy(gameObject);
         }
     }
 

@@ -159,7 +159,7 @@ public class AvatarWeaponHandler : NetworkBehaviour
     [ClientRpc]
     void RpcFireWeapon()
     {
-        Debug.Log("fIRING");
+        //Debug.Log("fIRING");
         EquippedWeapon.FireWeapon();
     }
 

@@ -26,7 +26,7 @@ public class Location : ScriptableObject {
             DestroyImmediate(t);
         var owner = new GameObject(Name);
         owner.transform.position = Position;
-        SpawnLocation(owner.transform, seed);
+        SpawnLocation(owner.transform,  seed);
 
     }
 
@@ -44,6 +44,7 @@ public class Location : ScriptableObject {
             UnityEngine.Random.InitState(seed);
 
         var go = new GameObject().AddComponent<InstantiatedLocation>();
+        go.transform.position = Position;
         go.TargetLocation = this;
         go.name = this.GetType() + " " + seed;
 

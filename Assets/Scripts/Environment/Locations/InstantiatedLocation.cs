@@ -13,13 +13,13 @@ public class InstantiatedLocation : MonoBehaviour {
     //public static List<BaseInterior> InteriorPrefabs = new List<BaseInterior>();
     //List<Vector2Int> spawnLocations = new List<Vector2Int>();
 
-    private void Awake()
-    {
-        //if (InteriorPrefabs.Count == 0)
-        //{
-        //    InteriorPrefabs = Resources.LoadAll<BaseInterior>("BaseInteriors").ToList();
-        //}
-    }
+    //private void Awake()
+    //{
+    //    //if (InteriorPrefabs.Count == 0)
+    //    //{
+    //    //    InteriorPrefabs = Resources.LoadAll<BaseInterior>("BaseInteriors").ToList();
+    //    //}
+    //}
 
     // Use this for initialization
     void Start () {
@@ -33,6 +33,12 @@ public class InstantiatedLocation : MonoBehaviour {
                 addToLocationStation();
                 break;
         }
+    }
+
+    //public virtual void BlockHit(Vector3 position)
+    public virtual void BlockHit(int x, int y, int z)
+    {
+
     }
 
     void addToLocationStation()

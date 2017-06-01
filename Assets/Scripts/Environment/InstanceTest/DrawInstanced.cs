@@ -49,6 +49,7 @@ public class DrawInstanced : MonoBehaviour {
                 }
 
                 Graphics.DrawMeshInstanced(TargetMesh, 0, c.Key, l.Matrixes, l.Matrixes.Count(), propBlock, UnityEngine.Rendering.ShadowCastingMode.On,true,l.Layer);
+                
             }
         }
            

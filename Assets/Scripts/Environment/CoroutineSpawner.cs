@@ -12,6 +12,7 @@ public class CoroutineSpawner : MonoBehaviour {
             if(instance == null)
             {
                 instance = new GameObject("Coroutine Spawner").AddComponent<CoroutineSpawner>();
+                Debug.Log("NEW COROUTINESPAWNER");
                 instance.StartCoroutine(instance.SpawnRoutine());
             }
             return instance;

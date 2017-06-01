@@ -31,7 +31,7 @@ public class NetworkHelper : NetworkBehaviour
     {
         instance = this;
         
-        MyLocations.Add(Resources.LoadAll<Location>("")[0]);
+        MyLocations.AddRange(Resources.LoadAll<Location>(""));
         Enemies = Resources.LoadAll<NpcBase>("Enemies").ToList();
 
     }
@@ -136,10 +136,10 @@ public class NetworkHelper : NetworkBehaviour
         var go = new GameObject(loc.Name);
         var location = loc.SpawnLocation(go.transform, seed);
         location.name = loc.Name;
-        var pos = loc.Position;
-        go.transform.position = pos;
+        //var pos = loc.Position;
+        //go.transform.position = pos;
 
-        Testing.AddDebug("Spawned location: " + loc.Name + " at " + pos);
+        Testing.AddDebug("Spawned location: " + loc.Name + " at " + loc.Position);
         //SpawnedLocations.Add(loc);
         SpawnedInstantiatedLocations.Add(location);
         return location;

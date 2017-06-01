@@ -44,16 +44,22 @@ public class CreateEnvironment : MonoBehaviour {
         }
 
         // spawn terrain in vicinity (local only)
-        var close = NetworkHelper.Instance.MyLocations.Where
-            (m => Vector3.Distance(transform.position, m.Position) < 200 && !NetworkHelper.Instance.SpawnedInstantiatedLocations.Any(loc => loc.name == m.Name));
-        if (close.Any())
+        //var close = NetworkHelper.Instance.MyLocations.Where
+        //    (m => Vector3.Distance(transform.position, m.Position) < 200 && !NetworkHelper.Instance.SpawnedInstantiatedLocations.Any(loc => loc.name == m.Name));
+        //if (close.Any())
+        //{
+        //    var loc = close.First();
+        //    var seed = loc.seed == -1 ? Random.Range(0, 32000) : loc.seed;
+        //    NetworkHelper.Instance.SpawnLocation(loc.Name, seed);
+        //    //SpawnedLocations.Add(loc);
+        //}
+        foreach(var loc in NetworkHelper.Instance.MyLocations.Where((m) => Vector3.Distance(transform.position, m.Position) < 200 && !NetworkHelper.Instance.SpawnedInstantiatedLocations.Any(loc => loc.name == m.Name)))
         {
-            var loc = close.First();
+            //var loc = close.First();
             var seed = loc.seed == -1 ? Random.Range(0, 32000) : loc.seed;
             NetworkHelper.Instance.SpawnLocation(loc.Name, seed);
             //SpawnedLocations.Add(loc);
         }
-
     }
 
     public void DestroyLevel()

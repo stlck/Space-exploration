@@ -6,61 +6,110 @@ public class DrawInstancedIndirect : MonoBehaviour {
 
     public static Dictionary<Material, DrawInstancedIndirect> DrawDictionary = new Dictionary<Material, DrawInstancedIndirect>();
     public int instanceCount = 100000;
+    public Mesh instanceMesh;
+    public Material instanceMaterial;
+
     private int cachedInstanceCount = -1;
     private ComputeBuffer positionBuffer;
     private ComputeBuffer argsBuffer;
-    StationSpawner stationSpawner = new StationSpawner();
     private uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
 
-    public Mesh instanceMesh;
-    public Material instanceMaterial;
-    public int StationSize = 100;
-    public GameObject Cube;
-    int[,] tilemap;
-    Vector3[] positionArray;
-    Vector3 position;
-    int layer;
+    private List<Vector3> positionArray;
+    private int layer;
+    public bool markUpdate = false;
+
     void Start ()
     {
         argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
 
         UpdateStationBuffers();
     }
-
-    public static void AddTileMap(Material t, int layer, int[,] tiles, Vector3 position)
+    static void init(Material targetMaterial, int layer)
     {
-        if(!DrawDictionary.ContainsKey(t))
-        {
-            var draw = Resources.Load<DrawInstancedIndirect>("base indirect draw");
-            draw.instanceMaterial = t;
-
-            DrawDictionary.Add(t, draw);
-        }
-
-        DrawDictionary[t].tilemap = tiles;
-        DrawDictionary[t].position = position;
-        DrawDictionary[t].positionArray = new Vector3[100];
-        DrawDictionary[t].layer = layer;
+        DrawDictionary.Add(targetMaterial, Instantiate(Resources.Load<DrawInstancedIndirect>("DrawIndirect")));
+        
+        DrawDictionary[targetMaterial].positionArray = new List<Vector3>();
+        DrawDictionary[targetMaterial].instanceMaterial = targetMaterial;
+        DrawDictionary[targetMaterial].layer = layer;
     }
 
-    public static void AddPosition(Material t, int layer, Vector3 position)
+    public static void AddToDraw(Material targetMaterial, int x, int y, int z, int layer)
     {
-        if (!DrawDictionary.ContainsKey(t))
+        if(!DrawDictionary.ContainsKey(targetMaterial))
         {
-            var draw = Resources.Load<DrawInstancedIndirect>("base indirect draw");
-            draw.instanceMaterial = t;
-            
-            DrawDictionary.Add(t, draw);
-            DrawDictionary[t].positionArray = new Vector3[20000];
+            init(targetMaterial, layer);
         }
 
-        //DrawDictionary[t].positionArray 
-        DrawDictionary[t].layer = layer;
+        var pos = new Vector3(x, y, z);
+        if (!DrawDictionary[targetMaterial].positionArray.Contains(pos))
+        {
+            DrawDictionary[targetMaterial].positionArray.Add(pos);
+            DrawDictionary[targetMaterial].markUpdate = true;
+        }
+    }
+
+    public static void AddToDraw(Material targetMaterial, Vector3 position, int layer)
+    {
+        if (!DrawDictionary.ContainsKey(targetMaterial))
+        {
+            init(targetMaterial, layer);
+        }
+        DrawDictionary[targetMaterial].positionArray.Add(position);
+            DrawDictionary[targetMaterial].markUpdate = true;
+    }
+
+    public static void AddToDraw(Material targetMaterial, List<Vector3> positions, int layer)
+    {
+        if (!DrawDictionary.ContainsKey(targetMaterial))
+        {
+            init(targetMaterial, layer);
+        }
+
+        DrawDictionary[targetMaterial].positionArray.AddRange(positions);
+            DrawDictionary[targetMaterial].markUpdate = true;
+    }
+
+    public static void RemoveFromDraw(Material targetMaterial, Vector3 position)
+    {
+        Debug.Log("REMOVE " + position);
+        if (DrawDictionary.ContainsKey(targetMaterial))
+        {
+            Debug.Log("REMOVAL SUCCESSFULL");
+            DrawDictionary[targetMaterial].positionArray.Remove(position);
+            DrawDictionary[targetMaterial].markUpdate = true;
+        }
+    }
+    public static void RemoveAll()
+    {
+        foreach (var d in DrawDictionary.Values)
+        {
+            Destroy(d.gameObject);
+        }
+        DrawDictionary.Clear();
+    }
+    public static void RemoveFromDraw(Material targetMaterial, int x, int y, int z)
+    {
+        if (DrawDictionary.ContainsKey(targetMaterial))
+        {
+            var pos = new Vector3(x, y, z);
+            DrawDictionary[targetMaterial].positionArray.Remove(pos);
+            DrawDictionary[targetMaterial].markUpdate = true;
+        }
+    }
+
+    public static void RemoveFromDraw(Material targetMaterial, List<Vector3> positions)
+    {
+        if (DrawDictionary.ContainsKey(targetMaterial))
+        {
+            foreach(var v in positions)
+                DrawDictionary[targetMaterial].positionArray.Remove(v);
+            DrawDictionary[targetMaterial].markUpdate = true;
+        }
     }
 
     void Update ()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (markUpdate)
             UpdateStationBuffers();
 
         // Render
@@ -74,24 +123,13 @@ public class DrawInstancedIndirect : MonoBehaviour {
             positionBuffer.Release();
 
         //var map = stationSpawner.GenerateIndirect(positionArray.Length, 10, 20, 3);
-        instanceCount = positionArray.Length;
+        instanceCount = positionArray.Count;
 
         positionBuffer = new ComputeBuffer(instanceCount, 16);
         Vector4[] positions = new Vector4[instanceCount];
 
-        //for (int i = 0; i < StationSize; i++)
-        //    for (int j = 0; j < StationSize; j++)
-        //        //positions[i * stationsize + j] = new Vector4(i, 1, j, 1);
-        //{ 
-        //    if (map[i, j] > 0)
-        //    {
-        //        positions[i + j * StationSize] = new Vector4(i, 0, j, 1);
-        //        Instantiate(Cube, new Vector3(i, 0, j), Quaternion.identity);
-        //    }
-        //}
-
         //foreach(var p in positionArray)
-        for (int i = 0; i < positionArray.Length; i++)
+        for (int i = 0; i < positionArray.Count; i++)
             positions[i] = new Vector4(positionArray[i].x, positionArray[i].y, positionArray[i].z, 1);
 
         positionBuffer.SetData(positions);
@@ -104,38 +142,8 @@ public class DrawInstancedIndirect : MonoBehaviour {
         argsBuffer.SetData(args);
 
         cachedInstanceCount = instanceCount;
+        markUpdate = false;
     }
-
-   /* void UpdateBuffers ()
-    {
-        // positions
-        if (positionBuffer != null)
-            positionBuffer.Release();
-
-        positionBuffer = new ComputeBuffer(instanceCount, 16);
-        Vector4[] positions = new Vector4[instanceCount];
-
-        for (int i = 0; i < instanceCount; i++)
-        {
-            float angle = Random.Range(0.0f, Mathf.PI * 2.0f);
-            float distance = Random.Range(20.0f, 100.0f);
-            float height = Random.Range(-2.0f, 2.0f);
-            float size = Random.Range(0.05f, 0.25f);
-            positions[i] = new Vector4(Mathf.Sin(angle) * distance, height, Mathf.Cos(angle) * distance, size);
-
-        }
-
-        positionBuffer.SetData(positions);
-        instanceMaterial.SetBuffer("positionBuffer", positionBuffer);
-
-        // indirect args
-        uint numIndices = (instanceMesh != null) ? (uint)instanceMesh.GetIndexCount(0) : 0;
-        args[0] = numIndices;
-        args[1] = (uint)instanceCount;
-        argsBuffer.SetData(args);
-
-        cachedInstanceCount = instanceCount;
-    }*/
 
     void OnDisable ()
     {
@@ -150,15 +158,3 @@ public class DrawInstancedIndirect : MonoBehaviour {
         argsBuffer = null;
     }
 }
-/*
-    public struct DrawStructContainer
-    {
-        //Graphics.DrawMeshInstancedIndirect
-
-        public Material TargetMaterial;
-        public Transform[] ToDraw;
-        public int Layer;
-        public int Count;
-        public bool Updated;
-        public Matrix4x4
-    }*/

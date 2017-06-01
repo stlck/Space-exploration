@@ -8,6 +8,7 @@
 
 		_Metallic("Metallic", Range(0,1)) = 0.0
 
+		_Color ("Color", Color) = (1,1,1,1)
 	}
 
 		SubShader{
@@ -22,7 +23,7 @@
 
 		// Physically based Standard lighting model
 
-#pragma surface surf Standard addshadow fullforwardshadows
+#pragma surface surf Standard fullforwardshadows addshadow
 
 #pragma multi_compile_instancing
 
@@ -40,7 +41,8 @@
 
 	};
 
-
+			//UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)	// Make _Color an instanced property (i.e. an array)
+			fixed4 _Color;
 
 #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
 
@@ -107,7 +109,7 @@
 
 	void surf(Input IN, inout SurfaceOutputStandard o) {
 
-		fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
+		fixed4 c = tex2D(_MainTex, IN.uv_MainTex)* (_Color);
 
 		o.Albedo = c.rgb;
 
