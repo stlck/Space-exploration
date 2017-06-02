@@ -26,7 +26,7 @@ public class LocationStation : Location
         var ret = owner.gameObject.AddComponent<InstantiatedStation>();
 
         ret.TargetLocation = this;
-        ret.transform.position = Position - Vector3.up * 2;
+        ret.transform.position = Position - Vector3.up * 2.5f;
 
         spawner = new StationSpawner();
         Tiles = spawner.Generate(owner, seed, Size, Splits, MinRoomSize, HalfCorridorSize, TileSet, false);
@@ -35,6 +35,7 @@ public class LocationStation : Location
         var height = 10;
         var voxelMap = spawner.ToVoxelMap(height);
         ret.Spawn(voxelMap);
+        ret.Rooms = Rooms;
 
         BestFirstSearch = new BestFirstSearch(Size, Size);
 

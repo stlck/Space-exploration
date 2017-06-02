@@ -26,19 +26,27 @@ public class DrawInstancedIndirect : MonoBehaviour {
     }
     static void init(Material targetMaterial, int layer)
     {
-        DrawDictionary.Add(targetMaterial, Instantiate(Resources.Load<DrawInstancedIndirect>("DrawIndirect")));
+        if(!DrawDictionary.ContainsKey(targetMaterial))
+        { 
+            DrawDictionary.Add(targetMaterial, Instantiate(Resources.Load<DrawInstancedIndirect>("DrawIndirect")));
         
-        DrawDictionary[targetMaterial].positionArray = new List<Vector3>();
-        DrawDictionary[targetMaterial].instanceMaterial = targetMaterial;
-        DrawDictionary[targetMaterial].layer = layer;
+            DrawDictionary[targetMaterial].positionArray = new List<Vector3>();
+            DrawDictionary[targetMaterial].instanceMaterial = targetMaterial;
+            DrawDictionary[targetMaterial].layer = layer;
+        }
+        else if(DrawDictionary[targetMaterial] == null)
+        {
+            DrawDictionary[targetMaterial] = Instantiate(Resources.Load<DrawInstancedIndirect>("DrawIndirect"));
+
+            DrawDictionary[targetMaterial].positionArray = new List<Vector3>();
+            DrawDictionary[targetMaterial].instanceMaterial = targetMaterial;
+            DrawDictionary[targetMaterial].layer = layer;
+        }
     }
 
     public static void AddToDraw(Material targetMaterial, int x, int y, int z, int layer)
     {
-        if(!DrawDictionary.ContainsKey(targetMaterial))
-        {
-            init(targetMaterial, layer);
-        }
+        init(targetMaterial, layer);
 
         var pos = new Vector3(x, y, z);
         if (!DrawDictionary[targetMaterial].positionArray.Contains(pos))
@@ -50,23 +58,18 @@ public class DrawInstancedIndirect : MonoBehaviour {
 
     public static void AddToDraw(Material targetMaterial, Vector3 position, int layer)
     {
-        if (!DrawDictionary.ContainsKey(targetMaterial))
-        {
-            init(targetMaterial, layer);
-        }
+        init(targetMaterial, layer);
+
         DrawDictionary[targetMaterial].positionArray.Add(position);
-            DrawDictionary[targetMaterial].markUpdate = true;
+        DrawDictionary[targetMaterial].markUpdate = true;
     }
 
     public static void AddToDraw(Material targetMaterial, List<Vector3> positions, int layer)
     {
-        if (!DrawDictionary.ContainsKey(targetMaterial))
-        {
-            init(targetMaterial, layer);
-        }
+        init(targetMaterial, layer);
 
         DrawDictionary[targetMaterial].positionArray.AddRange(positions);
-            DrawDictionary[targetMaterial].markUpdate = true;
+        DrawDictionary[targetMaterial].markUpdate = true;
     }
 
     public static void RemoveFromDraw(Material targetMaterial, Vector3 position)

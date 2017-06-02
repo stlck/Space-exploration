@@ -56,6 +56,7 @@ public class WalkingEnemy : NpcBase{
             {
                 currentTimer += Time.deltaTime * WalkingSpeed;
                 var tpos = Spawner.transform.TransformPoint(Route[0]);
+                tpos.y = transform.position.y;
                 transform.position = Vector3.MoveTowards(transform.position, tpos, Time.deltaTime * WalkingSpeed);
                 transform.LookAt(tpos);
 

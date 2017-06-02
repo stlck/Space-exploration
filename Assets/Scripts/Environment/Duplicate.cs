@@ -10,7 +10,7 @@ public class Duplicate : BaseAddForceObject
     public float Health = 150;
     public DuplicateFragment SpawnOnHit;
 
-    public DuplicateFragment EffectOnDeath;
+    //public DuplicateFragment EffectOnDeath;
     public DuplicateFragment EffectOnHit;
 
     public int X;
@@ -39,12 +39,13 @@ public class Duplicate : BaseAddForceObject
             Owner.BlockHit(X, Y, Z);
         }
 
-        if (EffectOnDeath != null)
-        {
-            var e = Instantiate(EffectOnDeath, point, EffectOnDeath.transform.rotation);
-            if (mat != null)
-                e.SetMaterial(mat);
-        }
+        //if (EffectOnDeath != null)
+        //{
+        //    var e = Instantiate(EffectOnDeath, transform.position, EffectOnDeath.transform.rotation);
+        //    if (mat != null)
+        //        e.SetColor(mat.color);
+        //        //e.SetMaterial(mat);
+        //}
 
         Destroy(gameObject);
     }
@@ -85,7 +86,8 @@ public class Duplicate : BaseAddForceObject
         {
             var e = Instantiate(EffectOnHit, originPoint, EffectOnHit.transform.rotation);
             if(mat != null)
-                e.SetMaterial(mat);
+                e.SetColor(mat.color);
+                //e.SetMaterial(mat);
         }
 
         return true;

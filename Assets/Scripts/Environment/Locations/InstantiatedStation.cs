@@ -7,10 +7,13 @@ public class InstantiatedStation : InstantiatedLocation {
     public Duplicate BaseBlock;
     int[,,] voxelMap;
     Dictionary<Vector3, Material> materialOverview = new Dictionary<Vector3, Material>();
-
+    public DuplicateFragment EffectOnBlockDeath;
+    public List<BspCell> Rooms;
     // Use this for initialization
     void Start() {
-	}
+        EffectOnBlockDeath = Resources.Load<DuplicateFragment>("TileSets/BlockDeathEffect");
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -21,6 +24,12 @@ public class InstantiatedStation : InstantiatedLocation {
     {
         //base.BlockHit(x, y, z);
         Vector3 pos = new Vector3(x , y, z) + transform.position;
+        if(EffectOnBlockDeath != null)
+        {
+            var e = Instantiate(EffectOnBlockDeath, pos, EffectOnBlockDeath.transform.rotation);
+            if (materialOverview[pos] != null)
+                e.SetColor(materialOverview[pos].color);
+        }
         DrawInstancedIndirect.RemoveFromDraw(materialOverview[pos], pos);
         materialOverview.Remove(pos);
     }
@@ -48,9 +57,20 @@ public class InstantiatedStation : InstantiatedLocation {
                         DrawInstancedIndirect.AddToDraw(set.Materials[voxelMap[x,y,z]], pos, 8);
                         //DrawInstanced.Instance.AddToDraw(transform, set.GroundTiles[voxelMap[x, y, z] - 1].GetComponent<MeshRenderer>().material);
                         //CoroutineSpawner.Instance.Enqueue(set.GroundTiles[voxelMap[x, y, z] - 1], Vector3.right * x + Vector3.forward * z + Vector3.up * (y - 2), Quaternion.identity, parent.transform);
-                        blocksToSpawn.Enqueue(new SpawnCase( 8, x,y,z));
+                        blocksToSpawn.Enqueue(new SpawnCase( 8, x, y, z));
                     }
                 }
+    }
+
+    public override Vector3 FindOpenSpotInLocation()
+    {
+        Vector3 ret = base.FindOpenSpotInLocation();
+
+        var room = Rooms.GetRandom();
+        ret.x = room.x + transform.position.x;
+        ret.z = room.y + transform.position.z;
+        
+        return ret;
     }
 
     Queue<SpawnCase> blocksToSpawn = new Queue<SpawnCase>();

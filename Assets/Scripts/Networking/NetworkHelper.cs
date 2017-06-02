@@ -136,8 +136,6 @@ public class NetworkHelper : NetworkBehaviour
         var go = new GameObject(loc.Name);
         var location = loc.SpawnLocation(go.transform, seed);
         location.name = loc.Name;
-        //var pos = loc.Position;
-        //go.transform.position = pos;
 
         Testing.AddDebug("Spawned location: " + loc.Name + " at " + loc.Position);
         //SpawnedLocations.Add(loc);

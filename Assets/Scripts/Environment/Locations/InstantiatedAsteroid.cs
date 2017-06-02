@@ -8,15 +8,26 @@ public class InstantiatedAsteroid : InstantiatedLocation {
     public IsosurfaceMesh isosurface;
     public int[,,] CurrentMap;
     public Duplicate CubeCollider;
+    public DuplicateFragment EffectOnBlockDeath;
     List<int> SizeArray;
     LocationTileSet set;
+    Material mat;
 
     private void Awake()
     {
+        EffectOnBlockDeath = Resources.Load<DuplicateFragment>("TileSets/BlockDeathEffect");
     }
 
     public override void BlockHit(int VoxelX, int VoxelY, int VoxelZ)
     {
+        if (EffectOnBlockDeath != null)
+        {
+            var p = new Vector3(VoxelX, VoxelY, VoxelZ) + transform.position;
+            var e = Instantiate(EffectOnBlockDeath, p, EffectOnBlockDeath.transform.rotation);
+            //if (materialOverview[pos] != null)
+                e.SetColor(mat.color);
+        }
+
         isosurface.isosurface.Data[VoxelX, VoxelY, VoxelZ] = 0;
         isosurface.isosurface.BuildData(ref isosurface.runtimeMesh);
     }
@@ -53,7 +64,8 @@ public class InstantiatedAsteroid : InstantiatedLocation {
         target.transform.SetParent(transform);
         target.transform.localPosition = Vector3.zero;
         target.AddComponent<MeshFilter>();
-        target.AddComponent<MeshRenderer>().sharedMaterial = set.GroundTiles.GetRandom().GetComponent<InstanceMe>().Material;
+        mat = set.GroundTiles.GetRandom().GetComponent<InstanceMe>().Material;
+        target.AddComponent<MeshRenderer>().sharedMaterial = mat;
         target.transform.parent.position += Vector3.down * SizeArray[SizeArray.Count - 1] / 2f;
 
         isosurface = target.AddComponent<IsosurfaceMesh>();

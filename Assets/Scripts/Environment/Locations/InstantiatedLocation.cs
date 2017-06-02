@@ -111,11 +111,11 @@ public class InstantiatedLocation : MonoBehaviour {
     //        }
     //}
 
-    public Vector3 FindOpenSpotInLocation()
+    public virtual Vector3 FindOpenSpotInLocation()
     {
         //var p = spawnLocations.GetRandom();
         //return transform.position + new Vector3(p.x, 0, p.y);
         Debug.LogWarning("Get spawn position");
-        return Vector3.zero;
+        return Vector3.up;
     }
 }
