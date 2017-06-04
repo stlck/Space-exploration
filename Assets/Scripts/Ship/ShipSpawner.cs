@@ -182,8 +182,8 @@ public class ShipSpawner : MonoBehaviour {
         
         if (IsTesting && changed)
         {
-            foreach (Transform c in Target.transform)
-                Destroy(c.gameObject);
+            //foreach (Transform c in Target.transform)
+            //    Destroy(c.gameObject);
             ShipToMesh(Target.transform, Size.x, Size.y, tiles, Target.GetComponent<MeshRenderer>().material);
             showControls();
         }
