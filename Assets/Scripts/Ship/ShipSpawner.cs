@@ -111,7 +111,7 @@ public class ShipSpawner : MonoBehaviour {
                     spawned.GetComponent<IShipSpawnObject>().SetTilePosition(new Vector2Int(x, y));
                 }
 
-        s.transform.position = position + Vector3.up / 2;
+        s.transform.position = position;
         s.transform.rotation = rotation;
 
         s.tiles = t;
