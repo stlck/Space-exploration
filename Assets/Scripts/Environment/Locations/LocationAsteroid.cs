@@ -19,6 +19,11 @@ public class LocationAsteroid : Location
         ret.transform.position = Position;
 
         var spawner = new AsteroidSpawnerNonCubed();
+        if(SizeArray.Count == 0)
+        {
+            SizeArray.Add(12);
+            SizeArray.Add(16);
+        }
         var map = spawner.GetVoxelMap(SizeArray, TileSize, owner, seed);
         ret.Spawn(map, SizeArray);
 

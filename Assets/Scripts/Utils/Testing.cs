@@ -77,7 +77,7 @@ public class Testing : MonoBehaviour {
         MissionLevel = (int)GUILayout.HorizontalSlider(MissionLevel, 0, 20);
         if (GUILayout.Button("Add MIssion"))
         {
-            NetworkHelper.Instance.CreateMission("Mission" + Random.Range(0, 100), Random.Range(0, 20000), 0, MissionLevel);
+            NetworkHelper.Instance.CreateMission("Mission" + Random.Range(0, 100), Random.Range(0, 20000), UnityEngine.Random.Range(0,2), MissionLevel);
         }
         GUI.DragWindow();
     }

@@ -8,7 +8,9 @@ public class MoveShip : MovementBase
     Ship owningShip;
     Rigidbody rigidbody;
     public float MoveSpeed = 5;
+    float lerpVert = 0f;
     public float RotateSpeed = 3;
+    float lerpHor = 0f;
 
     public bool TryPhysics = true;
     public float PhysicsModifier = 200;
@@ -39,6 +41,9 @@ public class MoveShip : MovementBase
     // Update is called once per frame
     void Update()
     {
+        lerpVert = Mathf.Lerp(lerpVert, (vert > 0) ? 1 : ((vert < 0) ? -1 : 0), Time.deltaTime);
+        lerpHor = Mathf.Lerp(lerpHor, (hor > 0) ? 1 : ((hor < 0) ? -1 : 0), Time.deltaTime);
+
         if (!TryPhysics && !owningShip.Warping && isServer)
         {
             //owningShip.CurrentSpeed = Mathf.Lerp(owningShip.CurrentSpeed, MoveSpeed, Time.deltaTime);
@@ -50,10 +55,10 @@ public class MoveShip : MovementBase
                 // add collision damage & effects
             }
             else
-                transform.Translate(Vector3.forward * vert * Time.deltaTime * MoveSpeed);// owningShip.CurrentSpeed);
+                transform.Translate(Vector3.forward * lerpVert * Time.deltaTime * MoveSpeed);// owningShip.CurrentSpeed);
         }
 
-        transform.Rotate(Vector3.up, hor * Time.deltaTime * RotateSpeed);
+        transform.Rotate(Vector3.up, lerpHor * Time.deltaTime * RotateSpeed);
     }
 
     void FixedUpdate()

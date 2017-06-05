@@ -22,8 +22,6 @@ public class NpcEquipWeapon : NetworkBehaviour {
 		if(isServer && WeaponTarget != null && WeaponTarget.Weapon == null)
         {
             RpcNpcEquipRandomWeapon();
-
-            WeaponTarget.Weapon.WeaponValues.Damage *= .33f * (WeaponTarget.Level);
         }
 	}
 
@@ -34,6 +32,8 @@ public class NpcEquipWeapon : NetworkBehaviour {
         var values = WeaponGenerator.getBaseWeaponValues(recipee);
         WeaponTarget.Weapon = WeaponGenerator.InstantiateWeapon(recipee.OrgWeapon.Id, WeaponTarget.WeaponPoint ?? transform);
         WeaponTarget.Weapon.WeaponValues = values;
+
+        WeaponTarget.Weapon.WeaponValues.Damage *= .33f * (WeaponTarget.Level);
     }
 
     [ClientRpc]
@@ -43,5 +43,7 @@ public class NpcEquipWeapon : NetworkBehaviour {
         var values = WeaponGenerator.getBaseWeaponValues(recipee);
         WeaponTarget.Weapon = WeaponGenerator.InstantiateWeapon(recipee.OrgWeapon.Id, WeaponTarget.WeaponPoint ?? transform);
         WeaponTarget.Weapon.WeaponValues = values;
+
+        WeaponTarget.Weapon.WeaponValues.Damage *= .33f * (WeaponTarget.Level);
     }
 }
