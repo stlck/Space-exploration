@@ -12,13 +12,7 @@ public class InstantiatedStation : InstantiatedLocation {
     // Use this for initialization
     void Start() {
         EffectOnBlockDeath = Resources.Load<DuplicateFragment>("TileSets/BlockDeathEffect");
-
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
     public override void BlockHit(int x, int y, int z)
     {

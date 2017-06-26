@@ -12,6 +12,7 @@ public class InstantiatedAsteroid : InstantiatedLocation {
     List<int> SizeArray;
     LocationTileSet set;
     Material mat;
+    List<asteroidContainer> singleAsteroids = new List<asteroidContainer>();
 
     private void Awake()
     {
@@ -32,10 +33,11 @@ public class InstantiatedAsteroid : InstantiatedLocation {
                 var e = Instantiate(EffectOnBlockDeath, p, EffectOnBlockDeath.transform.rotation);
                 //if (materialOverview[pos] != null)
                 e.SetColor(mat.color);
+                Debug.Log("root: " + transform.position + "\nasteroid: " + hit.Target.position + "\ncoor: " + VoxelX + " " + VoxelY + " " + VoxelZ);
             }
             hit.Surface.isosurface.Data[VoxelX - hit.StartX, VoxelY - hit.StartY, VoxelZ - hit.StartZ] = 0;
-            //isosurface.isosurface.Data[VoxelX, VoxelY, VoxelZ] = 0;
             hit.Surface.isosurface.BuildData(ref isosurface.runtimeMesh);
+            //isosurface.isosurface.Data[VoxelX, VoxelY, VoxelZ] = 0;
             //isosurface.isosurface.BuildData(ref isosurface.runtimeMesh);
         }
     }
@@ -110,7 +112,7 @@ public class InstantiatedAsteroid : InstantiatedLocation {
     public void FinishSpawn()
     {
         var pos = transform.position;
-        pos.y =- maxSizeY / 2f;//-voxelMap.GetLength(1) / 2f - SizeArray.Last() / 2f;
+        pos.y = -CurrentMap.GetLength(1) / 2f;//-maxSizeY / 2f;//-voxelMap.GetLength(1) / 2f - SizeArray.Last() / 2f;
         transform.position = pos;
     }
 
@@ -145,8 +147,7 @@ public class InstantiatedAsteroid : InstantiatedLocation {
                         coll.Z = k + offsetZ;
                     }
                 }
-        if (maxSizeY < map.GetLength(1))
-            maxSizeY = map.GetLength(1);
+
         var container = new asteroidContainer() { StartX = offsetX, StartY = offsetY, StartZ = offsetZ, Map = voxelMap, Size = map.GetLength(0) };
 
         addSubMesh(voxelMap, offset, container);
@@ -172,8 +173,6 @@ public class InstantiatedAsteroid : InstantiatedLocation {
         singleAsteroids.Add(container);
     }
 
-    int maxSizeY = 0;
-    List<asteroidContainer> singleAsteroids = new List<asteroidContainer>();
 
     class asteroidContainer
     {
