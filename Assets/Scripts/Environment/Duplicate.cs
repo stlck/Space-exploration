@@ -79,7 +79,7 @@ public class Duplicate : BaseAddForceObject
     bool newCollisionTest(Vector3 originPoint, float damage)
     {
         var pos = transform.position;
-        Debug.Log("Added force : " + damage);
+        //Debug.Log("Added force : " + damage);
         ApplyDamage(originPoint, damage);
 
         if (EffectOnHit != null)

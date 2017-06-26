@@ -80,6 +80,6 @@ public class SimplePlayerUI : MonoBehaviour {
     void doMissionWindow(int id)
     {
         foreach (var m in NetworkHelper.Instance.Missions)
-            GUILayout.Label(m.Name + " at " + m.Location.Position);
+            GUILayout.Label((LocationTypes) m.LocationType + ": " + m.Name + " at " + m.Location.Position);
     }
 }

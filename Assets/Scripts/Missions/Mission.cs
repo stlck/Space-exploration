@@ -15,11 +15,11 @@ public class Mission : MonoBehaviour {
 
         switch(LocationType)
         {
-            
+            case 0:
             case 1:
                 Location = new LocationAsteroid();
                 break;
-            case 0:
+            case 2:
             default:
                 Location = new LocationStation();
                 break;

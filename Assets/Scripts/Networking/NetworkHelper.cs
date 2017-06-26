@@ -33,7 +33,7 @@ public class NetworkHelper : NetworkBehaviour
         
         MyLocations.AddRange(Resources.LoadAll<Location>(""));
         Enemies = Resources.LoadAll<NpcBase>("Enemies").ToList();
-
+        Missions = new List<Mission>();
     }
 
     // Use this for initialization
