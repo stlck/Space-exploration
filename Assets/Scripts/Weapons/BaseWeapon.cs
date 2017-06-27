@@ -47,7 +47,7 @@ public class BaseWeapon : BaseItem
     {
         base.BuyItem();
 
-        MyAvatar.Instance.AvatarWeaponHandler.EquipWeapon(this.Id);
+        MyAvatar.Instance.AvatarWeaponHandler.EquipWeaponSeed(this.WeaponValues.Seed);
     }
 
     public void BuyWeapon(int seed)
@@ -61,14 +61,14 @@ public class BaseWeapon : BaseItem
     {
         base.ShopGUI();
 
-        GUILayout.TextField("dps " + (WeaponValues.Damage / WeaponValues.Cooldown), GUILayout.Width(60));
+        GUILayout.TextField("seed: " + WeaponValues.Seed + ". dps " + (WeaponValues.Damage / WeaponValues.Cooldown), GUILayout.Width(60));
     }
 
     public override void InventoryGUI()
     {
         base.InventoryGUI();
 
-        if (MyAvatar.Instance.AvatarWeaponHandler != this && GUILayout.Button("Equip"))
+        if (MyAvatar.Instance.AvatarWeaponHandler != this && GUILayout.Button("Equip " + WeaponValues.Seed))
             MyAvatar.Instance.AvatarWeaponHandler.EquipWeaponSeed(this.WeaponValues.Seed);
         else if (GUILayout.Button("Unequip"))
             MyAvatar.Instance.AvatarWeaponHandler.UnEquipWeapon(this.WeaponValues.Seed);

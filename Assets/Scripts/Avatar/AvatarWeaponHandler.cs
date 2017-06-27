@@ -49,6 +49,7 @@ public class AvatarWeaponHandler : NetworkBehaviour
     [ClientRpc]
     void RpcEquipWeaponSeed ( int seed)
     {
+        Debug.Log("Equipping : " + seed + ". in collection : " + string.Join(" ", InstantiatedWeapons.Select(m => m.Seed.ToString()).ToArray()));
         turnOffEquippedWeapon();
         //Destroy(EquippedWeapon.gameObject);
         if(!InstantiatedWeapons.Any(m => m.Seed == seed))
