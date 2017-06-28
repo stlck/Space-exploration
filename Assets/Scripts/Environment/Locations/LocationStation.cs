@@ -37,14 +37,14 @@ public class LocationStation : Location
         ret.Spawn(voxelMap);
         ret.Rooms = Rooms;
 
-        BestFirstSearch = new BestFirstSearch(Size, Size);
+        //BestFirstSearch = new BestFirstSearch(Size, Size);
 
-        for(int i = 0; i < Size; i++)
-            for(int j = 0; j < Size; j++)
-            {
-                if (Tiles[i, j] != 1)
-                    BestFirstSearch.AddObstacle(i,j);
-            }
+        //for(int i = 0; i < Size; i++)
+        //    for(int j = 0; j < Size; j++)
+        //    {
+        //        if (Tiles[i, j] != 1)
+        //            BestFirstSearch.AddObstacle(i,j);
+        //    }
 
         return ret;
     }

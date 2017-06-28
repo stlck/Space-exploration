@@ -14,7 +14,7 @@ public class Location : ScriptableObject {
     public LocationTypes Type;
     public LocationStandings Standing;
 
-    public BestFirstSearch BestFirstSearch;
+    //public BestFirstSearch BestFirstSearch;
 
     /// <summary>
     /// Test only

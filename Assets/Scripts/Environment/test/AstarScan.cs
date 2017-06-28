@@ -13,7 +13,7 @@ public class AstarScan : MonoBehaviour {
         station.SpawnLocation(transform);
         StationGraph = AstarPath.active.data.AddGraph(typeof(GridGraph)) as GridGraph;
         
-        StationGraph.neighbours = NumNeighbours.Four;
+        StationGraph.neighbours = NumNeighbours.Eight;
         StationGraph.SetDimensions(100, 100, 1);
         StationGraph.center = new Vector3(10, -1, 10);
         StationGraph.maxClimb = 1;
