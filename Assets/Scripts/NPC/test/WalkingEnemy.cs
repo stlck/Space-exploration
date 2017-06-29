@@ -38,8 +38,15 @@ public class WalkingEnemy : NpcBase{
                 // it timer - find target
                 if (NetworkHelper.Instance.AllPlayers.Any(m => Vector3.Distance(m.transform.position, transform.position) < ChaseRange && m.CurrentState != States.Dead))
                 {
-                    CurrentTarget = NetworkHelper.Instance.AllPlayers.First(m => Vector3.Distance(m.transform.position, transform.position) < ChaseRange).transform;
-                    NavAILerp.target = CurrentTarget;
+                    var temp = NetworkHelper.Instance.AllPlayers.First(m => Vector3.Distance(m.transform.position, transform.position) < ChaseRange).transform;
+                    if (Vector3.Distance(temp.position, transform.position) > AttackRange)
+                    {
+                        CurrentTarget = temp;
+                        NavAILerp.canMove = true;
+                        NavAILerp.target = CurrentTarget;
+                    }
+                    else
+                        NavAILerp.canMove = false;
                     //var tPos = ownerLocalPosition(CurrentTarget.position);
                     //var lPos = ownerLocalPosition(transform.position);
                     //Route = bfs.FindPath((int)transform.localPosition.x, (int)transform.localPosition.z, (int)CurrentTarget.localPosition.x, (int)CurrentTarget.localPosition.z, 1);
@@ -47,18 +54,20 @@ public class WalkingEnemy : NpcBase{
                 targetRefreshTimer = 0f;
             }
             RaycastHit hit;
-           /* if(CurrentTarget != null && CurrentTarget.gameObject.activeInHierarchy && Physics.Raycast(transform.position + transform.forward, CurrentTarget.position - transform.position, out hit, AttackRange) && hit.transform == CurrentTarget)
-            {
-                NavAILerp.target = null;
-                var lookAtPosition = CurrentTarget.position;
-                lookAtPosition.y = transform.position.y;
-                transform.LookAt(CurrentTarget);
-                if (Weapon != null && Weapon.CanFire())
-                    Weapon.FireWeapon();
-            }*/
+            /* if(CurrentTarget != null && CurrentTarget.gameObject.activeInHierarchy && Physics.Raycast(transform.position + transform.forward, CurrentTarget.position - transform.position, out hit, AttackRange) && hit.transform == CurrentTarget)
+             {
+                 NavAILerp.target = null;
+                 var lookAtPosition = CurrentTarget.position;
+                 lookAtPosition.y = transform.position.y;
+                 transform.LookAt(CurrentTarget);
+                 if (Weapon != null && Weapon.CanFire())
+                     Weapon.FireWeapon();
+             }*/
 
             if (CurrentTarget != null && Vector3.Distance(CurrentTarget.position, transform.position) < AttackRange)
+            {
                 NavAILerp.target = null;
+            }
             
             // if can see && within attackrange - attack
             /*else if (Route.Any())
