@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using System.Collections;
 using System.Reflection;
 using Isosurface;
@@ -14,7 +16,9 @@ public class DataProcessorEvent : UnityEvent<float[,,], Isosurface3D>
 [AddComponentMenu ("Easy Isosurface/Mesh Isosurface")]
 [RequireComponent (typeof (MeshFilter), typeof (MeshRenderer))]
 [ExecuteInEditMode]
+#if UNITY_EDITOR
 [InitializeOnLoad]
+#endif
 public class IsosurfaceMesh : MonoBehaviour
 {
 	#region Public Properties
@@ -55,9 +59,11 @@ public class IsosurfaceMesh : MonoBehaviour
 		if (!this.isActiveAndEnabled)
 			return;
 
-		EditorApplication.update += Update;
+#if UNITY_EDITOR
+        EditorApplication.update += Update;
+#endif
 		Init ();
-	}
+    }
 
 	void Init ()
 	{
@@ -111,15 +117,16 @@ public class IsosurfaceMesh : MonoBehaviour
 
 			DrawRuntimeMesh ();
 		}
-		else
-		{
+#if UNITY_EDITOR
+        else
+        {
 			if (update && dataProcessor.GetPersistentEventCount () > 0)
 				dataProcessor.GetPersistentTarget (0).GetType ().GetMethod (dataProcessor.GetPersistentMethodName (0)).Invoke (dataProcessor.GetPersistentTarget (0), new object[2]
 				{
 					isosurface.Data, isosurface
 				});
 
-			DrawEditorMesh ();
+            DrawEditorMesh ();
 		}
 	}
 
@@ -138,10 +145,11 @@ public class IsosurfaceMesh : MonoBehaviour
 
 			if (Camera.current != editorCamera && Camera.current != Camera.main)
 				Graphics.DrawMesh (editorMesh, transform.position, transform.rotation, meshRenderer.sharedMaterial, 0, Camera.current);
-		}
-	}
+        }
+#endif
+    }
 
-	public void DrawRuntimeMesh ()
+    public void DrawRuntimeMesh ()
 	{
 		if (update)
 			isosurface.BuildData (ref runtimeMesh);

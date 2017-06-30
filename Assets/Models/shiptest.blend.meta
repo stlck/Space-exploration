@@ -1,15 +1,27 @@
 fileFormatVersion: 2
-guid: e7352f468515dac4bb89ca7b512c1e0a
-timeCreated: 1496405292
+guid: b6d88775608e5d241bb817e1b3b41b06
+timeCreated: 1498810257
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: //RootNode
-    400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Cube
+    100000: Chassis
+    100002: exhaust_left
+    100004: exhaust_right
+    100006: //RootNode
+    400000: Chassis
+    400002: exhaust_left
+    400004: exhaust_right
+    400006: //RootNode
+    2300000: Chassis
+    2300002: exhaust_left
+    2300004: exhaust_right
+    3300000: Chassis
+    3300002: exhaust_left
+    3300004: exhaust_right
+    4300000: exhaust_left
+    4300002: Chassis
+    4300004: exhaust_right
     7400000: Default Take
     9500000: //RootNode
   materials:
@@ -41,20 +53,20 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
-    importBlendShapes: 0
+    importBlendShapes: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0
-    weldVertices: 0
+    weldVertices: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
   tangentSpace:
-    normalSmoothAngle: 0
+    normalSmoothAngle: 60
     normalImportMode: 1
     tangentImportMode: 3
   importAnimation: 1

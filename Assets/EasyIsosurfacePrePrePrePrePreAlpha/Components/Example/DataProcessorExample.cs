@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using System.Collections;
 using Isosurface;
 
 [ExecuteInEditMode]
+#if UNITY_EDITOR
 [InitializeOnLoad]
+#endif
 public class DataProcessorExample : MonoBehaviour
 {
 	#region Public Properties
@@ -29,19 +33,23 @@ public class DataProcessorExample : MonoBehaviour
 
 	void OnEnable ()
 	{
-		EditorApplication.update += Update;
-	}
+#if UNITY_EDITOR
+        EditorApplication.update += Update;
+#endif
+    }
 
 	void Update ()
 	{
 		if (this == null || !this.isActiveAndEnabled)
 			return;
 
+#if UNITY_EDITOR
 		if (!Application.isPlaying)
-			time = (float)EditorApplication.timeSinceStartup;
+            time = (float)EditorApplication.timeSinceStartup;
 		else
+#endif
 			time = Time.time;
-	}
+    }
 
 	#endregion
 

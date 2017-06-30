@@ -34,6 +34,7 @@ public class NpcEquipWeapon : NetworkBehaviour {
         WeaponTarget.Weapon.WeaponValues = values;
 
         WeaponTarget.Weapon.WeaponValues.Damage *= .33f * (WeaponTarget.Level);
+        WeaponTarget.Weapon.WeaponValues.Cooldown *= 2f;
     }
 
     [ClientRpc]
@@ -45,5 +46,6 @@ public class NpcEquipWeapon : NetworkBehaviour {
         WeaponTarget.Weapon.WeaponValues = values;
 
         WeaponTarget.Weapon.WeaponValues.Damage *= .33f * (WeaponTarget.Level);
+        WeaponTarget.Weapon.WeaponValues.Cooldown *= 2f;
     }
 }
