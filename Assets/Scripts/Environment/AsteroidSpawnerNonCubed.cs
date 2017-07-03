@@ -40,7 +40,7 @@ public class AsteroidSpawnerNonCubed : MonoBehaviour {
         Size = s;
         map = new int[Size, Size, Size];
         for (int i = 0; i < Size; i++)
-            for (int j = 0; j < Size; j++)
+            for (int j = (int)(Size * .3f); j < Size * .6f; j++)
                 for (int k = 0; k < Size; k++)
                 {
                     map[i, j, k] = Random.Range(0, 100) > GeneratePercentage ? 1 : 0;

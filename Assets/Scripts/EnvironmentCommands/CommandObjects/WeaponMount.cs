@@ -214,6 +214,9 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
         e.z = 0;
         e.y = Mathf.Clamp(Mathf.DeltaAngle(-e.y, 0), LocalYMin, LocalYMax);
         //MountTarget.localEulerAngles = e;
+
+        
+
         CurrentEulers = e;
     }
 

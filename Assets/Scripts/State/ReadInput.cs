@@ -15,6 +15,8 @@ public class ReadInput : NetworkBehaviour
     [SyncVar]
     public bool isMouseDown;
 
+    public Transform CurrentlyLookingAt;
+
     void Start()
     {
         lastHorizontal = 0f;
@@ -66,6 +68,14 @@ public class ReadInput : NetworkBehaviour
     void getLookingAt()
     {
         Vector3 t = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.y - transform.position.y));
+
+        var tUp = t + Vector3.up * 20;
+        Ray r = new Ray(t,t);
+        RaycastHit hit;
+        if (Physics.Raycast(r, out hit, 40))
+        {
+            CurrentlyLookingAt = hit.transform;
+        }
 
         if (isServer)
             lookingAtPosition = t;
