@@ -29,11 +29,12 @@ public class InstantiatedAsteroid : InstantiatedLocation {
             var hit = possibleAsteroids.First();
             if (EffectOnBlockDeath != null)
             {
-                var p = new Vector3(VoxelX, VoxelY, VoxelZ) + hit.Target.position;
+                var p = new Vector3(VoxelX, VoxelY, VoxelZ) + transform.position;
+                //var p = new Vector3(VoxelX, VoxelY, VoxelZ) + hit.Target.position;
                 var e = Instantiate(EffectOnBlockDeath, p, EffectOnBlockDeath.transform.rotation);
                 //if (materialOverview[pos] != null)
                 e.SetColor(mat.color);
-                Debug.Log("root: " + transform.position + "\nasteroid: " + hit.Target.position + "\ncoor: " + VoxelX + " " + VoxelY + " " + VoxelZ);
+                Debug.Log("root: " + transform.position + "\n" + hit.Target.name + ": " + hit.Target.position + ". local: " + hit.Target.localPosition + "\ncoor: " + VoxelX + " " + VoxelY + " " + VoxelZ);
             }
             hit.Surface.isosurface.Data[VoxelX - hit.StartX, VoxelY - hit.StartY, VoxelZ - hit.StartZ] = 0;
             hit.Surface.isosurface.BuildData(ref isosurface.runtimeMesh);
@@ -155,7 +156,7 @@ public class InstantiatedAsteroid : InstantiatedLocation {
 
     void addSubMesh(float[,,] voxels, Vector3 localPosition, asteroidContainer container)
     {
-        var target = new GameObject("IsoMesh");
+        var target = new GameObject("Asteroid IsoMesh " + singleAsteroids.Count);
         target.transform.SetParent(transform);
         target.transform.localPosition = localPosition;
         target.AddComponent<MeshFilter>();

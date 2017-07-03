@@ -23,7 +23,7 @@ public class BaseAddForceObject : MonoBehaviour {
         }
 	}
 
-    public virtual void ApplyForce(Vector3 origin, float force, float radius)
+    public virtual void ApplyForce(Vector3 origin, float force, float radius, float damage)
     {
         if (!hit)
         {

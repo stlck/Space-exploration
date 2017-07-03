@@ -33,7 +33,10 @@ public class BaseProjectile : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         if (hasHit)
+        {
+            Destroy(gameObject);
             return;
+        }
 
         hasHit = true;
 
@@ -47,13 +50,13 @@ public class BaseProjectile : MonoBehaviour
         var duplicates = Physics.OverlapSphere(point, HitRadius);
         //Debug.Log("Found " + duplicates.Length);
         if(duplicates.Length == 0 && collision.gameObject.GetComponent<BaseAddForceObject>() != null)
-            collision.gameObject.GetComponent<BaseAddForceObject>().ApplyForce(point, ExplosionForce, HitRadius);
+            collision.gameObject.GetComponent<BaseAddForceObject>().ApplyForce(point, ExplosionForce, HitRadius, Owner.WeaponValues.Damage);
         else
             foreach (var d in duplicates)
             {
                 if (d.gameObject != collision.gameObject && d.GetComponent<BaseAddForceObject>() != null)
                 {
-                    d.GetComponent<BaseAddForceObject>().ApplyForce(point, ExplosionForce, HitRadius);
+                    d.GetComponent<BaseAddForceObject>().ApplyForce(point, ExplosionForce, HitRadius, Owner.WeaponValues.Damage);
                 }
             }
 

@@ -71,7 +71,8 @@ public class CreateBoxMan : NpcBase {
         ApplyForce(
             from/*+ Scale * Size / 2 + Random.Range(-1.5f,1.5f) * Vector3.up*/,
             ExternalExplosionModifier,
-            4);//Parts[i].rigidBody.AddExplosionForce(200, transform.position - transform.forward, 6);
+            4,
+            0f);//Parts[i].rigidBody.AddExplosionForce(200, transform.position - transform.forward, 6);
 
         transform.position = position;
     }
@@ -107,7 +108,7 @@ public class CreateBoxMan : NpcBase {
         }
     }
 
-    public override void ApplyForce(Vector3 origin, float force, float radius)
+    public override void ApplyForce(Vector3 origin, float force, float radius, float damage)
     {
         for (int i = 0; i < Parts.Count; i++)
         {

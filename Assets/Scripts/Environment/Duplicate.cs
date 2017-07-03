@@ -50,13 +50,15 @@ public class Duplicate : BaseAddForceObject
         Destroy(gameObject);
     }
 
-    public override void ApplyForce(Vector3 origin, float force, float radius)
+    public override void ApplyForce(Vector3 origin, float force, float radius, float damage)
     {
-        base.ApplyForce(origin, force, radius);
-        
-        if(hit)
+        base.ApplyForce(origin, force, radius, damage);
+        var dam = force * Mathf.Abs(1f - Vector3.Distance(transform.position, origin) / radius);
+
+        //ApplyDamage(origin, damage);
+        if (hit)
         {
-            newCollisionTest(origin, force * Mathf.Abs( 1f - Vector3.Distance(transform.position, origin) / radius));
+            newCollisionTest(origin, dam);
         }
     }
 
