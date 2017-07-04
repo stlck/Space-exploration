@@ -19,6 +19,7 @@ public class WeaponGenerator : MonoBehaviour {
 
     void OnGUI()
     {
+        /* for tests */
         if (GUILayout.Button("New"))
         {
             testrecipee = GetRecipee(Random.Range(0, 10000));
@@ -78,9 +79,6 @@ public class WeaponGenerator : MonoBehaviour {
     }
     public static BaseWeapon InstantiateWeapon (BaseWeapon weapon, Transform parent)
     {
-        //if (LoadedWeapons == null || LoadedWeapons.Count == 0)
-        //    LoadedWeapons = Resources.LoadAll<BaseWeapon>("Weapons").ToList();
-
         BaseWeapon w = Instantiate(weapon);
 
         w.transform.parent = parent;

@@ -18,10 +18,21 @@ public class ItemPickup : MonoBehaviour {
 
     private void OnCollisionEnter (Collision collision)
     {
-        if(collision.gameObject.tag == "Player" && collision.gameObject.GetComponent<MyAvatar>().isLocalPlayer)
+        if (Item == null)
         {
-            MyAvatar.Instance.InventoryItems.Add(Item);
-            Destroy(gameObject);
+            Debug.Log("No Item To Pickup", gameObject);
+            return;
+        }
+
+        if (collision.gameObject.tag == "Player" /*&& collision.gameObject.GetComponent<MyAvatar>().isLocalPlayer*/)
+        {
+            var avatarToPickup = collision.transform.root.GetComponent<MyAvatar>();
+            if (avatarToPickup == MyAvatar.Instance)
+                MyAvatar.Instance.InventoryItems.Add(Item);
+            //Destroy(gameObject);
+
+            if (MyAvatar.Instance.isServer)
+                NetworkHelper.Instance.SrvDestroyObject(gameObject);
         }
     }
 }

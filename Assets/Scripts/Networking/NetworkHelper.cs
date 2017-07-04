@@ -81,7 +81,28 @@ public class NetworkHelper : NetworkBehaviour
             NetworkServer.Spawn(go);
     }
 
+    public void SpawnItem(BaseItem go, Vector3 position)
+    {
+        if (!isServer)
+            CmdSpawnItem(go.gameObject,position);
+        else
+            srvSpawnItem(go.gameObject, position);
+    }
+
+    [Command]
+    void CmdSpawnItem(GameObject go, Vector3 position)
+    {
+        srvSpawnItem(go, position);
+    }
+
+    void srvSpawnItem(GameObject go, Vector3 position)
+    {
+        var inst =Instantiate(go, position, go.transform.rotation);
+        SpawnObject(inst);
+    }
+
     [Server]
+    /// Used for ship item spawning (Bad naming! :d)
     public GameObject NetworkSpawnObject(NetworkSpawnObject so)
     {
         var go = Instantiate(so.SpawnTarget);
@@ -230,6 +251,10 @@ public class NetworkHelper : NetworkBehaviour
         RpcCreateMission(name, seed, locType, level);
     }
 
+    public void SrvDestroyObject(GameObject go)
+    {
+        NetworkServer.Destroy(go);
+    }
 }
 
 [Serializable]

@@ -210,13 +210,12 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
         MountTarget.forward = Vector3.RotateTowards(MountTarget.forward, LookTarget.normalized, RotateSpeed * Time.deltaTime, RotateSpeed * Time.deltaTime);
 
         var e = MountTarget.localEulerAngles;
-        e.x = 0;
+        //e.x = 0;
         e.z = 0;
         e.y = Mathf.Clamp(Mathf.DeltaAngle(-e.y, 0), LocalYMin, LocalYMax);
         //MountTarget.localEulerAngles = e;
 
         
-
         CurrentEulers = e;
     }
 
@@ -236,6 +235,4 @@ public class WeaponMount : MovementBase, CmdObj, IShipSpawnObject
         TilePositionX = position.x;
         TilePositionY = position.y;
     }
-
-
 }

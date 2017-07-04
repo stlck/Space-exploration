@@ -30,10 +30,10 @@ public class AvatarWeaponHandler : NetworkBehaviour
         CmdUnequipWeapon(seed);
     }
 
-    public void EquipWeapon(int id)
-    {
-        CmdEquipWeapon(id);
-    }
+    //public void EquipWeapon(int id)
+    //{
+    //    CmdEquipWeapon(id);
+    //}
 
     public void EquipWeaponSeed ( int seed)
     {
@@ -67,25 +67,11 @@ public class AvatarWeaponHandler : NetworkBehaviour
         }
     }
 
-   /* void OnGUI()
-    {
-        if(isLocalPlayer)
-        {
-            GUILayout.BeginArea(new Rect(Screen.width/2 - 100, Screen.height - 55, 200, 50));
-            GUILayout.Label(GetComponentsInChildren<BaseWeapon>().Count() + " weapons");
-            if(EquippedWeapon != null)
-            {
-                GUILayout.Button(EquippedWeapon.name + " : " + (int) Mathf.Min(100,100 * EquippedWeapon.CurrentCooldown / EquippedWeapon.WeaponValues.Cooldown));
-            }
-            GUILayout.EndArea();
-        }
-    }*/
-
-    [Command]
-    void CmdEquipWeapon(int id)
-    {
-        RpcUpdateWeaponInfo(id);
-    }
+    //[Command]
+    //void CmdEquipWeapon(int id)
+    //{
+    //    RpcUpdateWeaponInfo(id);
+    //}
 
     void turnOffEquippedWeapon()
     {
@@ -93,37 +79,21 @@ public class AvatarWeaponHandler : NetworkBehaviour
             EquippedWeapon.gameObject.SetActive(false);
     }
 
-    [ClientRpc]
-    void RpcUpdateWeaponInfo(int id)
-    {
-        turnOffEquippedWeapon();
-        //Destroy(EquippedWeapon.gameObject);
+    //[ClientRpc]
+    //void RpcUpdateWeaponInfo(int id)
+    //{
+    //    turnOffEquippedWeapon();
 
-        var w = WeaponGenerator.InstantiateWeapon(id, WeaponPoint);
+    //    var w = WeaponGenerator.InstantiateWeapon(id, WeaponPoint);
         
-        EquippedWeapon = w;
-    }
-
-   /* public BaseWeapon InstantiateWeapon (int id, int seed, Transform parent)
-    {
-        BaseWeapon w = Instantiate(LoadedWeapons.First(m => m.Id == id));
-
-        w.transform.parent = parent;
-        w.transform.localPosition = w.transform.position;
-        w.transform.localEulerAngles = Vector3.zero;
-
-        InstantiatedWeapons.Add(new InstantiatedWeapon() { GameObject = w.gameObject, Id = id, Seed = seed, Weapon = w });
-
-        return w;
-    }*/
+    //    EquippedWeapon = w;
+    //}
 
     [Command]
     void CmdUnequipWeapon(int seed)
     {
-        //NetworkServer.Destroy(EquippedWeapon.gameObject);
         RpcUnequipweapon(seed);
         turnOffEquippedWeapon();
-        //Destroy(EquippedWeapon.gameObject);
         EquippedWeapon = null;
     }
 
@@ -131,7 +101,6 @@ public class AvatarWeaponHandler : NetworkBehaviour
     void RpcUnequipweapon(int seed)
     {
         turnOffEquippedWeapon();
-        //Destroy(EquippedWeapon.gameObject);
         EquippedWeapon = null;
     }
 
@@ -146,7 +115,6 @@ public class AvatarWeaponHandler : NetworkBehaviour
         if(EquippedWeapon != null && EquippedWeapon.CanFire())
         { 
             RpcFireWeapon();
-            //EquippedWeapon.FireWeapon();
         }
     }
 
@@ -160,7 +128,6 @@ public class AvatarWeaponHandler : NetworkBehaviour
     [ClientRpc]
     void RpcFireWeapon()
     {
-        //Debug.Log("fIRING");
         EquippedWeapon.FireWeapon();
     }
 

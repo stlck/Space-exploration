@@ -12,10 +12,12 @@ public class InstantiatedStation : InstantiatedLocation {
     public List<BspCell> Rooms;
     public GridGraph StationGraph;
 
+
     // Use this for initialization
     void Start() {
         EffectOnBlockDeath = Resources.Load<DuplicateFragment>("TileSets/BlockDeathEffect");
         setupGraph();
+
     }
 
     void setupGraph()
@@ -34,6 +36,8 @@ public class InstantiatedStation : InstantiatedLocation {
         StationGraph.collision.thickRaycastDiameter = 2f;
         StationGraph.collision.fromHeight = 5f;
         StationGraph.collision.unwalkableWhenNoGround = false;
+        StationGraph.collision.heightMask = 256;
+        StationGraph.collision.mask = 9;// LayerMask.NameToLayer("Ship");
 
         StartCoroutine(waitAndScan());
     }

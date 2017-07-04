@@ -52,14 +52,5 @@ public class ProjectileWeapon : BaseWeapon {
         var t = Instantiate(Projectile, transform.position + transform.forward, transform.rotation);
         if (!t.gameObject.activeInHierarchy)
             t.gameObject.SetActive(true);
-        //t.WeaponColor.Invoke(WeaponValues.WeaponColor);
-
-        //t.ParticleSystems.ForEach(m =>
-        //{
-        //    var main = m.main;
-        //    main.startColor = WeaponValues.WeaponColor;
-        //});
-
-        //t.Owner = this;
     }
 }

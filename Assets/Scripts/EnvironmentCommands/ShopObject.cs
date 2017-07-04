@@ -42,6 +42,7 @@ public class ShopObject : MonoBehaviour {
 
         scrollPos = GUILayout.BeginScrollView(scrollPos, false, true);
 
+        GUILayout.Label("WEAPONS");
         GUILayout.BeginHorizontal();
         GUILayout.Label("Purchase", GUILayout.Width(100));
         GUILayout.Label("Name", GUILayout.Width(140));
@@ -61,6 +62,7 @@ public class ShopObject : MonoBehaviour {
             GUILayout.Label(WeaponValues[i].Range + "", GUILayout.Width(100));
             GUILayout.EndHorizontal();
         }
+
         GUILayout.EndScrollView();
         GUI.DragWindow();
     }
